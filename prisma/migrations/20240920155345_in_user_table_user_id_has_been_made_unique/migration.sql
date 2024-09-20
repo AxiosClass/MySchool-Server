@@ -10,10 +10,14 @@ CREATE TABLE "users" (
     "userId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "status" "UserStatus" NOT NULL,
+    "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
     "role" "UserRole" NOT NULL,
-    "joinedAt" TIMESTAMP(3) NOT NULL,
-    "needPasswordChange" BOOLEAN NOT NULL,
+    "joinedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updateAt" TIMESTAMP(3) NOT NULL,
+    "needPasswordChange" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_userId_key" ON "users"("userId");

@@ -13,6 +13,7 @@ export const seedSuperAdmin = async () => {
     });
     if (isSuperAdminExist) throw new Error('Super admin already exist');
 
+    // encrypting password
     const password = await bcrypt.hash(ADMIN_PASSWORD, SALT);
 
     // creating super admin

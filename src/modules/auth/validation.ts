@@ -14,6 +14,7 @@ export const changePasswordValidationSchema = z.object({
 });
 
 // types
-export interface ILoginPayload extends z.infer<typeof loginValidationSchema> {}
-export interface IChangePasswordPayload
-  extends z.infer<typeof changePasswordValidationSchema> {}
+export type TLoginPayload = z.infer<typeof loginValidationSchema>;
+export type TChangePasswordPayload = z.infer<
+  typeof changePasswordValidationSchema
+>;
