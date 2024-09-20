@@ -26,6 +26,7 @@ CREATE TABLE "staff" (
     "userId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "nid" TEXT NOT NULL,
+    "phone" TEXT NOT NULL,
     "dob" TIMESTAMP(3) NOT NULL,
     "bloodGroup" TEXT NOT NULL,
     "salary" DOUBLE PRECISION NOT NULL,
@@ -41,3 +42,6 @@ CREATE TABLE "staff" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "staff_nid_key" ON "staff"("nid");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "staff_phone_key" ON "staff"("phone");

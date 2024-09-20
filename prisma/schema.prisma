@@ -39,6 +39,7 @@ model Staff {
   userId      String    @id @default(uuid())
   name        String
   nid         String    @unique
+  phone       String    @unique
   dob         DateTime
   bloodGroup  String
   salary      Float

@@ -46,6 +46,9 @@ export const addTeacher = z.object({
   nid: z
     .string({ required_error: 'Nid is required' })
     .min(1, { message: 'Nid is required' }),
+  phone: z
+    .string({ required_error: 'Phone Number is required' })
+    .min(1, { message: 'Phone Number is required' }),
   dob: dateGenerator('Date of birth is required'),
   bloodGroup: enumGenerator(bloodGroups, 'Invalid blood group'),
   salary: z
