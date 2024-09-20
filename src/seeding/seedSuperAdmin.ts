@@ -1,24 +1,29 @@
 import bcrypt from 'bcrypt';
-import mongoose from 'mongoose';
-import { User } from '../modules/user/model';
-import { MONGO_URI, SALT } from '../app/config';
+
 import { ADMIN_ID, ADMIN_PASSWORD } from '../app/config';
+import { prismaClient } from '../app/prisma';
+import { UserRole } from '@prisma/client';
+import { SALT } from '../app/config';
 
 export const seedSuperAdmin = async () => {
   try {
-    await mongoose.connect(MONGO_URI!);
     // is super admin exist don't create another one
-    const isSuperAdminExist = await User.findOne({ role: 'SUPER_ADMIN' });
+    const isSuperAdminExist = await prismaClient.user.findFirst({
+      where: { role: UserRole.SUPER_ADMIN },
+    });
     if (isSuperAdminExist) throw new Error('Super admin already exist');
+
     const password = await bcrypt.hash(ADMIN_PASSWORD, SALT);
 
     // creating super admin
-    const superAdmin = await User.create({
-      name: 'Super Admin',
-      password,
-      role: 'SUPER_ADMIN',
-      userId: ADMIN_ID,
-      needsPasswordChange: false,
+    const superAdmin = await prismaClient.user.create({
+      data: {
+        name: 'Super Admin',
+        password,
+        role: UserRole.ADMIN,
+        userId: ADMIN_ID,
+        needPasswordChange: false,
+      },
     });
 
     if (!superAdmin) throw Error('Failed to create super admin');
@@ -31,8 +36,6 @@ export const seedSuperAdmin = async () => {
     console.log('************* ERROR *************');
     console.log('Error :', error.message);
     console.log('************* END *************');
-  } finally {
-    await mongoose.disconnect();
   }
 };
 

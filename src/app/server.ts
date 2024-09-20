@@ -1,12 +1,10 @@
-import mongoose from 'mongoose';
+import { PORT } from './config';
 import { Server } from 'http';
-import { MONGO_URI, PORT } from './config';
 import { app } from './app';
 
 let server: Server;
 
 const main = async () => {
-  await mongoose.connect(MONGO_URI!);
   server = app.listen(PORT, () => {
     console.log(`Server is listening to the port ${PORT}`);
   });
