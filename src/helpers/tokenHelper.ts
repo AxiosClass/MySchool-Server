@@ -13,6 +13,10 @@ export const generateAccessToken = (payload: IAccessTokenPayload) => {
   return jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
 };
 
+export const verifyAccessToken = (token: string) => {
+  return jwt.verify(token, ACCESS_TOKEN_SECRET) as IAccessTokenPayload;
+};
+
 interface IRefreshTokenPayload {
   id: string;
   userId: string;
