@@ -12,3 +12,10 @@ classRouter.post(
   validationHandler(validation.addClass),
   controller.addClass,
 );
+
+classRouter.post(
+  '/:classId/subjects',
+  authGuard('ADMIN', 'SUPER_ADMIN'),
+  validationHandler(validation.addSubjects),
+  controller.addSubjects,
+);

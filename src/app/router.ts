@@ -7,4 +7,4 @@ export const appRouter = Router();
 
 appRouter.use('/auth', authRouter);
 appRouter.use('/staff', staffRouter);
-appRouter.use("/class", classRouter)
+appRouter.use('/class', classRouter);

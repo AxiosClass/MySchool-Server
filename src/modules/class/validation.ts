@@ -9,4 +9,15 @@ export const addClass = z.object({
     .min(1, { message: 'Level is required' }),
 });
 
+export const addSubjects = z.object({
+  subjects: z
+    .array(
+      z
+        .string({ required_error: 'Subject is required' })
+        .min(1, { message: 'Subject is required' }),
+    )
+    .min(1, { message: 'Subjects is required' }),
+});
+
 export type TAddClassPayload = z.infer<typeof addClass>;
+export type TAddSubjectsPayload = z.infer<typeof addSubjects>;
