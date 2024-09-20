@@ -16,6 +16,13 @@ classRouter.post(
 classRouter.post(
   '/:classId/subjects',
   authGuard('ADMIN', 'SUPER_ADMIN'),
-  validationHandler(validation.addSubjects),
+  validationHandler(validation.addOrRemoveSubjects),
   controller.addSubjects,
+);
+
+classRouter.delete(
+  '/:classId/subjects',
+  authGuard('ADMIN', 'SUPER_ADMIN'),
+  validationHandler(validation.addOrRemoveSubjects),
+  controller.removeSubjects,
 );

@@ -1,9 +1,9 @@
+import { TAddOrRemoveSubjectsPayload } from '../../validation';
 import { prismaClient } from '../../../../app/prisma';
-import { TAddSubjectsPayload } from '../../validation';
 
 export const addSubjects = async (
   classId: string,
-  payload: TAddSubjectsPayload,
+  payload: TAddOrRemoveSubjectsPayload,
 ) => {
   const updatedClass = await prismaClient.class.update({
     where: { id: classId },

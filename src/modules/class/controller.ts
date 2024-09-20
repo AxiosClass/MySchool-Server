@@ -18,3 +18,13 @@ export const addSubjects = catchAsync(async (req, res) => {
     data: updatedClass,
   });
 });
+
+export const removeSubjects = catchAsync(async (req, res) => {
+  const { classId } = req.params;
+  const updatedClass = await services.removeSubjects(classId, req.body);
+
+  return sendSuccessResponse(res, {
+    message: 'Subjects Removed successfully',
+    data: updatedClass,
+  });
+});

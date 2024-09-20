@@ -9,7 +9,7 @@ export const addClass = z.object({
     .min(1, { message: 'Level is required' }),
 });
 
-export const addSubjects = z.object({
+export const addOrRemoveSubjects = z.object({
   subjects: z
     .array(
       z
@@ -20,4 +20,4 @@ export const addSubjects = z.object({
 });
 
 export type TAddClassPayload = z.infer<typeof addClass>;
-export type TAddSubjectsPayload = z.infer<typeof addSubjects>;
+export type TAddOrRemoveSubjectsPayload = z.infer<typeof addOrRemoveSubjects>;
