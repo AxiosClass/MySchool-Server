@@ -1,0 +1,14 @@
+import * as validation from './validation';
+import * as controller from './controller';
+
+import { authGuard, validationHandler } from '../../middlewares';
+import { Router } from 'express';
+
+export const classRouter = Router();
+
+classRouter.post(
+  '/',
+  authGuard('ADMIN', 'SUPER_ADMIN'),
+  validationHandler(validation.addClass),
+  controller.addClass,
+);
