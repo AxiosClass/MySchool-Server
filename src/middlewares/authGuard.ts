@@ -22,8 +22,10 @@ export const authGuard = (...requiredRoles: UserRole[]) => {
     const { userId } = decodedUser;
     const isUserExist = await prismaClient.user.findUnique({
       where: { userId },
-      select: { id: true, name: true, userId: true, role: true, status: true },
+      select: { name: true, userId: true, role: true, status: true },
     });
+
+    if (!isUserExist) throw new AppError('User not found', 404);
 
     if (isUserExist.status !== 'ACTIVE')
       throw new AppError('You are not active user', 400);

@@ -8,7 +8,7 @@ export const authRouter = Router();
 
 authRouter.post(
   '/login',
-  validationHandler(validation.loginValidationSchema),
+  validationHandler(validation.login),
   controller.login,
 );
 
@@ -22,6 +22,6 @@ authRouter.post(
     'SUPER_ADMIN',
     'TEACHER',
   ),
-  validationHandler(validation.changePasswordValidationSchema),
+  validationHandler(validation.changePassword),
   controller.changePassword,
 );

@@ -15,10 +15,10 @@ export const login = async (payload: TLoginPayload) => {
   const isPasswordMatch = await comparePassword(password, user.password);
   if (!isPasswordMatch) throw new AppError('Password does not match', 400);
 
-  const { id, name, role } = user;
+  const { name, role } = user;
 
-  const accessToken = generateAccessToken({ id, userId, name, role });
-  const refreshToken = generateRefreshToken({ id, userId });
+  const accessToken = generateAccessToken({ userId, name, role });
+  const refreshToken = generateRefreshToken({ userId });
 
   return { accessToken, refreshToken };
 };

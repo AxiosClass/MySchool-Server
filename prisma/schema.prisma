@@ -8,8 +8,7 @@ datasource db {
 }
 
 model User {
-  id                 String     @id @default(uuid())
-  userId             String     @unique
+  userId             String     @id
   name               String
   password           String
   status             UserStatus @default(ACTIVE)
@@ -34,4 +33,29 @@ enum UserRole {
   MODERATOR
   STUDENT
   TEACHER
+}
+
+model Staff {
+  userId      String    @id @default(uuid())
+  name        String
+  nid         String    @unique
+  dob         DateTime
+  bloodGroup  String
+  salary      Float
+  designation String
+  address     Json
+  education   Json?
+  role        StaffRole
+  joinedAt    DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("staff")
+}
+
+enum StaffRole {
+  ADMIN
+  ACCOUNTANT
+  MODERATOR
+  TEACHER
+  OTHER
 }

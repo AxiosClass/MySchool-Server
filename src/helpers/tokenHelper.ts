@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '../app/config';
 
 interface IAccessTokenPayload {
-  id: string;
   userId: string;
   name: string;
   role: string;
@@ -18,7 +17,6 @@ export const verifyAccessToken = (token: string) => {
 };
 
 interface IRefreshTokenPayload {
-  id: string;
   userId: string;
 }
 

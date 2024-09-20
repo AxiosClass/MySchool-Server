@@ -1,6 +1,6 @@
-import { NODE_ENV } from '../app/config';
-import { ErrorRequestHandler } from 'express';
 import { sendErrorResponse } from '../helpers';
+import { ErrorRequestHandler } from 'express';
+import { NODE_ENV } from '../app/config';
 
 export const globalErrorHandler: ErrorRequestHandler = (error, _, res, __) => {
   let status: number = error.status || 500;
@@ -25,14 +25,7 @@ export const globalErrorHandler: ErrorRequestHandler = (error, _, res, __) => {
     );
   }
 
-  // handling error for mongoose
-  // duplicate key
-  if (error.errorResponse?.code === 11000) {
-    const { errorResponse } = error;
-    const [key] = Object.keys(errorResponse.keyPattern);
-    message = `${key} : ${errorResponse.keyValue[key]} already exist`;
-    status = 400;
-  }
+  console.log(error)
 
   const errorInfo = NODE_ENV === 'development' ? error : null;
 
