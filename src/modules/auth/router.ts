@@ -11,3 +11,17 @@ authRouter.post(
   validationHandler(validation.loginValidationSchema),
   controller.login,
 );
+
+authRouter.post(
+  '/change-password',
+  authGuard(
+    'ACCOUNTANT',
+    'ADMIN',
+    'MODERATOR',
+    'STUDENT',
+    'SUPER_ADMIN',
+    'TEACHER',
+  ),
+  validationHandler(validation.changePasswordValidationSchema),
+  controller.changePassword,
+);

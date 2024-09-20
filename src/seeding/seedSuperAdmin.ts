@@ -1,9 +1,7 @@
-import bcrypt from 'bcrypt';
-
 import { ADMIN_ID, ADMIN_PASSWORD } from '../app/config';
 import { prismaClient } from '../app/prisma';
+import { encryptPassword } from '../helpers';
 import { UserRole } from '@prisma/client';
-import { SALT } from '../app/config';
 
 export const seedSuperAdmin = async () => {
   try {
@@ -14,7 +12,7 @@ export const seedSuperAdmin = async () => {
     if (isSuperAdminExist) throw new Error('Super admin already exist');
 
     // encrypting password
-    const password = await bcrypt.hash(ADMIN_PASSWORD, SALT);
+    const password = await encryptPassword(ADMIN_PASSWORD);
 
     // creating super admin
     const superAdmin = await prismaClient.user.create({

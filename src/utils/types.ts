@@ -1,5 +1,3 @@
-import { IUser } from '../modules/user/interface';
-
 export interface IMeta {
   page: number;
   limit: number;

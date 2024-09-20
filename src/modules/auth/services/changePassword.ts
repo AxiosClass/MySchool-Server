@@ -1,17 +1,34 @@
-import { AppError } from '../../../utils';
+import { comparePassword, encryptPassword } from '../../../helpers';
 import { TChangePasswordPayload } from '../validation';
+import { prismaClient } from '../../../app/prisma';
+import { AppError } from '../../../utils';
 
 export const changePassword = async (
   userId: string,
   payload: TChangePasswordPayload,
 ) => {
-  // const user = await User.findOne({ userId });
+  // finding use from db
+  const user = await prismaClient.user.findUniqueOrThrow({
+    where: { userId },
+    select: { password: true },
+  });
 
-  // const isPasswordMatch = await user.comparePassword(payload.currentPassword);
-  // if (!isPasswordMatch) throw new AppError("Password doesn't match", 400);
+  // checking if password match
+  const isPasswordMatch = await comparePassword(
+    payload.currentPassword,
+    user.password,
+  );
 
-  // user.password = payload.newPassword;
-  // await user.save();
+  if (!isPasswordMatch) throw new AppError('Password does not match', 400);
+
+  // encrypting password
+  const password = await encryptPassword(payload.newPassword);
+
+  // updating password
+  await prismaClient.user.update({
+    where: { userId },
+    data: { password, needPasswordChange: false },
+  });
 
   return 'Password Updated';
 };
