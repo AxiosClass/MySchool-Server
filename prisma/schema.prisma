@@ -49,8 +49,8 @@ model Staff {
   role        StaffRole
   joinedAt    DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  sections    Section[]
 
+  sections        Section[]
   subjectTeachers SubjectTeacher[]
 
   @@map("staff")
@@ -109,7 +109,8 @@ model SubjectTeacher {
   sectionId String
   section   Section @relation(fields: [sectionId], references: [id])
 
-  subject String @unique
+  subject String
 
+  @@id([teacherId, sectionId, subject])
   @@map("subject_teachers")
 }

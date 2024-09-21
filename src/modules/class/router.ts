@@ -33,3 +33,10 @@ classRouter.post(
   validationHandler(validation.addSection),
   controller.addSection,
 );
+
+classRouter.post(
+  '/:sectionId/assign-subject-teacher',
+  authGuard('ADMIN', 'SUPER_ADMIN'),
+  validationHandler(validation.assignSubjectTeacher),
+  controller.assignSubjectTeacher,
+);

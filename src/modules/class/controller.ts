@@ -32,3 +32,13 @@ export const addSection = catchAsync(async (req, res) => {
     data: section,
   });
 });
+
+export const assignSubjectTeacher = catchAsync(async (req, res) => {
+  const { sectionId } = req.params;
+  const result = await services.assignSubjectTeacher(sectionId, req.body);
+
+  return sendSuccessResponse(res, {
+    message: `Teacher is assigned for the class successfully`,
+    data: result,
+  });
+});
