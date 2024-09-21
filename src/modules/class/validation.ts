@@ -28,6 +28,16 @@ export const addSection = z.object({
     .min(1, { message: 'TeacherId is required' }),
 });
 
+export const assignSubjectTeacher = z.object({
+  name: z
+    .string({ required_error: 'Subject name is required' })
+    .min(1, { message: 'Subject Name is required' }),
+  teacherId: z
+    .string({ required_error: 'TeacherId is required' })
+    .min(1, { message: 'TeacherId is required' }),
+});
+
 export type TAddClassPayload = z.infer<typeof addClass>;
 export type TAddOrRemoveSubjectsPayload = z.infer<typeof addOrRemoveSubjects>;
 export type TAddSectionPayload = z.infer<typeof addSection>;
+export type TAssignSubjectTeacherPayload = z.infer<typeof assignSubjectTeacher>;
