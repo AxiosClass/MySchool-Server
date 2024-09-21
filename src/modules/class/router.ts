@@ -26,3 +26,10 @@ classRouter.delete(
   validationHandler(validation.addOrRemoveSubjects),
   controller.removeSubjects,
 );
+
+classRouter.post(
+  '/:classId/section',
+  authGuard('ADMIN', 'SUPER_ADMIN'),
+  validationHandler(validation.addSection),
+  controller.addSection,
+);

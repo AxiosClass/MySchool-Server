@@ -89,6 +89,7 @@ model Section {
 
   subjectTeachers SubjectTeacher[]
 
+  @@unique([teacherId, classId])
   @@map("sections")
 }
 

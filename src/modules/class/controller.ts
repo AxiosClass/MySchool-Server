@@ -1,7 +1,7 @@
 import * as services from './services';
 
-import { catchAsync } from '../../middlewares';
 import { sendSuccessResponse } from '../../helpers';
+import { catchAsync } from '../../middlewares';
 
 export const addClass = catchAsync(async (req, res) => {
   const newClass = await services.addClass(req.body);
@@ -26,5 +26,15 @@ export const removeSubjects = catchAsync(async (req, res) => {
   return sendSuccessResponse(res, {
     message: 'Subjects Removed successfully',
     data: updatedClass,
+  });
+});
+
+export const addSection = catchAsync(async (req, res) => {
+  const { classId } = req.params;
+  const section = await services.addSection(classId, req.body);
+
+  return sendSuccessResponse(res, {
+    message: 'Section Added successfully',
+    data: section,
   });
 });

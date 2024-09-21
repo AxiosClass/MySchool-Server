@@ -19,5 +19,15 @@ export const addOrRemoveSubjects = z.object({
     .min(1, { message: 'Subjects is required' }),
 });
 
+export const addSection = z.object({
+  name: z
+    .string({ required_error: 'Section name is required' })
+    .min(1, { message: 'Section name is required' }),
+  teacherId: z
+    .string({ required_error: 'TeacherId is required' })
+    .min(1, { message: 'TeacherId is required' }),
+});
+
 export type TAddClassPayload = z.infer<typeof addClass>;
 export type TAddOrRemoveSubjectsPayload = z.infer<typeof addOrRemoveSubjects>;
+export type TAddSectionPayload = z.infer<typeof addSection>;
