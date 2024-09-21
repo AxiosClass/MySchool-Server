@@ -11,22 +11,16 @@ export const addClass = catchAsync(async (req, res) => {
 
 export const addSubjects = catchAsync(async (req, res) => {
   const { classId } = req.params;
-  const updatedClass = await services.addSubjects(classId, req.body);
+  const message = await services.addSubjects(classId, req.body);
 
-  return sendSuccessResponse(res, {
-    message: 'Subjects added successfully',
-    data: updatedClass,
-  });
+  return sendSuccessResponse(res, { message, data: null });
 });
 
 export const removeSubjects = catchAsync(async (req, res) => {
   const { classId } = req.params;
-  const updatedClass = await services.removeSubjects(classId, req.body);
+  const message = await services.removeSubjects(classId, req.body);
 
-  return sendSuccessResponse(res, {
-    message: 'Subjects Removed successfully',
-    data: updatedClass,
-  });
+  return sendSuccessResponse(res, { message, data: null });
 });
 
 export const addSection = catchAsync(async (req, res) => {

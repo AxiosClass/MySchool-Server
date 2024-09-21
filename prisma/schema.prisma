@@ -49,9 +49,9 @@ model Staff {
   role        StaffRole
   joinedAt    DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  Section     Section[]
+  sections    Section[]
 
-  SubjectTeacher SubjectTeacher[]
+  subjectTeachers SubjectTeacher[]
 
   @@map("staff")
 }
@@ -68,13 +68,23 @@ model Class {
   id        String   @id @default(uuid())
   name      String
   level     String
-  subjects  String[] @default([])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   sections Section[]
+  subjects SubjectClass[]
 
   @@map("classes")
+}
+
+model SubjectClass {
+  name String
+
+  classId String
+  class   Class  @relation(fields: [classId], references: [id])
+
+  @@id([name, classId])
+  @@map("subject_classes")
 }
 
 model Section {
@@ -89,7 +99,6 @@ model Section {
 
   subjectTeachers SubjectTeacher[]
 
-  @@unique([teacherId, classId])
   @@map("sections")
 }
 
@@ -100,6 +109,7 @@ model SubjectTeacher {
   sectionId String
   section   Section @relation(fields: [sectionId], references: [id])
 
-  @@id([teacherId, sectionId])
+  subject String @unique
+
   @@map("subject_teachers")
 }

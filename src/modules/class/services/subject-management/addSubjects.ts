@@ -5,12 +5,13 @@ export const addSubjects = async (
   classId: string,
   payload: TAddOrRemoveSubjectsPayload,
 ) => {
-  const updatedClass = await prismaClient.class.update({
-    where: { id: classId },
-    data: {
-      subjects: { push: payload.subjects },
-    },
+  const subjects = payload.subjects.map((subject) => ({
+    name: subject,
+    classId,
+  }));
+  const newSubjects = await prismaClient.subjectClass.createMany({
+    data: subjects,
   });
 
-  return updatedClass;
+  return `Added ${newSubjects.count} subjects`;
 };

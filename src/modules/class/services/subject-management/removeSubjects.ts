@@ -6,25 +6,9 @@ export const removeSubjects = async (
   classId: string,
   payload: TAddOrRemoveSubjectsPayload,
 ) => {
-  const classInfo = await prismaClient.class.findUniqueOrThrow({
-    where: { id: classId },
-    select: { subjects: true },
+  const deletedStatus = await prismaClient.subjectClass.deleteMany({
+    where: { name: { in: payload.subjects }, classId },
   });
 
-  // removing subjects which is in the payload.subjects
-  const { subjects } = payload;
-  const remainingSubjects = classInfo.subjects.filter(
-    (subject) => !subjects.includes(subject),
-  );
-
-  if (remainingSubjects.length === classInfo.subjects.length)
-    throw new AppError('No class to remove from the class', 400);
-
-  // updating class with remaining subjects
-  const updatedClass = await prismaClient.class.update({
-    where: { id: classId },
-    data: { subjects: { set: remainingSubjects } },
-  });
-
-  return updatedClass;
+  return `Deleted ${deletedStatus.count} subjects`;
 };
