@@ -25,8 +25,6 @@ export const globalErrorHandler: ErrorRequestHandler = (error, _, res, __) => {
     );
   }
 
-  console.log(error);
-
   const errorInfo = NODE_ENV === 'development' ? error : null;
 
   return sendErrorResponse(res, { status, message, error: errorInfo });
