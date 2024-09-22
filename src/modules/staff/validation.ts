@@ -3,7 +3,7 @@ import { dateGenerator, enumGenerator } from '../../helpers';
 import { z } from 'zod';
 
 // sub schema
-const addressSubSchema = z.object(
+export const addressSubSchema = z.object(
   {
     division: enumGenerator(divisions, 'Invalid Division'),
     district: z

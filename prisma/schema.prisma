@@ -129,11 +129,13 @@ model Student {
   dob        DateTime
   bloodGroup String
   parents    Json
-  guading    Json
-  isDeleted  Boolean
+  guardian   Json
+  isDeleted  Boolean @default(false)
   admittedAt DateTime @default(now())
   address    Json
 
   admittedByUserId String
   admittedBy       User   @relation(fields: [admittedByUserId], references: [userId])
+  @@map("students")
+
 }
