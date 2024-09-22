@@ -1,23 +1,7 @@
 import { bloodGroups, divisions } from '../../global/constants';
+import { addressSubSchema } from '../../global/validationSchema';
 import { dateGenerator, enumGenerator } from '../../helpers';
 import { z } from 'zod';
-
-// sub schema
-const addressSubSchema = z.object(
-  {
-    division: enumGenerator(divisions, 'Invalid Division'),
-    district: z
-      .string({ required_error: 'District is required' })
-      .min(1, { message: 'District is required' }),
-    subDistrict: z
-      .string({ required_error: 'SubDistrict is required' })
-      .min(1, { message: 'Sub District is required' }),
-    postCode: z.string().optional(),
-    village: z.string().optional(),
-    streetAddress: z.string().optional(),
-  },
-  { required_error: 'Address is required' },
-);
 
 const educationSubSchema = z.object(
   {

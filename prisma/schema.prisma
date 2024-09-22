@@ -16,6 +16,7 @@ model User {
   joinedAt           DateTime   @default(now())
   updateAt           DateTime   @updatedAt
   needPasswordChange Boolean    @default(true)
+  addedStudents      Student[]
 
   @@map("users")
 }
@@ -49,8 +50,8 @@ model Staff {
   role        StaffRole
   joinedAt    DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  sections    Section[]
 
+  sections        Section[]
   subjectTeachers SubjectTeacher[]
 
   @@map("staff")
@@ -98,6 +99,7 @@ model Section {
   class   Class  @relation(fields: [classId], references: [id])
 
   subjectTeachers SubjectTeacher[]
+  students        Student[]
 
   @@map("sections")
 }
@@ -109,7 +111,31 @@ model SubjectTeacher {
   sectionId String
   section   Section @relation(fields: [sectionId], references: [id])
 
-  subject String @unique
+  subject String
 
+  @@id([teacherId, sectionId, subject])
   @@map("subject_teachers")
+}
+
+model Student {
+  userId  String @id
+  name    String
+  birthId String
+  class   String
+
+  classId   String
+  classRoom Section @relation(fields: [classId], references: [id])
+
+  dob        DateTime
+  bloodGroup String
+  parents    Json
+  guardian   Json
+  isDeleted  Boolean @default(false)
+  admittedAt DateTime @default(now())
+  address    Json
+
+  admittedByUserId String
+  admittedBy       User   @relation(fields: [admittedByUserId], references: [userId])
+  @@map("students")
+
 }
