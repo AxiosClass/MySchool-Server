@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { addressSubSchema } from '../staff/validation';
 import { bloodGroups } from '../../global/constants';
+import { addressSubSchema } from '../../global/validationSchema';
 
 const parentsSchema = z.object({
   name: z.string({ required_error: 'Parent name is required.' }),
