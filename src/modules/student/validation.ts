@@ -15,7 +15,7 @@ const guardianSchema = z.object({
   relation: z.string({ required_error: 'Guardian relation is required.' }),
 });
 
-export const createStudentSchema = z.object({
+export const addStudentSchema = z.object({
   name: z.string({ required_error: 'Student name is required.' }),
   birthId: z.string({ required_error: 'Student birth id is required.' }),
   class: z.string({ required_error: 'Student class is required.' }),
@@ -27,4 +27,4 @@ export const createStudentSchema = z.object({
   address: addressSubSchema,
 });
 
-export type TAddStudentPayload = z.infer<typeof createStudentSchema>;
+export type TAddStudentPayload = z.infer<typeof addStudentSchema>;

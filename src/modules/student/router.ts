@@ -9,6 +9,6 @@ export const studentRouter = Router();
 studentRouter.post(
   '/',
   authGuard('ADMIN', 'SUPER_ADMIN'),
-  validationHandler(validation.createStudentSchema),
+  validationHandler(validation.addStudentSchema),
   controller.addStudent,
 );
