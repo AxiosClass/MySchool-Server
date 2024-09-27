@@ -5,7 +5,7 @@ import {
 } from '../../../helpers';
 
 import { prismaClient } from '../../../app/prisma';
-import { TLoginPayload } from '../validation';
+import { TLoginPayload } from '../auth.validation';
 import { AppError } from '../../../utils';
 
 export const login = async (payload: TLoginPayload) => {

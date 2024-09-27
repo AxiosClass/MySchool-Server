@@ -1,5 +1,5 @@
 import { prismaClient } from '../../../../app/prisma';
-import { TAddSectionPayload } from '../../validation';
+import { TAddSectionPayload } from '../../class.validation';
 
 export const addSection = async (
   classId: string,

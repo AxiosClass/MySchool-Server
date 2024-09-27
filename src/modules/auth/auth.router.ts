@@ -1,5 +1,5 @@
-import * as validation from './validation';
-import * as controller from './controller';
+import * as validation from './auth.validation';
+import * as controller from './auth.controller';
 
 import { Router } from 'express';
 import { authGuard, validationHandler } from '../../middlewares';
