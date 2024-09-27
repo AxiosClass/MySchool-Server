@@ -53,6 +53,7 @@ model Staff {
 
   sections        Section[]
   subjectTeachers SubjectTeacher[]
+  salaries        Salary[]
 
   @@map("staff")
 }
@@ -130,12 +131,66 @@ model Student {
   bloodGroup String
   parents    Json
   guardian   Json
-  isDeleted  Boolean @default(false)
+  isDeleted  Boolean  @default(false)
   admittedAt DateTime @default(now())
   address    Json
 
   admittedByUserId String
   admittedBy       User   @relation(fields: [admittedByUserId], references: [userId])
-  @@map("students")
 
+  payments Payment[]
+
+  @@map("students")
+}
+
+model Payment {
+  paymentId String      @id
+  type      PaymentType
+  amount    Int
+  date      DateTime
+
+  studentId String
+  student   Student @relation(fields: [studentId], references: [userId])
+
+  @@map("payments")
+}
+
+enum PaymentType {
+  ADMISSION_FEE
+  MONTHLY_FEE
+  EXAM_FEE
+  OTHERS
+}
+
+model Salary {
+  trxId  String     @id @default(uuid())
+  type   SalaryType
+  amount Int
+  date   DateTime
+
+  staffId String
+  staff   Staff  @relation(fields: [staffId], references: [userId])
+
+  @@map("salaries")
+}
+
+enum SalaryType {
+  MONTHLY_SALARY
+  BONOUS
+  OTHERS
+}
+
+model Transaction {
+  trxId    String          @id @default(uuid())
+  category String
+  type     TransactionType
+  amount   Int
+  date     DateTime
+
+  @@map("transactions")
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
 }
