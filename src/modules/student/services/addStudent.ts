@@ -1,32 +1,24 @@
+import { TAddStudentPayload } from '../student.validation';
 import { encryptPassword } from '../../../helpers';
 import { prismaClient } from '../../../app/prisma';
 import { AppError } from '../../../utils';
 
-type addStudentType = {
-  name: string;
-  birthId: string;
-  class: string;
-  classId: string;
-  dob: string;
-  bloodGroup: string;
-  parents: Record<string, any>;
-  guardian: Record<string, any>;
-  address: Record<string, any>;
-  admittedByUserId: string;
-};
-
-export const addStudent = async (payload: addStudentType) => {
+export const addStudent = async (
+  adminId: string,
+  payload: TAddStudentPayload,
+) => {
   const {
     name,
-    dob,
-    bloodGroup,
     address,
+    birthId,
+    bloodGroup,
     classId,
-    class: studentClass,
+    dob,
+    guardian,
+    parents,
   } = payload;
 
-  const dobAsDate = new Date(dob);
-
+  const studentClass = payload.class;
   const currentYear = new Date().getFullYear();
 
   const existingClass = await prismaClient.section.findUnique({
@@ -39,7 +31,7 @@ export const addStudent = async (payload: addStudentType) => {
 
   let lastStudent = await prismaClient.student.findFirst({
     where: {
-      class: studentClass,
+      class: payload.class,
     },
     orderBy: {
       userId: 'desc',
@@ -61,10 +53,17 @@ export const addStudent = async (payload: addStudentType) => {
   const student = await prismaClient.$transaction(async (transactionClient) => {
     const newStudent = await transactionClient.student.create({
       data: {
-        ...payload,
-        dob: dobAsDate,
         userId: newUserId,
-        admittedByUserId: payload.admittedByUserId,
+        name,
+        address,
+        birthId,
+        bloodGroup,
+        class: studentClass,
+        dob,
+        guardian,
+        parents,
+        admittedByUserId: adminId,
+        classId,
       },
     });
 

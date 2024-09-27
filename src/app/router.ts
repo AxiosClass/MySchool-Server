@@ -1,7 +1,7 @@
 import { transactionRouter } from '../modules/transaction/transaction.router';
+import { studentRouter } from '../modules/student/student.router';
 import { staffRouter } from '../modules/staff/class.router';
 import { classRouter } from '../modules/class/class.router';
-import { studentRouter } from '../modules/student/router';
 import { authRouter } from '../modules/auth/auth.router';
 import { Router } from 'express';
 

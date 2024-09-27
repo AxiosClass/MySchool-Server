@@ -1,6 +1,6 @@
-import { bloodGroups, divisions } from '../../global/constants';
-import { addressSubSchema } from '../../global/validationSchema';
+import { addressSubSchema } from '../../global/global.validation';
 import { dateGenerator, enumGenerator } from '../../helpers';
+import { bloodGroups } from '../../global/global.constants';
 import { z } from 'zod';
 
 const educationSubSchema = z.object(
