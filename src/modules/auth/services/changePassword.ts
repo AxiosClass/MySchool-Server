@@ -1,5 +1,5 @@
 import { comparePassword, encryptPassword } from '../../../helpers';
-import { TChangePasswordPayload } from '../validation';
+import { TChangePasswordPayload } from '../auth.validation';
 import { prismaClient } from '../../../app/prisma';
 import { AppError } from '../../../utils';
 

@@ -1,4 +1,4 @@
-import { TAddOrRemoveSubjectsPayload } from '../../validation';
+import { TAddOrRemoveSubjectsPayload } from '../../class.validation';
 import { prismaClient } from '../../../../app/prisma';
 
 export const addSubjects = async (

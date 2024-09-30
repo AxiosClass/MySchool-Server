@@ -1,5 +1,5 @@
 import { prismaClient } from '../../../app/prisma';
-import { TAddClassPayload } from '../validation';
+import { TAddClassPayload } from '../class.validation';
 
 export const addClass = async (payload: TAddClassPayload) => {
   const { name, level } = payload;

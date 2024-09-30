@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { enumGenerator } from '../helpers';
-import { divisions } from './constants';
+import { divisions } from './global.constants';
 
 export const addressSubSchema = z.object(
   {

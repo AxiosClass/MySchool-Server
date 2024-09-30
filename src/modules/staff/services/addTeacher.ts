@@ -1,4 +1,4 @@
-import { TAddTeacherPayload } from '../validation';
+import { TAddTeacherPayload } from '../class.validation';
 import { encryptPassword } from '../../../helpers';
 import { prismaClient } from '../../../app/prisma';
 import { AppError } from '../../../utils';

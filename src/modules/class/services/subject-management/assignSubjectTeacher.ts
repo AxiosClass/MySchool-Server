@@ -1,4 +1,4 @@
-import { TAssignSubjectTeacherPayload } from '../../validation';
+import { TAssignSubjectTeacherPayload } from '../../class.validation';
 import { prismaClient } from '../../../../app/prisma';
 import { AppError } from '../../../../utils';
 
