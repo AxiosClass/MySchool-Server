@@ -11,3 +11,12 @@ export const addPayment = catchAsync(async (req, res) => {
     data: payment,
   });
 });
+
+export const giveSalary = catchAsync(async (req, res) => {
+  const transaction = await services.giveSalary(req.body);
+
+  return sendSuccessResponse(res, {
+    message: 'Salary is given',
+    data: transaction,
+  });
+});

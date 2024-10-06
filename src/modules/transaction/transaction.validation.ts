@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { dateGenerator, enumGenerator } from '../../helpers';
-import { PaymentType } from '@prisma/client';
+import { PaymentType, SalaryType } from '@prisma/client';
 
 export const addPaymentSchema = z.object({
   studentId: z
@@ -13,4 +13,14 @@ export const addPaymentSchema = z.object({
   date: dateGenerator('Date is required'),
 });
 
+export const giveSalarySchema = z.object({
+  type: enumGenerator(Object.keys(SalaryType), 'SalaryType is required'),
+  amount: z.number().min(100, { message: 'Minimum amount is 100' }),
+  date: dateGenerator('Date is required'),
+  staffId: z
+    .string({ required_error: 'StaffId is required' })
+    .min(1, { message: 'StaffId is required' }),
+});
+
 export type TAddPaymentPayload = z.infer<typeof addPaymentSchema>;
+export type TGiveSalaryPayload = z.infer<typeof giveSalarySchema>;
