@@ -12,3 +12,10 @@ transactionRouter.post(
   validationHandler(validation.addPaymentSchema),
   controller.addPayment,
 );
+
+transactionRouter.post(
+  '/salary',
+  authGuard('ADMIN', 'SUPER_ADMIN'),
+  validationHandler(validation.giveSalarySchema),
+  controller.giveSalary,
+);
