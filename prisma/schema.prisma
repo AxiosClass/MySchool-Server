@@ -7,150 +7,135 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  userId             String     @id
+model Admin {
+  id                 String     @id
   name               String
   password           String
-  status             UserStatus @default(ACTIVE)
-  role               UserRole
+  status             UserStatus
   joinedAt           DateTime   @default(now())
-  updateAt           DateTime   @updatedAt
+  updatedAt          DateTime   @updatedAt
   needPasswordChange Boolean    @default(true)
-  addedStudents      Student[]
 
-  @@map("users")
-}
-
-enum UserStatus {
-  ACTIVE
-  BLOCKED
-  PENDING
-}
-
-enum UserRole {
-  SUPER_ADMIN
-  ADMIN
-  ACCOUNTANT
-  MODERATOR
-  STUDENT
-  TEACHER
+  @@map("admins")
 }
 
 model Staff {
-  userId      String    @id @default(uuid())
+  id          String     @id
   name        String
-  nid         String    @unique
-  phone       String    @unique
+  nid         String     @unique
+  phone       String     @unique
   dob         DateTime
   bloodGroup  String
   salary      Float
   designation String
-  address     Json
-  education   Json?
+  address     String
   role        StaffRole
-  joinedAt    DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  joinedAt    DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  status      UserStatus
+  Salary      Salary[]
 
-  sections        Section[]
-  subjectTeachers SubjectTeacher[]
-  salaries        Salary[]
+  @@map("staffs")
+}
 
-  @@map("staff")
+model Teacher {
+  id          String     @id
+  password    String
+  name        String
+  nid         String     @unique
+  phone       String     @unique
+  dob         DateTime
+  bloodGroup  String
+  salary      Float
+  designation String
+  address     String
+  education   Json
+  role        StaffRole
+  joinedAt    DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  status      UserStatus
+
+  classrooms Classroom[]
+  Salary     Salary[]
+
+  @@map("teachers")
 }
 
 enum StaffRole {
   ADMIN
   ACCOUNTANT
-  MODERATOR
-  TEACHER
   OTHER
+}
+
+model Student {
+  id         String   @id
+  password   String
+  name       String
+  birthId    String   @unique
+  phone      String   @unique
+  dob        DateTime
+  bloodGroup String
+  class      Int
+
+  classroomId String
+  classroom   Classroom @relation(fields: [classroomId], references: [id])
+
+  address    String
+  parents    Json
+  guardian   Json
+  admittedAt DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  status     UserStatus
+
+  Payment Payment[]
+
+  @@map("studnents")
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
 }
 
 model Class {
   id        String   @id @default(uuid())
   name      String
-  level     String
+  level     Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  sections Section[]
-  subjects SubjectClass[]
+  classrooms Classroom[]
 
   @@map("classes")
 }
 
-model SubjectClass {
-  name String
-
-  classId String
-  class   Class  @relation(fields: [classId], references: [id])
-
-  @@id([name, classId])
-  @@map("subject_classes")
-}
-
-model Section {
+model Classroom {
   id   String @id @default(uuid())
   name String
 
-  teacherId String
-  teacher   Staff  @relation(fields: [teacherId], references: [userId])
-
   classId String
   class   Class  @relation(fields: [classId], references: [id])
 
-  subjectTeachers SubjectTeacher[]
-  students        Student[]
+  classTeacherId String
+  classTeacher   Teacher @relation(fields: [classTeacherId], references: [id])
 
-  @@map("sections")
-}
+  createdAt DateTime
 
-model SubjectTeacher {
-  teacherId String
-  teacher   Staff  @relation(fields: [teacherId], references: [userId])
+  students Student[]
 
-  sectionId String
-  section   Section @relation(fields: [sectionId], references: [id])
-
-  subject String
-
-  @@id([teacherId, sectionId, subject])
-  @@map("subject_teachers")
-}
-
-model Student {
-  userId  String @id
-  name    String
-  birthId String
-  class   String
-
-  classId   String
-  classRoom Section @relation(fields: [classId], references: [id])
-
-  dob        DateTime
-  bloodGroup String
-  parents    Json
-  guardian   Json
-  isDeleted  Boolean  @default(false)
-  admittedAt DateTime @default(now())
-  address    Json
-
-  admittedByUserId String
-  admittedBy       User   @relation(fields: [admittedByUserId], references: [userId])
-
-  payments Payment[]
-
-  @@map("students")
+  @@map("classrooms")
 }
 
 model Payment {
-  paymentId String      @id
+  id        String      @id @default(uuid())
+  amount    Float
+  month     Int
+  year      Int
+  createdAt DateTime
   type      PaymentType
-  amount    Int
-  date      DateTime
 
   studentId String
-  student   Student @relation(fields: [studentId], references: [userId])
+  student   Student @relation(fields: [studentId], references: [id])
 
   @@map("payments")
 }
@@ -158,39 +143,48 @@ model Payment {
 enum PaymentType {
   ADMISSION_FEE
   MONTHLY_FEE
-  EXAM_FEE
   OTHERS
 }
 
 model Salary {
-  trxId  String     @id @default(uuid())
-  type   SalaryType
-  amount Int
-  date   DateTime
+  id        String     @id @default(uuid())
+  amount    Float
+  month     Int
+  year      Int
+  createdAt DateTime
+  type      SalaryType
 
-  staffId String
-  staff   Staff  @relation(fields: [staffId], references: [userId])
+  teacherId String?
+  teacher   Teacher? @relation(fields: [teacherId], references: [id])
+
+  staffId String?
+  staff   Staff?  @relation(fields: [staffId], references: [id])
 
   @@map("salaries")
 }
 
 enum SalaryType {
   MONTHLY_SALARY
-  BONOUS
-  OTHERS
+  BONUOUS
+  OTHER
 }
 
-model Transaction {
-  trxId    String          @id @default(uuid())
-  category String
-  type     TransactionType
-  amount   Int
-  date     DateTime
+model Expense {
+  id     String @id @default(uuid())
+  amount Float
 
-  @@map("transactions")
+  categoryId String
+  category   ExpenseCategory @relation(fields: [categoryId], references: [id])
+
+  createdAt DateTime
+
+  @@map("expenses")
 }
 
-enum TransactionType {
-  INCOME
-  EXPENSE
+model ExpenseCategory {
+  id      String    @id @default(uuid())
+  name    String    @unique
+  Expense Expense[]
+
+  @@map("expense_ctagories")
 }
