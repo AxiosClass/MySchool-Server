@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "StaffRole" AS ENUM ('ADMIN', 'ACCOUNTANT', 'OTHER');
+CREATE TYPE "AdminRole" AS ENUM ('SUPER_ADMIN', 'ADMIN', 'ACCOUNTANT');
 
 -- CreateEnum
 CREATE TYPE "UserStatus" AS ENUM ('ACTIVE', 'BLOCKED');
@@ -18,7 +18,8 @@ CREATE TABLE "admins" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "status" "UserStatus" NOT NULL,
+    "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
+    "role" "AdminRole" NOT NULL,
     "joinedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "needPasswordChange" BOOLEAN NOT NULL DEFAULT true,
@@ -29,8 +30,6 @@ CREATE TABLE "admins" (
 -- CreateTable
 CREATE TABLE "staffs" (
     "id" TEXT NOT NULL,
-    "password" TEXT,
-    "accountAccess" BOOLEAN NOT NULL DEFAULT true,
     "name" TEXT NOT NULL,
     "nid" TEXT NOT NULL,
     "phone" TEXT NOT NULL,
@@ -39,10 +38,9 @@ CREATE TABLE "staffs" (
     "salary" DOUBLE PRECISION NOT NULL,
     "designation" TEXT NOT NULL,
     "address" TEXT NOT NULL,
-    "role" "StaffRole" NOT NULL,
     "joinedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "status" "UserStatus" NOT NULL,
+    "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
 
     CONSTRAINT "staffs_pkey" PRIMARY KEY ("id")
 );
@@ -57,13 +55,11 @@ CREATE TABLE "teachers" (
     "dob" TIMESTAMP(3) NOT NULL,
     "bloodGroup" TEXT NOT NULL,
     "salary" DOUBLE PRECISION NOT NULL,
-    "designation" TEXT NOT NULL,
     "address" TEXT NOT NULL,
     "education" JSONB NOT NULL,
-    "role" "StaffRole" NOT NULL,
     "joinedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "status" "UserStatus" NOT NULL,
+    "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
 
     CONSTRAINT "teachers_pkey" PRIMARY KEY ("id")
 );
@@ -82,7 +78,7 @@ CREATE TABLE "students" (
     "guardian" JSONB NOT NULL,
     "admittedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "status" "UserStatus" NOT NULL,
+    "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
     "class" INTEGER NOT NULL,
     "classroomId" TEXT NOT NULL,
 
@@ -223,6 +219,9 @@ CREATE UNIQUE INDEX "students_birthId_key" ON "students"("birthId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "students_phone_key" ON "students"("phone");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "classes_name_key" ON "classes"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "classes_level_key" ON "classes"("level");

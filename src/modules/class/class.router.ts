@@ -1,10 +1,10 @@
 import { Router } from 'express';
 
 import { USER_ROLES } from '../../utils/types';
+import { validationHandler } from '../../middlewares/validationHandler';
 import { authGuard } from '../../middlewares/authGuard';
 import { classValidation } from './class.validation';
 import { classController } from './class.controller';
-import { validationHandler } from '../../middlewares/validationHandler';
 
 export const classRouter = Router();
 
@@ -13,6 +13,13 @@ classRouter.post(
   authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
   validationHandler(classValidation.addClassSchema),
   classController.addClass,
+);
+
+classRouter.post(
+  '/:classId/subjects',
+  authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
+  validationHandler(classValidation.addOrRemoveSubjects),
+  classController.addSubjects,
 );
 
 // classRouter.post(

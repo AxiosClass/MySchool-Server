@@ -9,7 +9,16 @@ const addClassSchema = z.object({
     .min(1, { message: 'Level is required' }),
 });
 
-export const classValidation = { addClassSchema };
+const addOrRemoveSubjects = z.object({
+  subjects: z
+    .array(z.string().min(1, { message: 'Subject name is required' }))
+    .min(1, { message: 'Subjects is required' }),
+});
+
+export type TAddClassPayload = z.infer<typeof addClassSchema>;
+export type TAddOrRemoveSubjectsPayload = z.infer<typeof addOrRemoveSubjects>;
+
+export const classValidation = { addClassSchema, addOrRemoveSubjects };
 
 // export const addOrRemoveSubjects = z.object({
 //   subjects: z
@@ -39,7 +48,6 @@ export const classValidation = { addClassSchema };
 //     .min(1, { message: 'TeacherId is required' }),
 // });
 
-export type TAddClassPayload = z.infer<typeof addClassSchema>;
 // export type TAddOrRemoveSubjectsPayload = z.infer<typeof addOrRemoveSubjects>;
 // export type TAddSectionPayload = z.infer<typeof addSection>;
 // export type TAssignSubjectTeacherPayload = z.infer<typeof assignSubjectTeacher>;

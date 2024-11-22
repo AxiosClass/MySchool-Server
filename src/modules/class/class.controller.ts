@@ -12,4 +12,9 @@ const addClass = catchAsync(async (req, res) => {
   });
 });
 
-export const classController = { addClass };
+const addSubjects = catchAsync(async (req, res) => {
+  const message = await classService.addSubjects(req.body, req.params.classId);
+  sendSuccessResponse(res, { message, data: null, status: 201 });
+});
+
+export const classController = { addClass, addSubjects };
