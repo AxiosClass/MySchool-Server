@@ -2,7 +2,7 @@ import { UserStatus } from '@prisma/client';
 import { TLoginPayload } from './auth.validation';
 import { AppError } from '../../utils/appError';
 import { prismaClient } from '../../app/prisma';
-import { IAccessTokenPayload, USER_ROLES } from '../../utils/types';
+import { IUserInfo, USER_ROLES } from '../../utils/types';
 import { comparePassword } from '../../helpers/encryptionHelper';
 import { generateAccessToken } from '../../helpers/tokenHelper';
 
@@ -24,7 +24,7 @@ const login = async (payload: TLoginPayload, type: string) => {
       400,
     );
 
-  let tokenPayload: IAccessTokenPayload | null = null;
+  let tokenPayload: IUserInfo | null = null;
 
   switch (refinedLoginType) {
     case 'ADMIN': {

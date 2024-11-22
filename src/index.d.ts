@@ -1,14 +1,9 @@
-import { UserRole, UserStatus } from '@prisma/client';
+import { IUserInfo } from './utils/types';
 
 declare global {
   namespace Express {
     interface Request {
-      user: {
-        status: UserStatus;
-        userId: string;
-        name: string;
-        role: UserRole;
-      };
+      user: IUserInfo;
     }
   }
 }

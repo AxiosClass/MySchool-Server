@@ -18,7 +18,7 @@ export interface IErrorResponse {
   error: unknown;
 }
 
-export interface IAccessTokenPayload {
+export interface IUserInfo {
   id: string;
   role: USER_ROLES;
   name: string;

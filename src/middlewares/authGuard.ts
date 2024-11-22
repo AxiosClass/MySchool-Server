@@ -1,12 +1,20 @@
-import { verifyAccessToken } from '../helpers';
 import { prismaClient } from '../app/prisma';
+import { verifyAccessToken } from '../helpers/tokenHelper';
+
+import { USER_ROLES } from '../utils/types';
 import { catchAsync } from './catchAsync';
-import { UserRole } from '@prisma/client';
-import { AppError } from '../utils';
+import { UserStatus } from '@prisma/client';
+import { AppError } from '../utils/appError';
 
 const BEARER = 'bearer';
 
-export const authGuard = (...requiredRoles: UserRole[]) => {
+const ADMIN_ROLES = [
+  USER_ROLES.ADMIN,
+  USER_ROLES.ACCOUNTANT,
+  USER_ROLES.SUPER_ADMIN,
+];
+
+export const authGuard = (...requiredRoles: USER_ROLES[]) => {
   return catchAsync(async (req, _, next) => {
     const token = req.headers.authorization;
     if (!token) throw new AppError('No token found', 404);
@@ -19,21 +27,27 @@ export const authGuard = (...requiredRoles: UserRole[]) => {
     const decodedUser = verifyAccessToken(authToken);
     if (!decodedUser) throw new AppError('Invalid token', 400);
 
-    const { userId } = decodedUser;
-    const isUserExist = await prismaClient.user.findUnique({
-      where: { userId },
-      select: { name: true, userId: true, role: true, status: true },
-    });
+    const { id, role } = decodedUser;
+    const isAdmin = ADMIN_ROLES.includes(role);
+    // const isStudent = USER_ROLES.STUDENT === role;
+    // const isTeacher = USER_ROLES.TEACHER === role;
 
-    if (!isUserExist) throw new AppError('User not found', 404);
+    if (isAdmin) {
+      const adminInfo = await prismaClient.admin.findFirstOrThrow({
+        where: { id },
+        select: { name: true, role: true, status: true },
+      });
 
-    if (isUserExist.status !== 'ACTIVE')
-      throw new AppError('You are not active user', 400);
+      if (adminInfo.status === UserStatus.BLOCKED)
+        throw new AppError('You are blocked, please contact to the admin', 400);
 
-    if (!requiredRoles.includes(isUserExist.role))
-      throw new AppError('You are not authorized for this service', 400);
+      if (!requiredRoles.includes(adminInfo.role as USER_ROLES))
+        throw new AppError('Un authorized access', 401);
 
-    req.user = isUserExist;
+      const { name, role } = adminInfo;
+      req.user = { id, name, role: role as USER_ROLES };
+    }
+
     next();
   });
 };
