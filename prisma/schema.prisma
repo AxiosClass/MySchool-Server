@@ -98,7 +98,7 @@ enum UserStatus {
 
 model Class {
   id        String   @id @default(uuid())
-  name      String
+  name      String   @unique
   level     Int      @unique
   createdAt DateTime @default(now())
 
