@@ -1,0 +1,16 @@
+import { Router } from 'express';
+
+import { USER_ROLES } from '../../utils/types';
+import { validationHandler } from '../../middlewares/validationHandler';
+import { teacherValidation } from './teacher.validation';
+import { authGuard } from '../../middlewares/authGuard';
+import { teacherController } from './teacher.controller';
+
+export const teacherRouter = Router();
+
+teacherRouter.post(
+  '/',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  validationHandler(teacherValidation.addTeacherSchema),
+  teacherController.addTeacher,
+);

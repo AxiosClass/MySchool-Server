@@ -2,7 +2,7 @@ import cors from 'cors';
 import express from 'express';
 
 import { globalErrorHandler } from '../middlewares/globalErrorHandler';
-import { appRoutes } from './router';
+import { appRouter } from './router';
 
 export const app = express();
 
@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(cors());
 
 // apis
-app.use('/api/v1', appRoutes);
+app.use('/api/v1', appRouter);
 
 app.get('/', (_req, res) => {
   res.status(200).json({ ok: true, message: 'Welcome to MySchool server' });

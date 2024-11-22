@@ -3,9 +3,9 @@ import { validationHandler } from '../../middlewares/validationHandler';
 import { authController } from './auth.controller';
 import { authValidation } from './auth.validation';
 
-export const authRoutes = Router();
+export const authRouter = Router();
 
-authRoutes.post(
+authRouter.post(
   '/login',
   validationHandler(authValidation.loginSchema),
   authController.login,
