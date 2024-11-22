@@ -20,20 +20,23 @@ model Admin {
 }
 
 model Staff {
-  id          String     @id
-  name        String
-  nid         String     @unique
-  phone       String     @unique
-  dob         DateTime
-  bloodGroup  String
-  salary      Float
-  designation String
-  address     String
-  role        StaffRole
-  joinedAt    DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  status      UserStatus
-  Salary      Salary[]
+  id            String     @id
+  password      String?
+  accountAccess Boolean    @default(true)
+  name          String
+  nid           String     @unique
+  phone         String     @unique
+  dob           DateTime
+  bloodGroup    String
+  salary        Float
+  designation   String
+  address       String
+  role          StaffRole
+  joinedAt      DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  status        UserStatus
+
+  salaries Salary[]
 
   @@map("staffs")
 }
@@ -55,8 +58,9 @@ model Teacher {
   updatedAt   DateTime   @updatedAt
   status      UserStatus
 
-  classrooms Classroom[]
-  Salary     Salary[]
+  salaries                Salary[]
+  classroomsClassTeacher  Classroom[]
+  classroomSubjectTeacher ClassroomSubjectTeacher[]
 
   @@map("teachers")
 }
@@ -68,28 +72,27 @@ enum StaffRole {
 }
 
 model Student {
-  id         String   @id
+  id         String     @id
   password   String
   name       String
-  birthId    String   @unique
-  phone      String   @unique
+  birthId    String     @unique
+  phone      String     @unique
   dob        DateTime
   bloodGroup String
-  class      Int
-
-  classroomId String
-  classroom   Classroom @relation(fields: [classroomId], references: [id])
-
   address    String
   parents    Json
   guardian   Json
   admittedAt DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
   status     UserStatus
+  class      Int
 
-  Payment Payment[]
+  classroomId String
+  classroom   Classroom @relation(fields: [classroomId], references: [id])
 
-  @@map("studnents")
+  payments Payment[]
+
+  @@map("students")
 }
 
 enum UserStatus {
@@ -100,18 +103,33 @@ enum UserStatus {
 model Class {
   id        String   @id @default(uuid())
   name      String
-  level     Int
+  level     Int      @unique
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
   classrooms Classroom[]
+  subjects   ClassSubject[]
 
   @@map("classes")
 }
 
+model ClassSubject {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  classId String
+  class   Class  @relation(fields: [classId], references: [id])
+
+  classroomSubjectTeacher ClassroomSubjectTeacher[]
+
+  @@unique([name, classId])
+  @@map("class_subjects")
+}
+
 model Classroom {
-  id   String @id @default(uuid())
-  name String
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime
 
   classId String
   class   Class  @relation(fields: [classId], references: [id])
@@ -119,12 +137,48 @@ model Classroom {
   classTeacherId String
   classTeacher   Teacher @relation(fields: [classTeacherId], references: [id])
 
-  createdAt DateTime
-
-  students Student[]
+  students                 Student[]
+  classroomSubjectTeachers ClassroomSubjectTeacher[]
 
   @@map("classrooms")
 }
+
+model ClassroomSubjectTeacher {
+  id         String   @id @default(uuid())
+  assignedAt DateTime @default(now())
+
+  classSubjectId String
+  subject        ClassSubject @relation(fields: [classSubjectId], references: [id])
+
+  classroomId String
+  classroom   Classroom @relation(fields: [classroomId], references: [id])
+
+  teacherId String
+  teacher   Teacher @relation(fields: [teacherId], references: [id])
+
+  @@unique([classSubjectId, classroomId, teacherId])
+  @@map("classroom_subject_teacher")
+}
+
+// overall subject that can be used all other class for name suggestion while admin creating class subjects
+model Subject {
+  id        String   @id
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  @@map("subjects")
+}
+
+model Exam {
+  id        String   @id
+  name      String
+  year      Int
+  createdAt DateTime @default(now())
+
+  @@map("exams")
+}
+
+// to do => model : ExamSubject
 
 model Payment {
   id        String      @id @default(uuid())
@@ -165,26 +219,43 @@ model Salary {
 
 enum SalaryType {
   MONTHLY_SALARY
-  BONUOUS
+  BONUS
   OTHER
 }
 
 model Expense {
-  id     String @id @default(uuid())
-  amount Float
+  id        String   @id @default(uuid())
+  amount    Float
+  createdAt DateTime
 
   categoryId String
   category   ExpenseCategory @relation(fields: [categoryId], references: [id])
-
-  createdAt DateTime
 
   @@map("expenses")
 }
 
 model ExpenseCategory {
-  id      String    @id @default(uuid())
-  name    String    @unique
-  Expense Expense[]
+  id   String @id @default(uuid())
+  name String @unique
 
-  @@map("expense_ctagories")
+  expense Expense[]
+
+  @@map("expense_categories")
+}
+
+model Notice {
+  id          String    @id @default(uuid())
+  title       String
+  description String
+  createdAt   String
+  noticeFor   NoticeFor
+
+  @@map("notices")
+}
+
+enum NoticeFor {
+  TEACHER
+  STAFF
+  STUDENT
+  ADMIN
 }
