@@ -7,6 +7,7 @@ export interface IMeta {
 
 export interface ISuccessResponse {
   message: string;
+  status?: number;
   meta?: IMeta;
   data: unknown;
 }

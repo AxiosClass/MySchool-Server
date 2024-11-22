@@ -1,12 +1,10 @@
-import { studentRouter } from '../modules/student/student.router';
-import { staffRouter } from '../modules/staff/class.router';
-import { classRouter } from '../modules/class/class.router';
-import { authRouter } from '../modules/auth/auth.router';
 import { Router } from 'express';
 
-export const appRouter = Router();
+import { authRoutes } from '../modules/auth/auth.routes';
 
-appRouter.use('/auth', authRouter);
+export const appRoutes = Router();
+
+appRoutes.use('/auth', authRoutes);
 // appRouter.use('/staff', staffRouter);
 // appRouter.use('/class', classRouter);
 // appRouter.use('/student', studentRouter);

@@ -46,20 +46,19 @@ model Staff {
 }
 
 model Teacher {
-  id          String     @id
-  password    String
-  name        String
-  nid         String     @unique
-  phone       String     @unique
-  dob         DateTime
-  bloodGroup  String
-  salary      Float
-  designation String
-  address     String
-  education   Json
-  joinedAt    DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  status      UserStatus @default(ACTIVE)
+  id         String     @id
+  password   String
+  name       String
+  nid        String     @unique
+  phone      String     @unique
+  dob        DateTime
+  bloodGroup String
+  salary     Float
+  address    String
+  education  Json
+  joinedAt   DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  status     UserStatus @default(ACTIVE)
 
   salaries                Salary[]
   classroomsClassTeacher  Classroom[]

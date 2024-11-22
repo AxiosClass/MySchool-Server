@@ -9,7 +9,7 @@ import { generateAccessToken } from '../../helpers/tokenHelper';
 const loginTypes = ['ADMIN', 'TEACHER', 'STUDENT'];
 
 const login = async (payload: TLoginPayload, type: string) => {
-  let refinedLoginType: string;
+  let refinedLoginType: string = '';
 
   for (const eachType of loginTypes) {
     if (eachType === type.toUpperCase()) {
@@ -24,7 +24,7 @@ const login = async (payload: TLoginPayload, type: string) => {
       400,
     );
 
-  let tokenPayload: IAccessTokenPayload;
+  let tokenPayload: IAccessTokenPayload | null = null;
 
   switch (refinedLoginType) {
     case 'ADMIN': {

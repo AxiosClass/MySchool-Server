@@ -5,8 +5,8 @@ export const sendSuccessResponse = (
   res: Response,
   payload: ISuccessResponse,
 ) => {
-  const { message, meta, data } = payload;
-  return res.status(200).json({ ok: true, message, meta, data });
+  const { message, meta, data, status = 200 } = payload;
+  return res.status(status).json({ ok: true, message, meta, data });
 };
 
 export const sendErrorResponse = (res: Response, payload: IErrorResponse) => {
