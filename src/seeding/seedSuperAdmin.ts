@@ -1,40 +1,40 @@
+import { AdminRole } from '@prisma/client';
+import { encryptPassword } from '../helpers/encryptionHelper';
 import { ADMIN_ID, ADMIN_PASSWORD } from '../app/config';
 import { prismaClient } from '../app/prisma';
-import { encryptPassword } from '../helpers';
-import { UserRole } from '@prisma/client';
 
 export const seedSuperAdmin = async () => {
   try {
-    // is super admin exist don't create another one
-    const isSuperAdminExist = await prismaClient.user.findFirst({
-      where: { role: UserRole.SUPER_ADMIN },
+    // first checking if super admin exists or not
+    const isSuperAdminExist = await prismaClient.admin.findFirst({
+      where: { role: AdminRole.SUPER_ADMIN },
     });
-    if (isSuperAdminExist) throw new Error('Super admin already exist');
 
-    // encrypting password
+    if (isSuperAdminExist) throw new Error('Super Admin already exist');
+
+    // create super admin
     const password = await encryptPassword(ADMIN_PASSWORD);
-
-    // creating super admin
-    const superAdmin = await prismaClient.user.create({
+    const superAdmin = await prismaClient.admin.create({
       data: {
-        name: 'Super Admin',
+        id: ADMIN_ID,
+        name: 'SuperAdmin',
         password,
-        role: UserRole.ADMIN,
-        userId: ADMIN_ID,
+        role: AdminRole.SUPER_ADMIN,
         needPasswordChange: false,
       },
     });
 
-    if (!superAdmin) throw Error('Failed to create super admin');
+    if (!superAdmin)
+      throw new Error('Failed to create super admin, try again later');
 
-    console.log('************* START *************');
+    console.log('************* Success *************');
     console.log('UserId :', ADMIN_ID);
     console.log('Password :', ADMIN_PASSWORD);
-    console.log('************* END *************');
+    console.log('************* Success *************');
   } catch (error) {
     console.log('************* ERROR *************');
     console.log('Error :', error.message);
-    console.log('************* END *************');
+    console.log('************* ERROR *************');
   }
 };
 

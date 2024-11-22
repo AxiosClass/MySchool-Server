@@ -11,7 +11,8 @@ model Admin {
   id                 String     @id
   name               String
   password           String
-  status             UserStatus
+  status             UserStatus @default(ACTIVE)
+  role               AdminRole
   joinedAt           DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
   needPasswordChange Boolean    @default(true)
@@ -19,22 +20,25 @@ model Admin {
   @@map("admins")
 }
 
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  ACCOUNTANT
+}
+
 model Staff {
-  id            String     @id
-  password      String?
-  accountAccess Boolean    @default(true)
-  name          String
-  nid           String     @unique
-  phone         String     @unique
-  dob           DateTime
-  bloodGroup    String
-  salary        Float
-  designation   String
-  address       String
-  role          StaffRole
-  joinedAt      DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  status        UserStatus
+  id          String     @id
+  name        String
+  nid         String     @unique
+  phone       String     @unique
+  dob         DateTime
+  bloodGroup  String
+  salary      Float
+  designation String
+  address     String
+  joinedAt    DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  status      UserStatus @default(ACTIVE)
 
   salaries Salary[]
 
@@ -53,22 +57,15 @@ model Teacher {
   designation String
   address     String
   education   Json
-  role        StaffRole
   joinedAt    DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
-  status      UserStatus
+  status      UserStatus @default(ACTIVE)
 
   salaries                Salary[]
   classroomsClassTeacher  Classroom[]
   classroomSubjectTeacher ClassroomSubjectTeacher[]
 
   @@map("teachers")
-}
-
-enum StaffRole {
-  ADMIN
-  ACCOUNTANT
-  OTHER
 }
 
 model Student {
@@ -84,7 +81,7 @@ model Student {
   guardian   Json
   admittedAt DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
-  status     UserStatus
+  status     UserStatus @default(ACTIVE)
   class      Int
 
   classroomId String
