@@ -1,19 +1,15 @@
-import * as services from './services';
+import { authService } from './auth.service';
+import { catchAsync } from '../../middlewares/catchAsync';
+import { sendSuccessResponse } from '../../helpers/responseHelper';
 
-import { catchAsync } from '../../middlewares';
-import { sendSuccessResponse } from '../../helpers';
+const login = catchAsync(async (req, res) => {
+  const loginType = req.query.type as string;
+  const { accessToken } = await authService.login(req.body, loginType);
 
-export const login = catchAsync(async (req, res) => {
-  const { accessToken, refreshToken } = await services.login(req.body);
-
-  return sendSuccessResponse(res, {
-    message: 'Successfully login',
-    data: { accessToken, refreshToken },
+  sendSuccessResponse(res, {
+    message: 'Login was successful',
+    data: { accessToken },
   });
 });
 
-export const changePassword = catchAsync(async (req, res) => {
-  const message = await services.changePassword(req.user.userId, req.body);
-
-  return sendSuccessResponse(res, { message, data: null });
-});
+export const authController = { login };
