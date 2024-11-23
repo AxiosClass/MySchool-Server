@@ -1,12 +1,8 @@
 import { z } from 'zod';
 
 const addClassSchema = z.object({
-  name: z
-    .string({ required_error: 'Class Name is required' })
-    .min(1, { message: 'Class Name is required' }),
-  level: z
-    .number({ required_error: 'Level is required' })
-    .min(1, { message: 'Level is required' }),
+  name: z.string().min(1, { message: 'Class Name is required' }),
+  level: z.string().min(1, { message: 'Level is required' }),
 });
 
 const addOrRemoveSubjects = z.object({

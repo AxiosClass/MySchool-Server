@@ -70,7 +70,6 @@ CREATE TABLE "students" (
     "password" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "birthId" TEXT NOT NULL,
-    "phone" TEXT NOT NULL,
     "dob" TIMESTAMP(3) NOT NULL,
     "bloodGroup" TEXT NOT NULL,
     "address" TEXT NOT NULL,
@@ -79,7 +78,7 @@ CREATE TABLE "students" (
     "admittedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
-    "class" INTEGER NOT NULL,
+    "class" TEXT NOT NULL,
     "classroomId" TEXT NOT NULL,
 
     CONSTRAINT "students_pkey" PRIMARY KEY ("id")
@@ -89,7 +88,7 @@ CREATE TABLE "students" (
 CREATE TABLE "classes" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "level" INTEGER NOT NULL,
+    "level" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "classes_pkey" PRIMARY KEY ("id")
@@ -109,7 +108,7 @@ CREATE TABLE "class_subjects" (
 CREATE TABLE "classrooms" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "classId" TEXT NOT NULL,
     "classTeacherId" TEXT NOT NULL,
 
@@ -152,7 +151,8 @@ CREATE TABLE "payments" (
     "amount" DOUBLE PRECISION NOT NULL,
     "month" INTEGER NOT NULL,
     "year" INTEGER NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "description" TEXT,
     "type" "PaymentType" NOT NULL,
     "studentId" TEXT NOT NULL,
 
@@ -165,7 +165,8 @@ CREATE TABLE "salaries" (
     "amount" DOUBLE PRECISION NOT NULL,
     "month" INTEGER NOT NULL,
     "year" INTEGER NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "description" TEXT,
     "type" "SalaryType" NOT NULL,
     "teacherId" TEXT,
     "staffId" TEXT,
@@ -177,7 +178,8 @@ CREATE TABLE "salaries" (
 CREATE TABLE "expenses" (
     "id" TEXT NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "description" TEXT,
     "categoryId" TEXT NOT NULL,
 
     CONSTRAINT "expenses_pkey" PRIMARY KEY ("id")
@@ -187,6 +189,7 @@ CREATE TABLE "expenses" (
 CREATE TABLE "expense_categories" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "expense_categories_pkey" PRIMARY KEY ("id")
 );
@@ -196,7 +199,7 @@ CREATE TABLE "notices" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "createdAt" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "noticeFor" "NoticeFor" NOT NULL,
 
     CONSTRAINT "notices_pkey" PRIMARY KEY ("id")
@@ -218,9 +221,6 @@ CREATE UNIQUE INDEX "teachers_phone_key" ON "teachers"("phone");
 CREATE UNIQUE INDEX "students_birthId_key" ON "students"("birthId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "students_phone_key" ON "students"("phone");
-
--- CreateIndex
 CREATE UNIQUE INDEX "classes_name_key" ON "classes"("name");
 
 -- CreateIndex
@@ -228,6 +228,9 @@ CREATE UNIQUE INDEX "classes_level_key" ON "classes"("level");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "class_subjects_name_classId_key" ON "class_subjects"("name", "classId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "classrooms_classId_name_key" ON "classrooms"("classId", "name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "classroom_subject_teacher_classSubjectId_classroomId_teache_key" ON "classroom_subject_teacher"("classSubjectId", "classroomId", "teacherId");

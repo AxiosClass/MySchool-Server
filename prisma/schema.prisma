@@ -72,7 +72,6 @@ model Student {
   password   String
   name       String
   birthId    String     @unique
-  phone      String     @unique
   dob        DateTime
   bloodGroup String
   address    String
@@ -81,7 +80,7 @@ model Student {
   admittedAt DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
   status     UserStatus @default(ACTIVE)
-  class      Int
+  class      String
 
   classroomId String
   classroom   Classroom @relation(fields: [classroomId], references: [id])
@@ -99,7 +98,7 @@ enum UserStatus {
 model Class {
   id        String   @id @default(uuid())
   name      String   @unique
-  level     Int      @unique
+  level     String   @unique
   createdAt DateTime @default(now())
 
   classrooms Classroom[]
