@@ -1,27 +1,12 @@
-import * as validation from './auth.validation';
-import * as controller from './auth.controller';
-
 import { Router } from 'express';
-import { authGuard, validationHandler } from '../../middlewares';
+import { validationHandler } from '../../middlewares/validationHandler';
+import { authController } from './auth.controller';
+import { authValidation } from './auth.validation';
 
 export const authRouter = Router();
 
 authRouter.post(
   '/login',
-  validationHandler(validation.login),
-  controller.login,
-);
-
-authRouter.post(
-  '/change-password',
-  authGuard(
-    'ACCOUNTANT',
-    'ADMIN',
-    'MODERATOR',
-    'STUDENT',
-    'SUPER_ADMIN',
-    'TEACHER',
-  ),
-  validationHandler(validation.changePassword),
-  controller.changePassword,
+  validationHandler(authValidation.loginSchema),
+  authController.login,
 );

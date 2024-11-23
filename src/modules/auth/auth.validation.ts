@@ -1,12 +1,12 @@
 import { z } from 'zod';
 
 // validation schemas
-export const login = z.object({
-  userId: z.string().min(1, { message: 'UserId is required' }),
+export const loginSchema = z.object({
+  id: z.string().min(1, { message: 'UserId is required' }),
   password: z.string().min(4, { message: 'Minimum length is 4' }),
 });
 
-export const changePassword = z.object({
+export const changePasswordSchema = z.object({
   currentPassword: z
     .string()
     .min(1, { message: 'Current password is required' }),
@@ -14,5 +14,7 @@ export const changePassword = z.object({
 });
 
 // types
-export type TLoginPayload = z.infer<typeof login>;
-export type TChangePasswordPayload = z.infer<typeof changePassword>;
+export type TLoginPayload = z.infer<typeof loginSchema>;
+export type TChangePasswordPayload = z.infer<typeof changePasswordSchema>;
+
+export const authValidation = { loginSchema };

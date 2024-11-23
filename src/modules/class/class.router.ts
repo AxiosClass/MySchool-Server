@@ -1,42 +1,58 @@
-import * as validation from './class.validation';
-import * as controller from './class.controller';
-
-import { authGuard, validationHandler } from '../../middlewares';
 import { Router } from 'express';
+
+import { USER_ROLES } from '../../utils/types';
+import { validationHandler } from '../../middlewares/validationHandler';
+import { authGuard } from '../../middlewares/authGuard';
+import { classValidation } from './class.validation';
+import { classController } from './class.controller';
 
 export const classRouter = Router();
 
 classRouter.post(
   '/',
-  authGuard('ADMIN', 'SUPER_ADMIN'),
-  validationHandler(validation.addClass),
-  controller.addClass,
+  authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
+  validationHandler(classValidation.addClassSchema),
+  classController.addClass,
 );
 
 classRouter.post(
   '/:classId/subjects',
-  authGuard('ADMIN', 'SUPER_ADMIN'),
-  validationHandler(validation.addOrRemoveSubjects),
-  controller.addSubjects,
+  authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
+  validationHandler(classValidation.addOrRemoveSubjects),
+  classController.addSubjects,
 );
 
-classRouter.delete(
-  '/:classId/subjects',
-  authGuard('ADMIN', 'SUPER_ADMIN'),
-  validationHandler(validation.addOrRemoveSubjects),
-  controller.removeSubjects,
-);
+// classRouter.post(
+//   '/',
+//   authGuard('ADMIN', 'SUPER_ADMIN'),
+//   validationHandler(validation.addClass),
+//   controller.addClass,
+// );
 
-classRouter.post(
-  '/:classId/section',
-  authGuard('ADMIN', 'SUPER_ADMIN'),
-  validationHandler(validation.addSection),
-  controller.addSection,
-);
+// classRouter.post(
+//   '/:classId/subjects',
+//   authGuard('ADMIN', 'SUPER_ADMIN'),
+//   validationHandler(validation.addOrRemoveSubjects),
+//   controller.addSubjects,
+// );
 
-classRouter.post(
-  '/:sectionId/assign-subject-teacher',
-  authGuard('ADMIN', 'SUPER_ADMIN'),
-  validationHandler(validation.assignSubjectTeacher),
-  controller.assignSubjectTeacher,
-);
+// classRouter.delete(
+//   '/:classId/subjects',
+//   authGuard('ADMIN', 'SUPER_ADMIN'),
+//   validationHandler(validation.addOrRemoveSubjects),
+//   controller.removeSubjects,
+// );
+
+// classRouter.post(
+//   '/:classId/section',
+//   authGuard('ADMIN', 'SUPER_ADMIN'),
+//   validationHandler(validation.addSection),
+//   controller.addSection,
+// );
+
+// classRouter.post(
+//   '/:sectionId/assign-subject-teacher',
+//   authGuard('ADMIN', 'SUPER_ADMIN'),
+//   validationHandler(validation.assignSubjectTeacher),
+//   controller.assignSubjectTeacher,
+// );

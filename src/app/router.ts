@@ -1,14 +1,15 @@
-import { transactionRouter } from '../modules/transaction/transaction.router';
-import { studentRouter } from '../modules/student/student.router';
-import { staffRouter } from '../modules/staff/class.router';
-import { classRouter } from '../modules/class/class.router';
-import { authRouter } from '../modules/auth/auth.router';
 import { Router } from 'express';
+
+import { authRouter } from '../modules/auth/auth.router';
+import { classroomRouter } from '../modules/classroom/classroom.router';
+import { teacherRouter } from '../modules/teacher/teacher.router';
+import { studentRouter } from '../modules/student/student.router';
+import { classRouter } from '../modules/class/class.router';
 
 export const appRouter = Router();
 
 appRouter.use('/auth', authRouter);
-appRouter.use('/staff', staffRouter);
+appRouter.use('/teacher', teacherRouter);
 appRouter.use('/class', classRouter);
+appRouter.use('/classroom', classroomRouter);
 appRouter.use('/student', studentRouter);
-appRouter.use('/transaction', transactionRouter);

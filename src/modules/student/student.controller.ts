@@ -1,13 +1,15 @@
-import * as services from './services';
+import { sendSuccessResponse } from '../../helpers/responseHelper';
+import { catchAsync } from '../../middlewares/catchAsync';
+import { studentService } from './student.service';
 
-import { sendSuccessResponse } from '../../helpers';
-import { catchAsync } from '../../middlewares';
-
-export const addStudent = catchAsync(async (req, res) => {
-  const student = await services.addStudent(req.user.userId, req.body);
+const addStudent = catchAsync(async (req, res) => {
+  const { id, password } = await studentService.addStudent(req.body);
 
   return sendSuccessResponse(res, {
+    status: 201,
     message: 'Student added successfully',
-    data: student,
+    data: { id, password },
   });
 });
+
+export const studentController = { addStudent };

@@ -1,44 +1,20 @@
-import * as services from './services';
+import { sendSuccessResponse } from '../../helpers/responseHelper';
+import { catchAsync } from '../../middlewares/catchAsync';
+import { classService } from './class.service';
 
-import { sendSuccessResponse } from '../../helpers';
-import { catchAsync } from '../../middlewares';
+const addClass = catchAsync(async (req, res) => {
+  const classInfo = await classService.addClass(req.body);
 
-export const addClass = catchAsync(async (req, res) => {
-  const newClass = await services.addClass(req.body);
-
-  return sendSuccessResponse(res, { message: 'Class Added!', data: newClass });
-});
-
-export const addSubjects = catchAsync(async (req, res) => {
-  const { classId } = req.params;
-  const message = await services.addSubjects(classId, req.body);
-
-  return sendSuccessResponse(res, { message, data: null });
-});
-
-export const removeSubjects = catchAsync(async (req, res) => {
-  const { classId } = req.params;
-  const message = await services.removeSubjects(classId, req.body);
-
-  return sendSuccessResponse(res, { message, data: null });
-});
-
-export const addSection = catchAsync(async (req, res) => {
-  const { classId } = req.params;
-  const section = await services.addSection(classId, req.body);
-
-  return sendSuccessResponse(res, {
-    message: 'Section Added successfully',
-    data: section,
+  sendSuccessResponse(res, {
+    message: 'Class created successfully',
+    data: classInfo,
+    status: 201,
   });
 });
 
-export const assignSubjectTeacher = catchAsync(async (req, res) => {
-  const { sectionId } = req.params;
-  const result = await services.assignSubjectTeacher(sectionId, req.body);
-
-  return sendSuccessResponse(res, {
-    message: `Teacher is assigned for the class successfully`,
-    data: result,
-  });
+const addSubjects = catchAsync(async (req, res) => {
+  const message = await classService.addSubjects(req.body, req.params.classId);
+  sendSuccessResponse(res, { message, data: null, status: 201 });
 });
+
+export const classController = { addClass, addSubjects };

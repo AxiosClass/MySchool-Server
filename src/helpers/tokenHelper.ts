@@ -1,25 +1,13 @@
 import jwt from 'jsonwebtoken';
 
-import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '../app/config';
+import { ACCESS_TOKEN_SECRET } from '../app/config';
+import { IUserInfo } from '../utils/types';
 
-interface IAccessTokenPayload {
-  userId: string;
-  name: string;
-  role: string;
-}
-
-export const generateAccessToken = (payload: IAccessTokenPayload) => {
-  return jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
+export const generateAccessToken = (payload: IUserInfo | null) => {
+  if (!payload) return null;
+  return jwt.sign(payload, ACCESS_TOKEN_SECRET!, { expiresIn: '30d' });
 };
 
 export const verifyAccessToken = (token: string) => {
-  return jwt.verify(token, ACCESS_TOKEN_SECRET) as IAccessTokenPayload;
-};
-
-interface IRefreshTokenPayload {
-  userId: string;
-}
-
-export const generateRefreshToken = (payload: IRefreshTokenPayload) => {
-  return jwt.sign(payload, REFRESH_TOKEN_SECRET, { expiresIn: '30d' });
+  return jwt.verify(token, ACCESS_TOKEN_SECRET!) as IUserInfo;
 };
