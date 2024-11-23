@@ -125,7 +125,7 @@ model ClassSubject {
 model Classroom {
   id        String   @id @default(uuid())
   name      String
-  createdAt DateTime
+  createdAt DateTime @default(now())
 
   classId String
   class   Class  @relation(fields: [classId], references: [id])
@@ -136,6 +136,7 @@ model Classroom {
   students                 Student[]
   classroomSubjectTeachers ClassroomSubjectTeacher[]
 
+  @@unique([classId, name])
   @@map("classrooms")
 }
 
@@ -177,12 +178,13 @@ model Exam {
 // to do => model : ExamSubject
 
 model Payment {
-  id        String      @id @default(uuid())
-  amount    Float
-  month     Int
-  year      Int
-  createdAt DateTime
-  type      PaymentType
+  id          String      @id @default(uuid())
+  amount      Float
+  month       Int
+  year        Int
+  createdAt   DateTime    @default(now())
+  description String?
+  type        PaymentType
 
   studentId String
   student   Student @relation(fields: [studentId], references: [id])
@@ -197,12 +199,13 @@ enum PaymentType {
 }
 
 model Salary {
-  id        String     @id @default(uuid())
-  amount    Float
-  month     Int
-  year      Int
-  createdAt DateTime
-  type      SalaryType
+  id          String     @id @default(uuid())
+  amount      Float
+  month       Int
+  year        Int
+  createdAt   DateTime   @default(now())
+  description String?
+  type        SalaryType
 
   teacherId String?
   teacher   Teacher? @relation(fields: [teacherId], references: [id])
@@ -220,9 +223,10 @@ enum SalaryType {
 }
 
 model Expense {
-  id        String   @id @default(uuid())
-  amount    Float
-  createdAt DateTime
+  id          String   @id @default(uuid())
+  amount      Float
+  createdAt   DateTime @default(now())
+  description String?
 
   categoryId String
   category   ExpenseCategory @relation(fields: [categoryId], references: [id])
@@ -231,8 +235,9 @@ model Expense {
 }
 
 model ExpenseCategory {
-  id   String @id @default(uuid())
-  name String @unique
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
 
   expense Expense[]
 
@@ -243,7 +248,7 @@ model Notice {
   id          String    @id @default(uuid())
   title       String
   description String
-  createdAt   String
+  createdAt   DateTime  @default(now())
   noticeFor   NoticeFor
 
   @@map("notices")
