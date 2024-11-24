@@ -5,6 +5,7 @@ import { classroomRouter } from '../modules/classroom/classroom.router';
 import { teacherRouter } from '../modules/teacher/teacher.router';
 import { studentRouter } from '../modules/student/student.router';
 import { classRouter } from '../modules/class/class.router';
+import { paymentRouter } from '../modules/payment/payment.router';
 
 export const appRouter = Router();
 
@@ -13,3 +14,4 @@ appRouter.use('/teacher', teacherRouter);
 appRouter.use('/class', classRouter);
 appRouter.use('/classroom', classroomRouter);
 appRouter.use('/student', studentRouter);
+appRouter.use('/payment', paymentRouter);
