@@ -23,6 +23,7 @@ export interface IUserInfo {
   role: USER_ROLES;
   name: string;
   image?: string;
+  needPasswordChange: boolean;
 }
 
 export enum USER_ROLES {

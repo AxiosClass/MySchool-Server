@@ -36,6 +36,7 @@ const login = async (payload: TLoginPayload, type: string) => {
           password: true,
           role: true,
           status: true,
+          needPasswordChange: true,
         },
       });
 
@@ -45,7 +46,7 @@ const login = async (payload: TLoginPayload, type: string) => {
         throw new AppError('You are blocked please contact to admin', 400);
 
       // checking password
-      const isPasswordMatched = comparePassword(
+      const isPasswordMatched = await comparePassword(
         payload.password,
         adminInfo.password,
       );
@@ -58,6 +59,7 @@ const login = async (payload: TLoginPayload, type: string) => {
         id: adminInfo.id,
         name: adminInfo.name,
         role: adminInfo.role as USER_ROLES,
+        needPasswordChange: adminInfo.needPasswordChange,
       };
 
       break;
