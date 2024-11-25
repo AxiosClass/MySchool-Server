@@ -7,9 +7,7 @@ export const loginSchema = z.object({
 });
 
 export const changePasswordSchema = z.object({
-  currentPassword: z
-    .string()
-    .min(1, { message: 'Current password is required' }),
+  currentPassword: z.string().min(1, { message: 'Current password is required' }),
   newPassword: z.string().min(1, { message: 'New password is required' }),
 });
 

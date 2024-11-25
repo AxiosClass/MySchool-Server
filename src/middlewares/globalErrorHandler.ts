@@ -9,15 +9,8 @@ export const globalErrorHandler: ErrorRequestHandler = (error, _, res, __) => {
   // handling error for zod
   if (error.name === 'ZodError') {
     message = error.issues.reduce(
-      (
-        msg: string,
-        issue: { message: string; path: any[]; received: string },
-        index: number,
-      ) => {
-        msg +=
-          issue.received === 'undefined'
-            ? issue.message
-            : `In ${issue.path[0]} ${issue.message}`;
+      (msg: string, issue: { message: string; path: any[]; received: string }, index: number) => {
+        msg += issue.received === 'undefined' ? issue.message : `In ${issue.path[0]} ${issue.message}`;
         msg += index !== error.issues.length - 1 ? ' || ' : '';
         return msg;
       },
