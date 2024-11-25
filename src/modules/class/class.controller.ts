@@ -17,4 +17,9 @@ const getClassDetails = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message: 'Class created successfully', data: classDetails });
 });
 
-export const classController = { addClass, addSubjects, getClassDetails };
+const getClasses = catchAsync(async (req, res) => {
+  const classes = await classService.getClasses();
+  sendSuccessResponse(res, { message: 'Classes retrieved successfully', data: classes });
+});
+
+export const classController = { addClass, addSubjects, getClasses, getClassDetails };
