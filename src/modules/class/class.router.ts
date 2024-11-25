@@ -22,6 +22,12 @@ classRouter.post(
   classController.addSubjects,
 );
 
+classRouter.get(
+  '/:classId',
+  authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.TEACHER, USER_ROLES.STUDENT),
+  classController.getClassDetails,
+);
+
 // classRouter.post(
 //   '/',
 //   authGuard('ADMIN', 'SUPER_ADMIN'),
