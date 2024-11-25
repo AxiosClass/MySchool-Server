@@ -1,5 +1,4 @@
 import { prismaClient } from '../../app/prisma';
-import { AppError } from '../../utils/appError';
 import { TCreateClassroomPayload } from './classroom.validation';
 
 const createClassroom = async (payload: TCreateClassroomPayload) => {
