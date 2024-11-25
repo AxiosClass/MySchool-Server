@@ -6,7 +6,5 @@ export const enumGenerator = (options: string[], message: string) => {
 };
 
 export const dateGenerator = (required_error: string) => {
-  return z
-    .string({ required_error })
-    .refine((date) => isValidDate(date), { message: 'Invalid date' });
+  return z.string({ required_error }).refine((date) => isValidDate(date), { message: 'Invalid date' });
 };
