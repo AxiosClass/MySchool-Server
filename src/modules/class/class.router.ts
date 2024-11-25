@@ -1,9 +1,9 @@
 import { Router } from 'express';
-
-import { USER_ROLES } from '../../utils/types';
 import { validationHandler } from '../../middlewares/validationHandler';
+
 import { authGuard } from '../../middlewares/authGuard';
 import { classValidation } from './class.validation';
+import { USER_ROLES } from '../../utils/types';
 import { classController } from './class.controller';
 
 export const classRouter = Router();
@@ -22,37 +22,10 @@ classRouter.post(
   classController.addSubjects,
 );
 
-// classRouter.post(
-//   '/',
-//   authGuard('ADMIN', 'SUPER_ADMIN'),
-//   validationHandler(validation.addClass),
-//   controller.addClass,
-// );
+export const classesRouter = Router();
 
-// classRouter.post(
-//   '/:classId/subjects',
-//   authGuard('ADMIN', 'SUPER_ADMIN'),
-//   validationHandler(validation.addOrRemoveSubjects),
-//   controller.addSubjects,
-// );
-
-// classRouter.delete(
-//   '/:classId/subjects',
-//   authGuard('ADMIN', 'SUPER_ADMIN'),
-//   validationHandler(validation.addOrRemoveSubjects),
-//   controller.removeSubjects,
-// );
-
-// classRouter.post(
-//   '/:classId/section',
-//   authGuard('ADMIN', 'SUPER_ADMIN'),
-//   validationHandler(validation.addSection),
-//   controller.addSection,
-// );
-
-// classRouter.post(
-//   '/:sectionId/assign-subject-teacher',
-//   authGuard('ADMIN', 'SUPER_ADMIN'),
-//   validationHandler(validation.assignSubjectTeacher),
-//   controller.assignSubjectTeacher,
-// );
+classesRouter.get(
+  '/',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER, USER_ROLES.STUDENT),
+  classController.getClasses,
+);
