@@ -18,12 +18,7 @@ const login = async (payload: TLoginPayload, type: string) => {
     }
   }
 
-  if (!refinedLoginType)
-    throw new AppError(
-      'Invalid type selection, Type has to be ADMIN | TEACHER | STUDENT',
-      400,
-    );
-
+  if (!refinedLoginType) throw new AppError('Invalid type selection, Type has to be ADMIN | TEACHER | STUDENT', 400);
   let tokenPayload: IUserInfo | null = null;
 
   switch (refinedLoginType) {
@@ -36,28 +31,25 @@ const login = async (payload: TLoginPayload, type: string) => {
           password: true,
           role: true,
           status: true,
+          needPasswordChange: true,
         },
       });
 
       if (!adminInfo) throw new AppError('Admin not found', 404);
 
-      if (adminInfo.status === UserStatus.BLOCKED)
-        throw new AppError('You are blocked please contact to admin', 400);
+      if (adminInfo.status === UserStatus.BLOCKED) throw new AppError('You are blocked please contact to admin', 400);
 
       // checking password
-      const isPasswordMatched = comparePassword(
-        payload.password,
-        adminInfo.password,
-      );
+      const isPasswordMatched = await comparePassword(payload.password, adminInfo.password);
 
-      if (!isPasswordMatched)
-        throw new AppError('Password does not match', 400);
+      if (!isPasswordMatched) throw new AppError('Password does not match', 400);
 
       // generating token payload
       tokenPayload = {
         id: adminInfo.id,
         name: adminInfo.name,
         role: adminInfo.role as USER_ROLES,
+        needPasswordChange: adminInfo.needPasswordChange,
       };
 
       break;

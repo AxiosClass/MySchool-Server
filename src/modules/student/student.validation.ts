@@ -10,9 +10,7 @@ const parentSubSchema = z.object({
 const guardianSubSchema = z.object({
   name: z.string().min(1, { message: 'Guardian name is required' }),
   phone: z.string().min(1, { message: 'Guardian phone number is required' }),
-  relation: z
-    .string()
-    .min(1, { message: 'Please provide relation with guardian' }),
+  relation: z.string().min(1, { message: 'Please provide relation with guardian' }),
 });
 
 // main schemas
