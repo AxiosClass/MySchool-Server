@@ -11,6 +11,6 @@ const takePaymentSchema = z.object({
   studentId: z.string().min(0, { message: 'Student id is required' }),
 });
 
-export type TTakePaymentPayload = z.infer<typeof takePaymentSchema>;
+export type TTakePaymentPayload = z.infer<typeof takePaymentSchema> & { type: PaymentType };
 
 export const paymentValidation = { takePaymentSchema };

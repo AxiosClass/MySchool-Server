@@ -1,11 +1,10 @@
 import { TTakePaymentPayload } from './payment.validation';
 import { prismaClient } from '../../app/prisma';
-import { PaymentType } from '@prisma/client';
 import { AppError } from '../../utils/appError';
 
 const takePayment = async (payload: TTakePaymentPayload) => {
   const payment = await prismaClient.payment.create({
-    data: { ...payload, type: payload.type as PaymentType },
+    data: { ...payload },
     select: { id: true },
   });
 
