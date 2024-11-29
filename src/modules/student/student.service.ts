@@ -47,4 +47,20 @@ const addStudent = async (payload: TAddStudentPayload) => {
   return { id: student.id, password };
 };
 
-export const studentService = { addStudent };
+const getStudents = async () => {
+  const student = await prismaClient.student.findMany({
+    select: {
+      id: true,
+      name: true,
+      address: true,
+      guardian: true,
+      admittedAt: true,
+      class: true,
+      classroom: { select: { name: true } },
+    },
+  });
+
+  return { student };
+};
+
+export const studentService = { addStudent, getStudents };

@@ -4,12 +4,12 @@ import { studentService } from './student.service';
 
 const addStudent = catchAsync(async (req, res) => {
   const { id, password } = await studentService.addStudent(req.body);
-
-  return sendSuccessResponse(res, {
-    status: 201,
-    message: 'Student added successfully',
-    data: { id, password },
-  });
+  sendSuccessResponse(res, { status: 201, message: 'Student added successfully', data: { id, password } });
 });
 
-export const studentController = { addStudent };
+const getStudents = catchAsync(async (req, res) => {
+  const { student } = await studentService.getStudents();
+  sendSuccessResponse(res, { message: 'Student retrieved successfully', data: student });
+});
+
+export const studentController = { addStudent, getStudents };
