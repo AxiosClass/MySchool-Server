@@ -13,4 +13,21 @@ const takePayment = async (payload: TTakePaymentPayload) => {
   return payment;
 };
 
-export const paymentService = { takePayment };
+const getPaymentSummary = async (studentId: string) => {
+  const studentInfo = await prismaClient.student.findUnique({
+    where: { id: studentId },
+    select: {
+      id: true,
+      name: true,
+      class: true,
+      classroom: { select: { id: true, name: true } },
+      guardian: true,
+      status: true,
+    },
+  });
+
+  const totalPaid = await prismaClient.payment.aggregate({ where: { studentId }, _sum: { amount: true } });
+  return { info: { ...studentInfo }, totalPaid };
+};
+
+export const paymentService = { takePayment, getPaymentSummary };

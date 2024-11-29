@@ -4,7 +4,6 @@ import { encryptPassword } from '../../helpers/encryptionHelper';
 import { generateRandomCharacter } from '../../helpers/uniqueIdHelper';
 import { AppError } from '../../utils/appError';
 
-const date = new Date();
 const addStudent = async (payload: TAddStudentPayload) => {
   // getting last student's id
   const classInfo = await prismaClient.classroom.findUnique({
@@ -19,6 +18,7 @@ const addStudent = async (payload: TAddStudentPayload) => {
     orderBy: { admittedAt: 'desc' },
   });
 
+  const date = new Date();
   // generating student's id
   let studentId; // formate of student id => year - class - id_part
   if (!lastStudent) {
