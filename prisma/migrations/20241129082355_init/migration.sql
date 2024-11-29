@@ -60,6 +60,7 @@ CREATE TABLE "teachers" (
     "joinedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
+    "classroomId" TEXT NOT NULL,
 
     CONSTRAINT "teachers_pkey" PRIMARY KEY ("id")
 );
@@ -80,6 +81,7 @@ CREATE TABLE "students" (
     "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
     "class" TEXT NOT NULL,
     "classroomId" TEXT NOT NULL,
+    "monthlyFee" DOUBLE PRECISION,
 
     CONSTRAINT "students_pkey" PRIMARY KEY ("id")
 );
@@ -89,6 +91,8 @@ CREATE TABLE "classes" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "level" TEXT NOT NULL,
+    "monthlyFee" DOUBLE PRECISION NOT NULL,
+    "admissionFee" DOUBLE PRECISION NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "classes_pkey" PRIMARY KEY ("id")
@@ -157,6 +161,16 @@ CREATE TABLE "payments" (
     "studentId" TEXT NOT NULL,
 
     CONSTRAINT "payments_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Discount" (
+    "id" TEXT NOT NULL,
+    "amount" DOUBLE PRECISION NOT NULL,
+    "description" TEXT,
+    "studentId" TEXT NOT NULL,
+
+    CONSTRAINT "Discount_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -230,6 +244,9 @@ CREATE UNIQUE INDEX "classes_level_key" ON "classes"("level");
 CREATE UNIQUE INDEX "class_subjects_name_classId_key" ON "class_subjects"("name", "classId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "classrooms_classTeacherId_key" ON "classrooms"("classTeacherId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "classrooms_classId_name_key" ON "classrooms"("classId", "name");
 
 -- CreateIndex
@@ -264,6 +281,9 @@ ALTER TABLE "classroom_subject_teacher" ADD CONSTRAINT "classroom_subject_teache
 
 -- AddForeignKey
 ALTER TABLE "payments" ADD CONSTRAINT "payments_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Discount" ADD CONSTRAINT "Discount_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "salaries" ADD CONSTRAINT "salaries_teacherId_fkey" FOREIGN KEY ("teacherId") REFERENCES "teachers"("id") ON DELETE SET NULL ON UPDATE CASCADE;

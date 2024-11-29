@@ -9,8 +9,8 @@
     "pretty": "npx prettier --write .",
     "seed-super-admin": "ts-node-dev --transpile-only src/seeding/seedSuperAdmin.ts",
     "formate": "npx prettier --write .",
-    "db-migrate": "npx prisma migrate dev",
-    "generate": "npx prisma generate",
+    "db:migrate": "npx prisma migrate dev",
+    "db:generate": "npx prisma generate",
     "postinstall": "npx prisma generate"
   },
   "keywords": [],
@@ -18,7 +18,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@prisma/client": "^5.20.0",
+    "@prisma/client": "^6.0.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

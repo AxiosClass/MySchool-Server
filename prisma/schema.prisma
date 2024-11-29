@@ -61,8 +61,9 @@ model Teacher {
   status     UserStatus @default(ACTIVE)
 
   salaries                Salary[]
-  classroomsClassTeacher  Classroom[]
+  classroomsClassTeacher  Classroom?
   classroomSubjectTeacher ClassroomSubjectTeacher[]
+  classroomId             String
 
   @@map("teachers")
 }
@@ -82,9 +83,11 @@ model Student {
   status      UserStatus @default(ACTIVE)
   class       String
   classroomId String
+  monthlyFee  Float?
 
-  classroom Classroom @relation(fields: [classroomId], references: [id])
+  classroom Classroom  @relation(fields: [classroomId], references: [id])
   payments  Payment[]
+  discounts Discount[]
 
   @@map("students")
 }
@@ -95,10 +98,12 @@ enum UserStatus {
 }
 
 model Class {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  level     String   @unique
-  createdAt DateTime @default(now())
+  id           String   @id @default(uuid())
+  name         String   @unique
+  level        String   @unique
+  monthlyFee   Float
+  admissionFee Float
+  createdAt    DateTime @default(now())
 
   classrooms Classroom[]
   subjects   ClassSubject[]
@@ -125,7 +130,7 @@ model Classroom {
   name           String
   createdAt      DateTime @default(now())
   classId        String
-  classTeacherId String
+  classTeacherId String   @unique
 
   class        Class   @relation(fields: [classId], references: [id])
   classTeacher Teacher @relation(fields: [classTeacherId], references: [id])
@@ -191,6 +196,15 @@ enum PaymentType {
   ADMISSION_FEE
   MONTHLY_FEE
   OTHERS
+}
+
+model Discount {
+  id          String  @id @default(uuid())
+  amount      Float
+  description String?
+  studentId   String
+
+  student Student @relation(fields: [studentId], references: [id])
 }
 
 model Salary {
