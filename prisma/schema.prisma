@@ -63,7 +63,6 @@ model Teacher {
   salaries                Salary[]
   classroomsClassTeacher  Classroom?
   classroomSubjectTeacher ClassroomSubjectTeacher[]
-  classroomId             String
 
   @@map("teachers")
 }

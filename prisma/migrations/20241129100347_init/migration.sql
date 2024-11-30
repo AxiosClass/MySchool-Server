@@ -60,7 +60,6 @@ CREATE TABLE "teachers" (
     "joinedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
-    "classroomId" TEXT NOT NULL,
 
     CONSTRAINT "teachers_pkey" PRIMARY KEY ("id")
 );
