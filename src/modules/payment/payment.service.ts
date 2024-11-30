@@ -1,6 +1,7 @@
-import { TTakePaymentPayload } from './payment.validation';
-import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
+import { prismaClient } from '../../app/prisma';
+import { TTakePaymentPayload } from './payment.validation';
+import { calculateMonthsBetween } from '../../helpers/common';
 
 const takePayment = async (payload: TTakePaymentPayload) => {
   const payment = await prismaClient.payment.create({
@@ -20,14 +21,24 @@ const getPaymentSummary = async (studentId: string) => {
       id: true,
       name: true,
       class: true,
-      classroom: { select: { id: true, name: true } },
+      classroom: { select: { id: true, name: true, class: { select: { monthlyFee: true, admissionFee: true } } } },
       guardian: true,
       status: true,
+      admittedAt: true,
     },
   });
 
+  if (!studentInfo) return null;
+
+  // calculating total due
+  const totalMonthSinceAdmitted = calculateMonthsBetween(new Date(studentInfo?.admittedAt), new Date());
+  let totalDue =
+    (studentInfo.classroom.class.admissionFee || 0) +
+    (studentInfo.classroom.class.monthlyFee || 0) * totalMonthSinceAdmitted;
+
   const totalPaid = await prismaClient.payment.aggregate({ where: { studentId }, _sum: { amount: true } });
-  return { info: { ...studentInfo }, totalPaid };
+
+  return { ...studentInfo, totalPaid: totalPaid._sum.amount || 0, totalDue };
 };
 
 export const paymentService = { takePayment, getPaymentSummary };

@@ -13,3 +13,19 @@ export const generateRandomCharacters = (len: number) => {
 
   return char;
 };
+
+export const calculateMonthsBetween = (startDate: Date, endDate: Date) => {
+  if (startDate > endDate) {
+    throw new Error('Start date must be before end date.');
+  }
+
+  const startYear = startDate.getFullYear();
+  const startMonth = startDate.getMonth();
+  const endYear = endDate.getFullYear();
+  const endMonth = endDate.getMonth();
+
+  const yearDifference = endYear - startYear;
+  const monthDifference = endMonth - startMonth + 1;
+
+  return yearDifference * 12 + monthDifference;
+};
