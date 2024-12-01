@@ -1,10 +1,10 @@
 import { Router } from 'express';
 
 import { authRouter } from '../modules/auth/auth.router';
-import { paymentRouter } from '../modules/payment/payment.router';
 import { classroomRouter } from '../modules/classroom/classroom.router';
 import { classesRouter, classRouter } from '../modules/class/class.router';
 import { teacherRouter, teachersRouter } from '../modules/teacher/teacher.router';
+import { paymentRouter, paymentsRouter } from '../modules/payment/payment.router';
 import { studentRouter, studentsRouter } from '../modules/student/student.router';
 
 export const appRouter = Router();
@@ -18,3 +18,4 @@ appRouter.use('/classroom', classroomRouter);
 appRouter.use('/student', studentRouter);
 appRouter.use('/students', studentsRouter);
 appRouter.use('/payment', paymentRouter);
+appRouter.use('/payments', paymentsRouter);

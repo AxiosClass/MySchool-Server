@@ -7,9 +7,14 @@ const takePayment = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { status: 201, message: 'Payment was successful!', data: payment });
 });
 
+const getPayments = catchAsync(async (req, res) => {
+  const { payments, meta } = await paymentService.getPayments(req.query);
+  sendSuccessResponse(res, { message: 'Payments retrieved successfully', meta, data: payments });
+});
+
 const getPaymentSummary = catchAsync(async (req, res) => {
   const summary = await paymentService.getPaymentSummary(req.params.studentId);
   sendSuccessResponse(res, { message: 'Payment summary retrieved successfully', data: summary });
 });
 
-export const paymentController = { takePayment, getPaymentSummary };
+export const paymentController = { takePayment, getPayments, getPaymentSummary };

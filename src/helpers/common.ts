@@ -29,3 +29,18 @@ export const calculateMonthsBetween = (startDate: Date, endDate: Date) => {
 
   return yearDifference * 12 + monthDifference;
 };
+
+export const removeEmptyProperties = (obj: Record<string, any>) => {
+  return Object.keys(obj).reduce((acc: Record<string, any>, key) => {
+    if (obj[key]) acc[key] = obj[key];
+    return acc;
+  }, {});
+};
+
+export const picker = (keys: string[], obj: Record<string, any>) => {
+  const refinedObj = removeEmptyProperties(obj);
+  return Object.keys(refinedObj).reduce((acc: Record<string, any>, key) => {
+    if (keys.includes(key)) acc[key] = obj[key];
+    return acc;
+  }, {});
+};
