@@ -19,8 +19,6 @@ const getPayments = async (query: Record<string, any>) => {
   const page = Number(query.page) || 1;
   const limit = Number(query.limit) || 20;
 
-  console.log(exactMatchProperties);
-
   const payments = await prismaClient.payment.findMany({
     where: exactMatchProperties,
     orderBy: { createdAt: 'desc' },
@@ -28,7 +26,7 @@ const getPayments = async (query: Record<string, any>) => {
     take: limit,
     select: {
       id: true,
-      student: { select: { id: true, name: true } },
+      student: { select: { id: true, name: true, class: true, classroom: { select: { name: true } } } },
       amount: true,
       description: true,
       month: true,
