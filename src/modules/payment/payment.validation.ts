@@ -1,15 +1,23 @@
 import { z } from 'zod';
-import { enumGenerator } from '../../helpers/zodHelper';
 import { PaymentType } from '@prisma/client';
+import { enumGenerator } from '../../helpers/zodHelper';
 
-const takePaymentSchema = z.object({
-  amount: z.number().min(0, { message: 'Amount can not be negative' }),
-  month: z.number().min(0, { message: 'Invalid month' }).max(11, { message: 'Invalid month' }),
-  year: z.number().min(0, { message: 'Invalid Year' }),
-  description: z.string().optional(),
-  type: enumGenerator(Object.keys(PaymentType), 'Invalid payment type'),
-  studentId: z.string().min(0, { message: 'Student id is required' }),
-});
+const takePaymentSchema = z
+  .object({
+    amount: z.number().min(0, { message: 'Amount can not be negative' }),
+    month: z.number().optional(),
+    year: z.number().min(0, { message: 'Invalid Year' }),
+    description: z.string().optional(),
+    type: enumGenerator(Object.keys(PaymentType), 'Invalid payment type'),
+    studentId: z.string().min(0, { message: 'Student id is required' }),
+  })
+  .superRefine((value, ctx) => {
+    if (value.type === PaymentType.MONTHLY_FEE && !value.month)
+      ctx.addIssue({ code: 'custom', message: 'Month is required', path: ['month'] });
+
+    if (value.month && (value.month < 0 || value.month > 11))
+      ctx.addIssue({ code: 'custom', message: 'Invalid month', path: ['moth'] });
+  });
 
 export type TTakePaymentPayload = z.infer<typeof takePaymentSchema> & { type: PaymentType };
 

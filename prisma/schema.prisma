@@ -179,7 +179,7 @@ model Exam {
 model Payment {
   id          String      @id @default(uuid())
   amount      Float
-  month       Int
+  month       Int?
   year        Int
   createdAt   DateTime    @default(now())
   description String?
