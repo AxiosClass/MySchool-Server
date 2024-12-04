@@ -14,3 +14,11 @@ teacherRouter.post(
   validationHandler(teacherValidation.addTeacherSchema),
   teacherController.addTeacher,
 );
+
+export const teachersRouter = Router();
+
+teachersRouter.get(
+  '/',
+  authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.ACCOUNTANT),
+  teacherController.getTeachers,
+);

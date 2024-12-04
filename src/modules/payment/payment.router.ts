@@ -13,3 +13,17 @@ paymentRouter.post(
   validationHandler(paymentValidation.takePaymentSchema),
   paymentController.takePayment,
 );
+
+paymentRouter.get(
+  '/summary/:studentId',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.ACCOUNTANT),
+  paymentController.getPaymentSummary,
+);
+
+export const paymentsRouter = Router();
+
+paymentsRouter.get(
+  '/',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.ACCOUNTANT, USER_ROLES.STUDENT),
+  paymentController.getPayments,
+);

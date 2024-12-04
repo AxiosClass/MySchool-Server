@@ -5,8 +5,4 @@ import { authValidation } from './auth.validation';
 
 export const authRouter = Router();
 
-authRouter.post(
-  '/login',
-  validationHandler(authValidation.loginSchema),
-  authController.login,
-);
+authRouter.post('/login', validationHandler(authValidation.loginSchema), authController.login);

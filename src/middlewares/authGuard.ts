@@ -24,8 +24,6 @@ export const authGuard = (...requiredRoles: USER_ROLES[]) => {
 
     const { id, role } = decodedUser;
     const isAdmin = ADMIN_ROLES.includes(role);
-    // const isStudent = USER_ROLES.STUDENT === role;
-    // const isTeacher = USER_ROLES.TEACHER === role;
 
     if (isAdmin) {
       const adminInfo = await prismaClient.admin.findFirstOrThrow({

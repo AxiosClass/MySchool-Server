@@ -1,10 +1,7 @@
 import bcrypt from 'bcrypt';
 import { SALT } from '../app/config';
 
-export const comparePassword = async (
-  givenPassword: string,
-  savedPassword: string,
-) => {
+export const comparePassword = async (givenPassword: string, savedPassword: string) => {
   return await bcrypt.compare(givenPassword, savedPassword);
 };
 
