@@ -11,7 +11,7 @@ CREATE TYPE "PaymentType" AS ENUM ('ADMISSION_FEE', 'MONTHLY_FEE', 'OTHERS');
 CREATE TYPE "SalaryType" AS ENUM ('MONTHLY_SALARY', 'BONUS', 'OTHER');
 
 -- CreateEnum
-CREATE TYPE "NoticeFor" AS ENUM ('TEACHER', 'STAFF', 'STUDENT', 'ADMIN');
+CREATE TYPE "NoticeFor" AS ENUM ('TEACHER', 'STUDENT', 'ALL');
 
 -- CreateTable
 CREATE TABLE "admins" (
@@ -152,7 +152,7 @@ CREATE TABLE "exams" (
 CREATE TABLE "payments" (
     "id" TEXT NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL,
-    "month" INTEGER NOT NULL,
+    "month" INTEGER,
     "year" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "description" TEXT,

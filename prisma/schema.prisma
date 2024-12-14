@@ -263,7 +263,6 @@ model Notice {
 
 enum NoticeFor {
   TEACHER
-  STAFF
   STUDENT
-  ADMIN
+  ALL
 }
