@@ -26,25 +26,6 @@ enum AdminRole {
   ACCOUNTANT
 }
 
-model Staff {
-  id          String     @id
-  name        String
-  nid         String     @unique
-  phone       String     @unique
-  dob         DateTime
-  bloodGroup  String
-  salary      Float
-  designation String
-  address     String
-  joinedAt    DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  status      UserStatus @default(ACTIVE)
-
-  salaries Salary[]
-
-  @@map("staffs")
-}
-
 model Teacher {
   id         String     @id
   password   String
@@ -60,7 +41,6 @@ model Teacher {
   updatedAt  DateTime   @updatedAt
   status     UserStatus @default(ACTIVE)
 
-  salaries                Salary[]
   classroomsClassTeacher  Classroom?
   classroomSubjectTeacher ClassroomSubjectTeacher[]
 
@@ -204,51 +184,6 @@ model Discount {
   studentId   String
 
   student Student @relation(fields: [studentId], references: [id])
-}
-
-model Salary {
-  id          String     @id @default(uuid())
-  amount      Float
-  month       Int
-  year        Int
-  createdAt   DateTime   @default(now())
-  description String?
-  type        SalaryType
-  teacherId   String?
-  staffId     String?
-
-  teacher Teacher? @relation(fields: [teacherId], references: [id])
-  staff   Staff?   @relation(fields: [staffId], references: [id])
-
-  @@map("salaries")
-}
-
-enum SalaryType {
-  MONTHLY_SALARY
-  BONUS
-  OTHER
-}
-
-model Expense {
-  id          String   @id @default(uuid())
-  amount      Float
-  createdAt   DateTime @default(now())
-  description String?
-  categoryId  String
-
-  category ExpenseCategory @relation(fields: [categoryId], references: [id])
-
-  @@map("expenses")
-}
-
-model ExpenseCategory {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  createdAt DateTime @default(now())
-
-  expense Expense[]
-
-  @@map("expense_categories")
 }
 
 model Notice {
