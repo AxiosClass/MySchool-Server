@@ -7,4 +7,9 @@ const createNotice = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message: 'Notice created successfully', data: notice });
 });
 
-export const noticeController = { createNotice };
+const getNotices = catchAsync(async (req, res) => {
+  const { meta, notices } = await noticeService.getNotices(req.query);
+  sendSuccessResponse(res, { message: 'Notices retrieved successfully', meta, data: notices });
+});
+
+export const noticeController = { createNotice, getNotices };

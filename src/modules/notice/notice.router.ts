@@ -13,3 +13,7 @@ noticeRouter.post(
   validationHandler(noticeValidation.createNotice),
   noticeController.createNotice,
 );
+
+export const noticesRouter = Router();
+
+noticesRouter.get('/', noticeController.getNotices);

@@ -1,7 +1,7 @@
 import { prismaClient } from '../../app/prisma';
 import { TAddStudentPayload } from './student.validation';
 import { encryptPassword } from '../../helpers/encryptionHelper';
-import { generateRandomCharacter } from '../../helpers/uniqueIdHelper';
+import { generateRandomCharacters } from '../../helpers/common';
 import { AppError } from '../../utils/appError';
 
 const addStudent = async (payload: TAddStudentPayload) => {
@@ -30,7 +30,7 @@ const addStudent = async (payload: TAddStudentPayload) => {
   }
 
   // generating random password
-  const password = generateRandomCharacter(4);
+  const password = generateRandomCharacters(4);
   const hashedPassword = await encryptPassword(password);
 
   // creating the student
