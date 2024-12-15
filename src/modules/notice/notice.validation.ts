@@ -1,6 +1,6 @@
-import { z } from 'zod';
 import { enumGenerator } from '../../helpers/zodHelper';
 import { NoticeFor } from '@prisma/client';
+import { z } from 'zod';
 
 const createNotice = z.object({
   title: z.string({ required_error: 'Title is required' }).min(1, { message: 'Tittle is required' }),
@@ -8,6 +8,13 @@ const createNotice = z.object({
   noticeFor: enumGenerator(Object.keys(NoticeFor), 'Please specify who is going to see notice'),
 });
 
-export const noticeValidation = { createNotice };
+const updateNotice = z.object({
+  title: z.string().optional(),
+  description: z.string().optional(),
+  noticeFor: enumGenerator(Object.keys(NoticeFor), 'Please Specify who is going to see notice').optional(),
+});
+
+export const noticeValidation = { createNotice, updateNotice };
 
 export type TCreateNoticePayload = z.infer<typeof createNotice> & { noticeFor: NoticeFor };
+export type TUpdateNoticePayload = z.infer<typeof updateNotice> & { noticeFor?: NoticeFor };

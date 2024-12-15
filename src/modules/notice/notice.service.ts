@@ -1,5 +1,5 @@
 import { exactMatchPicker, metaGenerator, partialMatchPicker } from '../../helpers/common';
-import { TCreateNoticePayload } from './notice.validation';
+import { TCreateNoticePayload, TUpdateNoticePayload } from './notice.validation';
 import { prismaClient } from '../../app/prisma';
 
 const createNotice = async (payload: TCreateNoticePayload) => {
@@ -25,4 +25,9 @@ const getNotices = async (query: Record<string, any>) => {
   return { notices, meta: metaGenerator({ page, limit, total }) };
 };
 
-export const noticeService = { createNotice, getNotices };
+const updateNotice = async (payload: TUpdateNoticePayload, noticeId: string) => {
+  const notice = await prismaClient.notice.update({ where: { id: noticeId }, data: { ...payload } });
+  return notice;
+};
+
+export const noticeService = { createNotice, getNotices, updateNotice };
