@@ -21,6 +21,8 @@ noticeRouter.patch(
   noticeController.updateNotice,
 );
 
+noticeRouter.delete('/:noticeId', authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN), noticeController.deleteNotice);
+
 export const noticesRouter = Router();
 
 noticesRouter.get('/', noticeController.getNotices);

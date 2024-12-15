@@ -17,4 +17,9 @@ const updateNotice = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message: 'Notice updated successfully', data: notice });
 });
 
-export const noticeController = { createNotice, getNotices, updateNotice };
+const deleteNotice = catchAsync(async (req, res) => {
+  const message = await noticeService.deleteNotice(req.params.noticeId);
+  sendSuccessResponse(res, { message, data: null });
+});
+
+export const noticeController = { createNotice, getNotices, updateNotice, deleteNotice };

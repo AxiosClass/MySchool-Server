@@ -30,4 +30,9 @@ const updateNotice = async (payload: TUpdateNoticePayload, noticeId: string) => 
   return notice;
 };
 
-export const noticeService = { createNotice, getNotices, updateNotice };
+const deleteNotice = async (noticeId: string) => {
+  await prismaClient.notice.delete({ where: { id: noticeId } });
+  return 'Notice has been deleted';
+};
+
+export const noticeService = { createNotice, getNotices, updateNotice, deleteNotice };
