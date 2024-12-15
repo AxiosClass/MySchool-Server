@@ -6,4 +6,6 @@ const createClassroom = async (payload: TCreateClassroomPayload) => {
   return 'Classroom is created successfully';
 };
 
+const assignSubjectTeacher = async () => {};
+
 export const classroomService = { createClassroom };

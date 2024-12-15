@@ -1,7 +1,6 @@
-import { prismaClient } from '../../app/prisma';
-import { TAddStudentPayload } from './student.validation';
 import { encryptPassword } from '../../helpers/encryptionHelper';
-import { generateRandomCharacters } from '../../helpers/common';
+import { TAddStudentPayload } from './student.validation';
+import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
 
 const addStudent = async (payload: TAddStudentPayload) => {
@@ -29,9 +28,7 @@ const addStudent = async (payload: TAddStudentPayload) => {
     studentId = `${yearPart}-${classPart}-${idPartAsNumber.toString().padStart(3, '0')}`;
   }
 
-  // generating random password
-  const password = generateRandomCharacters(4);
-  const hashedPassword = await encryptPassword(password);
+  const hashedPassword = await encryptPassword(payload.birthId);
 
   // creating the student
   const student = await prismaClient.student.create({
@@ -44,7 +41,7 @@ const addStudent = async (payload: TAddStudentPayload) => {
     select: { id: true },
   });
 
-  return { id: student.id, password };
+  return { id: student.id };
 };
 
 const getStudents = async () => {

@@ -136,15 +136,6 @@ model ClassroomSubjectTeacher {
   @@map("classroom_subject_teacher")
 }
 
-// overall subject that can be used all other class for name suggestion while admin creating class subjects
-model Subject {
-  id        String   @id
-  name      String   @unique
-  createdAt DateTime @default(now())
-
-  @@map("subjects")
-}
-
 model Exam {
   id        String   @id
   name      String
@@ -153,8 +144,6 @@ model Exam {
 
   @@map("exams")
 }
-
-// to do => model : ExamSubject
 
 model Payment {
   id          String      @id @default(uuid())
@@ -184,6 +173,8 @@ model Discount {
   studentId   String
 
   student Student @relation(fields: [studentId], references: [id])
+
+  @@map("discount")
 }
 
 model Notice {

@@ -1,16 +1,14 @@
+import { encryptPassword } from '../../helpers/encryptionHelper';
+import { TAddTeacherPayload } from './teacher.validation';
 import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
-import { encryptPassword } from '../../helpers/encryptionHelper';
-import { generateRandomCharacters } from '../../helpers/common';
-import { TAddTeacherPayload } from './teacher.validation';
 
 const addTeacher = async (payload: TAddTeacherPayload) => {
-  const password = generateRandomCharacters(4);
-  const encryptedPassword = await encryptPassword(password);
+  const encryptedPassword = await encryptPassword(payload.nid);
   const teacher = await prismaClient.teacher.create({ data: { ...payload, password: encryptedPassword } });
 
   if (!teacher) throw new AppError('Failed to create a teacher', 400);
-  return { password };
+  return 'Teacher created successfully';
 };
 
 const getTeachers = async () => {

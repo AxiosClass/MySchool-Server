@@ -8,9 +8,6 @@ CREATE TYPE "UserStatus" AS ENUM ('ACTIVE', 'BLOCKED');
 CREATE TYPE "PaymentType" AS ENUM ('ADMISSION_FEE', 'MONTHLY_FEE', 'OTHERS');
 
 -- CreateEnum
-CREATE TYPE "SalaryType" AS ENUM ('MONTHLY_SALARY', 'BONUS', 'OTHER');
-
--- CreateEnum
 CREATE TYPE "NoticeFor" AS ENUM ('TEACHER', 'STUDENT', 'ALL');
 
 -- CreateTable
@@ -25,24 +22,6 @@ CREATE TABLE "admins" (
     "needPasswordChange" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "admins_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "staffs" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "nid" TEXT NOT NULL,
-    "phone" TEXT NOT NULL,
-    "dob" TIMESTAMP(3) NOT NULL,
-    "bloodGroup" TEXT NOT NULL,
-    "salary" DOUBLE PRECISION NOT NULL,
-    "designation" TEXT NOT NULL,
-    "address" TEXT NOT NULL,
-    "joinedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
-
-    CONSTRAINT "staffs_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -130,15 +109,6 @@ CREATE TABLE "classroom_subject_teacher" (
 );
 
 -- CreateTable
-CREATE TABLE "subjects" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "subjects_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "exams" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -163,48 +133,13 @@ CREATE TABLE "payments" (
 );
 
 -- CreateTable
-CREATE TABLE "Discount" (
+CREATE TABLE "discount" (
     "id" TEXT NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL,
     "description" TEXT,
     "studentId" TEXT NOT NULL,
 
-    CONSTRAINT "Discount_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "salaries" (
-    "id" TEXT NOT NULL,
-    "amount" DOUBLE PRECISION NOT NULL,
-    "month" INTEGER NOT NULL,
-    "year" INTEGER NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "description" TEXT,
-    "type" "SalaryType" NOT NULL,
-    "teacherId" TEXT,
-    "staffId" TEXT,
-
-    CONSTRAINT "salaries_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "expenses" (
-    "id" TEXT NOT NULL,
-    "amount" DOUBLE PRECISION NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "description" TEXT,
-    "categoryId" TEXT NOT NULL,
-
-    CONSTRAINT "expenses_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "expense_categories" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "expense_categories_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "discount_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -217,12 +152,6 @@ CREATE TABLE "notices" (
 
     CONSTRAINT "notices_pkey" PRIMARY KEY ("id")
 );
-
--- CreateIndex
-CREATE UNIQUE INDEX "staffs_nid_key" ON "staffs"("nid");
-
--- CreateIndex
-CREATE UNIQUE INDEX "staffs_phone_key" ON "staffs"("phone");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "teachers_nid_key" ON "teachers"("nid");
@@ -251,12 +180,6 @@ CREATE UNIQUE INDEX "classrooms_classId_name_key" ON "classrooms"("classId", "na
 -- CreateIndex
 CREATE UNIQUE INDEX "classroom_subject_teacher_classSubjectId_classroomId_teache_key" ON "classroom_subject_teacher"("classSubjectId", "classroomId", "teacherId");
 
--- CreateIndex
-CREATE UNIQUE INDEX "subjects_name_key" ON "subjects"("name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "expense_categories_name_key" ON "expense_categories"("name");
-
 -- AddForeignKey
 ALTER TABLE "students" ADD CONSTRAINT "students_classroomId_fkey" FOREIGN KEY ("classroomId") REFERENCES "classrooms"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -282,13 +205,4 @@ ALTER TABLE "classroom_subject_teacher" ADD CONSTRAINT "classroom_subject_teache
 ALTER TABLE "payments" ADD CONSTRAINT "payments_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Discount" ADD CONSTRAINT "Discount_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "salaries" ADD CONSTRAINT "salaries_teacherId_fkey" FOREIGN KEY ("teacherId") REFERENCES "teachers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "salaries" ADD CONSTRAINT "salaries_staffId_fkey" FOREIGN KEY ("staffId") REFERENCES "staffs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "expenses" ADD CONSTRAINT "expenses_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "expense_categories"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "discount" ADD CONSTRAINT "discount_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
