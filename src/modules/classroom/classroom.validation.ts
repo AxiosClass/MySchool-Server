@@ -6,6 +6,12 @@ const createClassroom = z.object({
   classTeacherId: z.string().min(1, { message: 'Teacher is required' }),
 });
 
-export type TCreateClassroomPayload = z.infer<typeof createClassroom>;
+const assignSubjectTeacher = z.object({
+  classSubjectId: z.string().min(1, { message: 'Subject id is required' }),
+  teacherId: z.string().min(1, { message: 'Teacher id is required' }),
+});
 
-export const classroomValidation = { createClassroom };
+export const classroomValidation = { createClassroom, assignSubjectTeacher };
+
+export type TCreateClassroomPayload = z.infer<typeof createClassroom>;
+export type TAssignSubjectTeacher = z.infer<typeof assignSubjectTeacher>;
