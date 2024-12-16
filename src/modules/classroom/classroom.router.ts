@@ -15,8 +15,14 @@ classroomRouter.post(
 );
 
 classroomRouter.post(
-  '/:classroomId/subject-teacher',
+  '/subject-teacher',
   authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
   validationHandler(classroomValidation.assignSubjectTeacher),
   classroomController.assignSubjectTeacher,
+);
+
+classroomRouter.delete(
+  '/subject-teacher/:classroomSubjectTeacherId',
+  authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
+  classroomController.removeSubjectTeacher,
 );
