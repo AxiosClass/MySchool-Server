@@ -26,3 +26,9 @@ classroomRouter.delete(
   authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
   classroomController.removeSubjectTeacher,
 );
+
+classroomRouter.patch(
+  '/subject-teacher/:classroomSubjectTeacherId',
+  authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
+  classroomController.reassignSubjectTeacher,
+);

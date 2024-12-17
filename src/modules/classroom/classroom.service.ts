@@ -1,4 +1,4 @@
-import { TAssignSubjectTeacher, TCreateClassroomPayload } from './classroom.validation';
+import { TAssignSubjectTeacher, TCreateClassroomPayload, TReassignSubjectTeacher } from './classroom.validation';
 import { AppError } from '../../utils/appError';
 import { prismaClient } from '../../app/prisma';
 
@@ -25,4 +25,13 @@ const removeSubjectTeacher = async (classroomSubjectTeacherId: string) => {
   return 'Teacher removed successfully';
 };
 
-export const classroomService = { createClassroom, assignSubjectTeacher, removeSubjectTeacher };
+const reassignSubjectTeacher = async (payload: TReassignSubjectTeacher, classroomSubjectTeacherId: string) => {
+  await prismaClient.classroomSubjectTeacher.update({
+    where: { id: classroomSubjectTeacherId },
+    data: { teacherId: payload.teacherId },
+  });
+
+  return 'Teacher reassigned successfully';
+};
+
+export const classroomService = { createClassroom, assignSubjectTeacher, removeSubjectTeacher, reassignSubjectTeacher };
