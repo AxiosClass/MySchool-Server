@@ -3,8 +3,8 @@ import { sendSuccessResponse } from '../../helpers/responseHelper';
 import { teacherService } from './teacher.service';
 
 const addTeacher = catchAsync(async (req, res) => {
-  const { password } = await teacherService.addTeacher(req.body);
-  sendSuccessResponse(res, { status: 201, message: 'Added teacher successfully', data: { password } });
+  const message = await teacherService.addTeacher(req.body);
+  sendSuccessResponse(res, { status: 201, message, data: null });
 });
 
 const getTeachers = catchAsync(async (_, res) => {
@@ -12,4 +12,9 @@ const getTeachers = catchAsync(async (_, res) => {
   sendSuccessResponse(res, { message: 'Teachers retrieved successfully', data: teachers });
 });
 
-export const teacherController = { addTeacher, getTeachers };
+const getTeacherList = catchAsync(async (req, res) => {
+  const teachers = await teacherService.getTeacherList();
+  sendSuccessResponse(res, { message: 'Teacher list retrieved successfully', data: teachers });
+});
+
+export const teacherController = { addTeacher, getTeachers, getTeacherList };

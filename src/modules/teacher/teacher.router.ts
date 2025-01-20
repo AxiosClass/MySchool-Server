@@ -22,3 +22,5 @@ teachersRouter.get(
   authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.ACCOUNTANT),
   teacherController.getTeachers,
 );
+
+teachersRouter.get('/list', authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN), teacherController.getTeacherList);

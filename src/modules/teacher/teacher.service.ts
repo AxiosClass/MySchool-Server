@@ -26,4 +26,9 @@ const getTeachers = async () => {
   return teacher;
 };
 
-export const teacherService = { addTeacher, getTeachers };
+const getTeacherList = async () => {
+  const teachers = await prismaClient.teacher.findMany({ select: { id: true, name: true } });
+  return teachers;
+};
+
+export const teacherService = { addTeacher, getTeachers, getTeacherList };

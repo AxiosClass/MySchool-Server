@@ -14,7 +14,7 @@ const addSubjects = catchAsync(async (req, res) => {
 
 const getClassDetails = catchAsync(async (req, res) => {
   const classDetails = await classService.getClassDetails(req.params.classId);
-  sendSuccessResponse(res, { message: 'Class created successfully', data: classDetails });
+  sendSuccessResponse(res, { message: 'Class retrieved successfully', data: classDetails });
 });
 
 const getClasses = catchAsync(async (req, res) => {
