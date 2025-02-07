@@ -22,4 +22,14 @@ const getClasses = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message: 'Classes retrieved successfully', data: classes });
 });
 
-export const classController = { addClass, addSubjects, getClasses, getClassDetails };
+const getClassList = catchAsync(async (req, res) => {
+  const classList = await classService.getClassList();
+  sendSuccessResponse(res, { message: 'Class list retrieved successfully', data: classList });
+});
+
+const getClassroomList = catchAsync(async (req, res) => {
+  const classroomList = await classService.getClassroomList(req.params.level);
+  sendSuccessResponse(res, { message: 'Classroom list retrieved successfully', data: classroomList });
+});
+
+export const classController = { addClass, addSubjects, getClasses, getClassDetails, getClassList, getClassroomList };

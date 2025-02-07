@@ -35,3 +35,15 @@ classesRouter.get(
   authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER, USER_ROLES.STUDENT),
   classController.getClasses,
 );
+
+classesRouter.get(
+  '/list',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER, USER_ROLES.STUDENT),
+  classController.getClassList,
+);
+
+classesRouter.get(
+  '/list/classroom/:level',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER, USER_ROLES.STUDENT),
+  classController.getClassroomList,
+);

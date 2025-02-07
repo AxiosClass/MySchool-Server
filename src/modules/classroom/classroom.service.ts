@@ -34,4 +34,9 @@ const reassignSubjectTeacher = async (payload: TReassignSubjectTeacher, classroo
   return 'Teacher reassigned successfully';
 };
 
-export const classroomService = { createClassroom, assignSubjectTeacher, removeSubjectTeacher, reassignSubjectTeacher };
+export const classroomService = {
+  createClassroom,
+  assignSubjectTeacher,
+  removeSubjectTeacher,
+  reassignSubjectTeacher,
+};

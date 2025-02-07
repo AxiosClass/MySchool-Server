@@ -61,4 +61,19 @@ const getClassDetails = async (classId: string) => {
   return classInfo;
 };
 
-export const classService = { addClass, addSubjects, getClasses, getClassDetails };
+const getClassList = async () => {
+  const classList = await prismaClient.class.findMany({ select: { level: true, name: true } });
+  return classList;
+};
+
+const getClassroomList = async (level: string) => {
+  const classDetails = await prismaClient.class.findUnique({
+    where: { level },
+    select: { classrooms: { select: { id: true, name: true } } },
+  });
+
+  if (!classDetails) throw new AppError('Class not found', 404);
+  return classDetails.classrooms;
+};
+
+export const classService = { addClass, addSubjects, getClasses, getClassDetails, getClassList, getClassroomList };

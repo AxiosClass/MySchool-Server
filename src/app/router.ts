@@ -10,15 +10,19 @@ import { noticeRouter, noticesRouter } from '../modules/notice/notice.router';
 
 export const appRouter = Router();
 
-appRouter.use('/auth', authRouter);
-appRouter.use('/teacher', teacherRouter);
-appRouter.use('/teachers', teachersRouter);
-appRouter.use('/class', classRouter);
-appRouter.use('/classes', classesRouter);
-appRouter.use('/classroom', classroomRouter);
-appRouter.use('/student', studentRouter);
-appRouter.use('/students', studentsRouter);
-appRouter.use('/payment', paymentRouter);
-appRouter.use('/payments', paymentsRouter);
-appRouter.use('/notice', noticeRouter);
-appRouter.use('/notices', noticesRouter);
+const routes: { path: string; router: Router }[] = [
+  { path: '/auth', router: authRouter },
+  { path: '/teacher', router: teacherRouter },
+  { path: '/teachers', router: teachersRouter },
+  { path: '/class', router: classRouter },
+  { path: '/classes', router: classesRouter },
+  { path: '/classroom', router: classroomRouter },
+  { path: '/student', router: studentRouter },
+  { path: '/students', router: studentsRouter },
+  { path: '/payment', router: paymentRouter },
+  { path: '/payments', router: paymentsRouter },
+  { path: '/notice', router: noticeRouter },
+  { path: '/notices', router: noticesRouter },
+];
+
+routes.forEach(({ path, router }) => appRouter.use(path, router));
