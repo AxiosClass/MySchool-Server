@@ -33,3 +33,5 @@ export enum USER_ROLES {
   TEACHER = 'TEACHER',
   STUDENT = 'STUDENT',
 }
+
+export type TObject<TValue = string> = Record<string, TValue>;

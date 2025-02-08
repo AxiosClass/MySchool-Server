@@ -1,5 +1,6 @@
 import { sendSuccessResponse } from '../../helpers/responseHelper';
 import { catchAsync } from '../../middlewares/catchAsync';
+import { TObject } from '../../utils/types';
 import { paymentService } from './payment.service';
 
 const takePayment = catchAsync(async (req, res) => {
@@ -8,7 +9,7 @@ const takePayment = catchAsync(async (req, res) => {
 });
 
 const getPayments = catchAsync(async (req, res) => {
-  const { payments, meta } = await paymentService.getPayments(req.query);
+  const { payments, meta } = await paymentService.getPayments(req.query as TObject);
   sendSuccessResponse(res, { message: 'Payments retrieved successfully', meta, data: payments });
 });
 

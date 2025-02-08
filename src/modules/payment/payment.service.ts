@@ -2,6 +2,7 @@ import { calculateMonthsBetween, exactMatchPicker, metaGenerator } from '../../h
 import { TTakePaymentPayload } from './payment.validation';
 import { AppError } from '../../utils/appError';
 import { prismaClient } from '../../app/prisma';
+import { TObject } from '../../utils/types';
 
 const takePayment = async (payload: TTakePaymentPayload) => {
   const payment = await prismaClient.payment.create({
@@ -14,7 +15,7 @@ const takePayment = async (payload: TTakePaymentPayload) => {
   return payment;
 };
 
-const getPayments = async (query: Record<string, any>) => {
+const getPayments = async (query: TObject) => {
   const exactMatchProperties = exactMatchPicker(['month', 'year', 'type', 'studentId'], query);
   const page = Number(query.page) || 1;
   const limit = Number(query.limit) || 20;
