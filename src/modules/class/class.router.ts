@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { validationHandler } from '../../middlewares/validationHandler';
-
 import { authGuard } from '../../middlewares/authGuard';
 import { classValidation } from './class.validation';
 import { USER_ROLES } from '../../utils/types';
@@ -15,11 +14,17 @@ classRouter.post(
   classController.addClass,
 );
 
-classRouter.post(
+classRouter.patch(
   '/subjects',
   authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
   validationHandler(classValidation.assignSubjectsSchema),
   classController.assignSubject,
+);
+
+classRouter.get(
+  '/:classId/subjects',
+  authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
+  classController.getAssignedSubjects,
 );
 
 classRouter.get(

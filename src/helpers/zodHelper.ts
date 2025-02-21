@@ -8,3 +8,10 @@ export const enumGenerator = (options: string[], message: string) => {
 export const dateGenerator = (required_error: string) => {
   return z.string({ required_error }).refine((date) => isValidDate(date), { message: 'Invalid date' });
 };
+
+export const zodCapital = (message: string) => {
+  return z
+    .string()
+    .min(1, { message })
+    .transform((val) => val.charAt(0) + val.slice(1).toLowerCase());
+};

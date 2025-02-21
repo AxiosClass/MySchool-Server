@@ -1,6 +1,6 @@
-import type { TAddClassPayload, TAssignSubjectsPayload } from './class.validation';
 import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
+import type { TAddClassPayload, TAssignSubjectsPayload } from './class.validation';
 
 const addClass = async (payload: TAddClassPayload) => {
   const isClassExist = await prismaClient.class.findFirst({
@@ -33,30 +33,31 @@ const getClasses = async () => {
 
 const assignSubject = async (payload: TAssignSubjectsPayload) => {
   const classInfo = await prismaClient.classSubject.findMany({ where: { classId: payload.classId } });
-  const subjectsToRemove = classInfo.filter((subject) => !payload.subjects.includes(subject.name));
+  const subjectsToRemove = classInfo.filter(
+    (subject) => !payload.subjects.map((subject) => subject.toLowerCase()).includes(subject.name.toLowerCase()),
+  );
 
   const subjectsToAdd = payload.subjects
-    .filter((subject) => !classInfo.find((s) => s.name === subject))
+    .filter((subject) => !classInfo.find((s) => s.name.toLowerCase() === subject.toLowerCase()))
     .map((subject) => ({ name: subject, classId: payload.classId }));
 
-  const result = await prismaClient.$transaction(async (client) => {
-    let removedSubject = 0;
+  await prismaClient.$transaction(async (client) => {
     if (subjectsToRemove.length) {
       const subjectIds = subjectsToRemove.map((subject) => subject.id);
-      const result = await client.classSubject.deleteMany({ where: { id: { in: subjectIds } } });
-      removedSubject = result.count;
+      await client.classSubject.deleteMany({ where: { id: { in: subjectIds } } });
     }
 
-    let addedSubject = 0;
     if (subjectsToAdd.length) {
-      const result = await client.classSubject.createMany({ data: subjectsToAdd });
-      addedSubject = result.count;
+      await client.classSubject.createMany({ data: subjectsToAdd });
     }
-
-    return { removedSubject, addedSubject };
   });
 
-  return `Subjects added: ${result.addedSubject}, Subjects removed: ${result.removedSubject}`;
+  return `Subject Assigned successfully`;
+};
+
+const getAssignedSubjects = async (classId: string) => {
+  const subjects = await prismaClient.classSubject.findMany({ where: { classId }, select: { name: true, id: true } });
+  return subjects;
 };
 
 const getClassDetails = async (classId: string) => {
@@ -97,4 +98,12 @@ const getClassroomList = async (level: string) => {
   return classDetails.classrooms;
 };
 
-export const classService = { addClass, assignSubject, getClasses, getClassDetails, getClassList, getClassroomList };
+export const classService = {
+  addClass,
+  assignSubject,
+  getClasses,
+  getAssignedSubjects,
+  getClassDetails,
+  getClassList,
+  getClassroomList,
+};

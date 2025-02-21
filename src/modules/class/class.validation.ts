@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { zodCapital } from '../../helpers/zodHelper';
 
 const addClassSchema = z.object({
   name: z.string().min(1, { message: 'Class Name is required' }),
@@ -8,11 +9,7 @@ const addClassSchema = z.object({
 });
 
 const assignSubjectsSchema = z.object({
-  subjects: z
-    .string()
-    .min(1, { message: 'Subject name is required' })
-    .array()
-    .min(1, { message: 'Please select at least one subject' }),
+  subjects: zodCapital('Subject name is required').array().min(1, { message: 'Please select at least one subject' }),
   classId: z.string().min(1, { message: 'Class ID is required' }),
 });
 
