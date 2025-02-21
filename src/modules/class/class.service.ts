@@ -1,13 +1,14 @@
-import { TAddClassPayload, TAddOrRemoveSubjectsPayload } from './class.validation';
+import type { TAddClassPayload, TAssignSubjectsPayload } from './class.validation';
 import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
 
 const addClass = async (payload: TAddClassPayload) => {
-  // checking if the class exist or not
   const isClassExist = await prismaClient.class.findFirst({
     where: { OR: [{ level: payload.level }, { name: payload.name }] },
   });
+
   if (isClassExist) throw new AppError('Class already exist', 400);
+
   const classInfo = await prismaClient.class.create({ data: { ...payload } });
   if (!classInfo) throw new AppError('Failed to add class', 400);
 
@@ -30,12 +31,32 @@ const getClasses = async () => {
   return classes;
 };
 
-const addSubjects = async (payload: TAddOrRemoveSubjectsPayload, classId: string) => {
-  const subjects = payload.subjects.map((subject) => ({ name: subject, classId }));
-  const subjectInfo = await prismaClient.classSubject.createMany({ data: subjects });
-  if (subjectInfo.count < 1) throw new AppError('Failed to create Subjects', 400);
+const assignSubject = async (payload: TAssignSubjectsPayload) => {
+  const classInfo = await prismaClient.classSubject.findMany({ where: { classId: payload.classId } });
+  const subjectsToRemove = classInfo.filter((subject) => !payload.subjects.includes(subject.name));
 
-  return 'Subjects Created Successfully';
+  const subjectsToAdd = payload.subjects
+    .filter((subject) => !classInfo.find((s) => s.name === subject))
+    .map((subject) => ({ name: subject, classId: payload.classId }));
+
+  const result = await prismaClient.$transaction(async (client) => {
+    let removedSubject = 0;
+    if (subjectsToRemove.length) {
+      const subjectIds = subjectsToRemove.map((subject) => subject.id);
+      const result = await client.classSubject.deleteMany({ where: { id: { in: subjectIds } } });
+      removedSubject = result.count;
+    }
+
+    let addedSubject = 0;
+    if (subjectsToAdd.length) {
+      const result = await client.classSubject.createMany({ data: subjectsToAdd });
+      addedSubject = result.count;
+    }
+
+    return { removedSubject, addedSubject };
+  });
+
+  return `Subjects added: ${result.addedSubject}, Subjects removed: ${result.removedSubject}`;
 };
 
 const getClassDetails = async (classId: string) => {
@@ -76,4 +97,4 @@ const getClassroomList = async (level: string) => {
   return classDetails.classrooms;
 };
 
-export const classService = { addClass, addSubjects, getClasses, getClassDetails, getClassList, getClassroomList };
+export const classService = { addClass, assignSubject, getClasses, getClassDetails, getClassList, getClassroomList };

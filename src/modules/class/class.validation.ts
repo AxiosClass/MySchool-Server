@@ -7,13 +7,16 @@ const addClassSchema = z.object({
   admissionFee: z.number().positive({ message: 'Admission fee can not be negative' }),
 });
 
-const addOrRemoveSubjects = z.object({
+const assignSubjectsSchema = z.object({
   subjects: z
-    .array(z.string().min(1, { message: 'Subject name is required' }))
-    .min(1, { message: 'Subjects is required' }),
+    .string()
+    .min(1, { message: 'Subject name is required' })
+    .array()
+    .min(1, { message: 'Please select at least one subject' }),
+  classId: z.string().min(1, { message: 'Class ID is required' }),
 });
 
 export type TAddClassPayload = z.infer<typeof addClassSchema>;
-export type TAddOrRemoveSubjectsPayload = z.infer<typeof addOrRemoveSubjects>;
+export type TAssignSubjectsPayload = z.infer<typeof assignSubjectsSchema>;
 
-export const classValidation = { addClassSchema, addOrRemoveSubjects };
+export const classValidation = { addClassSchema, assignSubjectsSchema };
