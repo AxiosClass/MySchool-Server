@@ -7,8 +7,8 @@ const addClass = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message: 'Class created successfully', data: classInfo, status: 201 });
 });
 
-const addSubjects = catchAsync(async (req, res) => {
-  const message = await classService.addSubjects(req.body, req.params.classId);
+const assignSubject = catchAsync(async (req, res) => {
+  const message = await classService.assignSubject(req.body);
   sendSuccessResponse(res, { message, data: null, status: 201 });
 });
 
@@ -32,4 +32,4 @@ const getClassroomList = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message: 'Classroom list retrieved successfully', data: classroomList });
 });
 
-export const classController = { addClass, addSubjects, getClasses, getClassDetails, getClassList, getClassroomList };
+export const classController = { addClass, assignSubject, getClasses, getClassDetails, getClassList, getClassroomList };

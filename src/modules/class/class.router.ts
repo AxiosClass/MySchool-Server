@@ -16,10 +16,10 @@ classRouter.post(
 );
 
 classRouter.post(
-  '/:classId/subjects',
+  '/subjects',
   authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
-  validationHandler(classValidation.addOrRemoveSubjects),
-  classController.addSubjects,
+  validationHandler(classValidation.assignSubjectsSchema),
+  classController.assignSubject,
 );
 
 classRouter.get(
