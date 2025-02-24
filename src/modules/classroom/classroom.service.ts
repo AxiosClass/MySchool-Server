@@ -34,9 +34,33 @@ const reassignSubjectTeacher = async (payload: TReassignSubjectTeacher, classroo
   return 'Teacher reassigned successfully';
 };
 
+type TSubjectWithTeacher = { id: string; name: string; teacher?: { id: string; name: string } };
+const getSubjectListWithTeacher = async (classroomId: string) => {
+  const subjectsWithTeacher = await prismaClient.classroomSubjectTeacher.findMany({
+    where: { classroomId },
+    select: { subject: { select: { id: true, name: true } }, teacher: { select: { id: true, name: true } } },
+  });
+
+  const subjects = await prismaClient.classSubject.findMany({
+    where: { class: { classrooms: { every: { id: classroomId } } } },
+    select: { name: true, id: true },
+  });
+
+  const subjectList = subjects.reduce((acc: TSubjectWithTeacher[], subject) => {
+    const targetSubject = subjectsWithTeacher.find((eachSubject) => eachSubject.subject.id === subject.id);
+    if (targetSubject) acc.push({ ...subject, teacher: { ...targetSubject.teacher } });
+    else acc.push({ ...subject });
+
+    return acc;
+  }, []);
+
+  return subjectList;
+};
+
 export const classroomService = {
   createClassroom,
   assignSubjectTeacher,
   removeSubjectTeacher,
   reassignSubjectTeacher,
+  getSubjectListWithTeacher,
 };

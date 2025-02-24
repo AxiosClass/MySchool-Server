@@ -33,4 +33,10 @@ classroomRouter.patch(
   classroomController.reassignSubjectTeacher,
 );
 
+classroomRouter.get(
+  '/:classroomId/subjects',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  classroomController.getSubjectListWithTeacher,
+);
+
 export { classroomRouter };

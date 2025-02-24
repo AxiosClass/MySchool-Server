@@ -35,7 +35,12 @@ const getSubjects = (query: TObject) => {
       ...(classId && { classId }),
       ...(classroomId && { class: { classrooms: { every: { id: classroomId } } } }),
     },
-    select: { id: true, name: true, classId: true },
+
+    select: {
+      id: true,
+      name: true,
+      classId: true,
+    },
   });
 };
 
