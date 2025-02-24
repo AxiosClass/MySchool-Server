@@ -192,3 +192,12 @@ enum NoticeFor {
   STUDENT
   ALL
 }
+
+model Attendance {
+  id        String   @id @default(uuid())
+  studentId String
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  @@map("attendances")
+}
