@@ -13,7 +13,8 @@ const assignSubjectsSchema = z.object({
   classId: z.string().min(1, { message: 'Class ID is required' }),
 });
 
-export type TAddClassPayload = z.infer<typeof addClassSchema>;
-export type TAssignSubjectsPayload = z.infer<typeof assignSubjectsSchema>;
+type TAddClassPayload = z.infer<typeof addClassSchema>;
+type TAssignSubjectsPayload = z.infer<typeof assignSubjectsSchema>;
 
 export const classValidation = { addClassSchema, assignSubjectsSchema };
+export { TAddClassPayload, TAssignSubjectsPayload };

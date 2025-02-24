@@ -14,7 +14,8 @@ const updateNotice = z.object({
   noticeFor: enumGenerator(Object.keys(NoticeFor), 'Please Specify who is going to see notice').optional(),
 });
 
-export const noticeValidation = { createNotice, updateNotice };
+type TCreateNoticePayload = z.infer<typeof createNotice> & { noticeFor: NoticeFor };
+type TUpdateNoticePayload = z.infer<typeof updateNotice> & { noticeFor?: NoticeFor };
 
-export type TCreateNoticePayload = z.infer<typeof createNotice> & { noticeFor: NoticeFor };
-export type TUpdateNoticePayload = z.infer<typeof updateNotice> & { noticeFor?: NoticeFor };
+export const noticeValidation = { createNotice, updateNotice };
+export { TCreateNoticePayload, TUpdateNoticePayload };

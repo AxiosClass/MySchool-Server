@@ -25,6 +25,7 @@ const addStudentSchema = z.object({
   classroomId: z.string().min(1, { message: 'Student class id is required.' }),
 });
 
-export type TAddStudentPayload = z.infer<typeof addStudentSchema>;
+type TAddStudentPayload = z.infer<typeof addStudentSchema>;
 
 export const studentValidation = { addStudentSchema };
+export { TAddStudentPayload };

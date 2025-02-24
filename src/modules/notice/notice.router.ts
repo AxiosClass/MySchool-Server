@@ -5,7 +5,7 @@ import { noticeController } from './notice.controller';
 import { USER_ROLES } from '../../utils/types';
 import { Router } from 'express';
 
-export const noticeRouter = Router();
+const noticeRouter = Router();
 
 noticeRouter.post(
   '/',
@@ -23,6 +23,8 @@ noticeRouter.patch(
 
 noticeRouter.delete('/:noticeId', authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN), noticeController.deleteNotice);
 
-export const noticesRouter = Router();
+const noticesRouter = Router();
 
 noticesRouter.get('/', noticeController.getNotices);
+
+export { noticeRouter, noticesRouter };

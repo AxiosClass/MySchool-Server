@@ -6,7 +6,7 @@ import { studentValidation } from './student.validation';
 import { studentController } from './student.controller';
 import { validationHandler } from '../../middlewares/validationHandler';
 
-export const studentRouter = Router();
+const studentRouter = Router();
 
 studentRouter.post(
   '/',
@@ -15,10 +15,12 @@ studentRouter.post(
   studentController.addStudent,
 );
 
-export const studentsRouter = Router();
+const studentsRouter = Router();
 
 studentsRouter.get(
   '/',
   authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER, USER_ROLES.ACCOUNTANT),
   studentController.getStudents,
 );
+
+export { studentRouter, studentsRouter };

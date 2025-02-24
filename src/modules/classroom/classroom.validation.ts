@@ -16,8 +16,9 @@ const reassignSubjectTeacher = z.object({
   teacherId: z.string().min(1, { message: 'Teacher id is required' }),
 });
 
-export const classroomValidation = { createClassroom, assignSubjectTeacher, reassignSubjectTeacher };
+type TCreateClassroomPayload = z.infer<typeof createClassroom>;
+type TAssignSubjectTeacher = z.infer<typeof assignSubjectTeacher>;
+type TReassignSubjectTeacher = z.infer<typeof reassignSubjectTeacher>;
 
-export type TCreateClassroomPayload = z.infer<typeof createClassroom>;
-export type TAssignSubjectTeacher = z.infer<typeof assignSubjectTeacher>;
-export type TReassignSubjectTeacher = z.infer<typeof reassignSubjectTeacher>;
+export const classroomValidation = { createClassroom, assignSubjectTeacher, reassignSubjectTeacher };
+export { TCreateClassroomPayload, TAssignSubjectTeacher, TReassignSubjectTeacher };

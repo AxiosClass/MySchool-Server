@@ -19,6 +19,7 @@ const takePaymentSchema = z
       ctx.addIssue({ code: 'custom', message: 'Invalid month', path: ['moth'] });
   });
 
-export type TTakePaymentPayload = z.infer<typeof takePaymentSchema> & { type: PaymentType };
+type TTakePaymentPayload = z.infer<typeof takePaymentSchema> & { type: PaymentType };
 
 export const paymentValidation = { takePaymentSchema };
+export { TTakePaymentPayload };

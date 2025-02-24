@@ -5,7 +5,7 @@ import { classValidation } from './class.validation';
 import { USER_ROLES } from '../../utils/types';
 import { classController } from './class.controller';
 
-export const classRouter = Router();
+const classRouter = Router();
 
 classRouter.post(
   '/',
@@ -14,26 +14,13 @@ classRouter.post(
   classController.addClass,
 );
 
-classRouter.patch(
-  '/subjects',
-  authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
-  validationHandler(classValidation.assignSubjectsSchema),
-  classController.assignSubject,
-);
-
-classRouter.get(
-  '/:classId/subjects',
-  authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
-  classController.getAssignedSubjects,
-);
-
 classRouter.get(
   '/:classId',
   authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.TEACHER, USER_ROLES.STUDENT),
   classController.getClassDetails,
 );
 
-export const classesRouter = Router();
+const classesRouter = Router();
 
 classesRouter.get(
   '/',
@@ -52,3 +39,5 @@ classesRouter.get(
   authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER, USER_ROLES.STUDENT),
   classController.getClassroomList,
 );
+
+export { classRouter, classesRouter };

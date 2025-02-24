@@ -38,10 +38,10 @@ const addStudent = async (payload: TAddStudentPayload) => {
       password: hashedPassword,
       class: classInfo.class.level,
     },
-    select: { id: true },
+    select: { id: true, password: true },
   });
 
-  return { id: student.id };
+  return { ...student };
 };
 
 const getStudents = async () => {

@@ -5,7 +5,7 @@ import { authGuard } from '../../middlewares/authGuard';
 import { USER_ROLES } from '../../utils/types';
 import { Router } from 'express';
 
-export const classroomRouter = Router();
+const classroomRouter = Router();
 
 classroomRouter.post(
   '/',
@@ -32,3 +32,5 @@ classroomRouter.patch(
   authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
   classroomController.reassignSubjectTeacher,
 );
+
+export { classroomRouter };

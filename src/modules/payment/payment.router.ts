@@ -5,7 +5,7 @@ import { paymentValidation } from './payment.validation';
 import { paymentController } from './payment.controller';
 import { USER_ROLES } from '../../utils/types';
 
-export const paymentRouter = Router();
+const paymentRouter = Router();
 
 paymentRouter.post(
   '/',
@@ -20,10 +20,12 @@ paymentRouter.get(
   paymentController.getPaymentSummary,
 );
 
-export const paymentsRouter = Router();
+const paymentsRouter = Router();
 
 paymentsRouter.get(
   '/',
   authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.ACCOUNTANT, USER_ROLES.STUDENT),
   paymentController.getPayments,
 );
+
+export { paymentRouter, paymentsRouter };

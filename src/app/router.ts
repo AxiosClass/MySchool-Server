@@ -7,6 +7,7 @@ import { teacherRouter, teachersRouter } from '../modules/teacher/teacher.router
 import { paymentRouter, paymentsRouter } from '../modules/payment/payment.router';
 import { studentRouter, studentsRouter } from '../modules/student/student.router';
 import { noticeRouter, noticesRouter } from '../modules/notice/notice.router';
+import { subjectsRouter } from '../modules/subjects/subject.router';
 
 export const appRouter = Router();
 
@@ -23,6 +24,7 @@ const routes: { path: string; router: Router }[] = [
   { path: '/payments', router: paymentsRouter },
   { path: '/notice', router: noticeRouter },
   { path: '/notices', router: noticesRouter },
+  { path: '/subjects', router: subjectsRouter },
 ];
 
 routes.forEach(({ path, router }) => appRouter.use(path, router));
