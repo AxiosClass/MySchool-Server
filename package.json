@@ -8,7 +8,7 @@
     "build": "npx tsc",
     "pretty": "npx prettier --write .",
     "seed-super-admin": "ts-node-dev --transpile-only src/seeding/seedSuperAdmin.ts",
-    "formate": "npx prettier --write .",
+    "format": "npx prettier --write .",
     "db:migrate": "npx prisma migrate dev",
     "db:generate": "npx prisma generate",
     "postinstall": "npx prisma generate"

@@ -1,6 +1,7 @@
+.vercel
+
 node_modules
 package-lock.json
 .env
 dist
-.vercel
 yarn.lock

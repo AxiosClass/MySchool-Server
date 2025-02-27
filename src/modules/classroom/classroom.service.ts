@@ -1,4 +1,4 @@
-import { TAssignSubjectTeacher, TCreateClassroomPayload, TReassignSubjectTeacher } from './classroom.validation';
+import { TAssignSubjectTeacher, TCreateClassroomPayload } from './classroom.validation';
 import { AppError } from '../../utils/appError';
 import { prismaClient } from '../../app/prisma';
 
@@ -25,20 +25,10 @@ const removeSubjectTeacher = async (classroomSubjectTeacherId: string) => {
   return 'Teacher removed successfully';
 };
 
-const reassignSubjectTeacher = async (payload: TReassignSubjectTeacher, classroomSubjectTeacherId: string) => {
-  await prismaClient.classroomSubjectTeacher.update({
-    where: { id: classroomSubjectTeacherId },
-    data: { teacherId: payload.teacherId },
-  });
-
-  return 'Teacher reassigned successfully';
-};
-
-type TSubjectWithTeacher = { id: string; name: string; teacher?: { id: string; name: string } };
 const getSubjectListWithTeacher = async (classroomId: string) => {
   const subjectsWithTeacher = await prismaClient.classroomSubjectTeacher.findMany({
     where: { classroomId },
-    select: { subject: { select: { id: true, name: true } }, teacher: { select: { id: true, name: true } } },
+    select: { id: true, subject: { select: { id: true, name: true } }, teacher: { select: { id: true, name: true } } },
   });
 
   const subjects = await prismaClient.classSubject.findMany({
@@ -48,7 +38,8 @@ const getSubjectListWithTeacher = async (classroomId: string) => {
 
   const subjectList = subjects.reduce((acc: TSubjectWithTeacher[], subject) => {
     const targetSubject = subjectsWithTeacher.find((eachSubject) => eachSubject.subject.id === subject.id);
-    if (targetSubject) acc.push({ ...subject, teacher: { ...targetSubject.teacher } });
+    if (targetSubject)
+      acc.push({ ...subject, classroomSubjectTeacherId: targetSubject.id, teacher: { ...targetSubject.teacher } });
     else acc.push({ ...subject });
 
     return acc;
@@ -57,10 +48,18 @@ const getSubjectListWithTeacher = async (classroomId: string) => {
   return subjectList;
 };
 
+// types
+type TSubjectWithTeacher = {
+  id: string;
+  name: string;
+  classroomSubjectTeacherId?: string;
+  teacher?: { id: string; name: string };
+};
+
+// exports
 export const classroomService = {
   createClassroom,
   assignSubjectTeacher,
   removeSubjectTeacher,
-  reassignSubjectTeacher,
   getSubjectListWithTeacher,
 };

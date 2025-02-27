@@ -17,11 +17,6 @@ const removeSubjectTeacher = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message, data: null });
 });
 
-const reassignSubjectTeacher = catchAsync(async (req, res) => {
-  const message = await classroomService.reassignSubjectTeacher(req.body, req.params.classroomSubjectTeacherId);
-  sendSuccessResponse(res, { message, data: null });
-});
-
 const getSubjectListWithTeacher = catchAsync(async (req, res) => {
   const subjects = await classroomService.getSubjectListWithTeacher(req.params.classroomId);
   sendSuccessResponse(res, { message: 'Subjects fetched successfully', data: subjects });
@@ -31,6 +26,5 @@ export const classroomController = {
   createClassroom,
   assignSubjectTeacher,
   removeSubjectTeacher,
-  reassignSubjectTeacher,
   getSubjectListWithTeacher,
 };
