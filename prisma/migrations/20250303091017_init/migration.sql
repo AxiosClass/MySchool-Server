@@ -10,6 +10,9 @@ CREATE TYPE "PaymentType" AS ENUM ('ADMISSION_FEE', 'MONTHLY_FEE', 'OTHERS');
 -- CreateEnum
 CREATE TYPE "NoticeFor" AS ENUM ('TEACHER', 'STUDENT', 'ALL');
 
+-- CreateEnum
+CREATE TYPE "DayOfWeek" AS ENUM ('SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY');
+
 -- CreateTable
 CREATE TABLE "admins" (
     "id" TEXT NOT NULL,
@@ -153,6 +156,35 @@ CREATE TABLE "notices" (
     CONSTRAINT "notices_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "attendances" (
+    "id" TEXT NOT NULL,
+    "studentId" TEXT NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "attendances_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "weekend_days" (
+    "day" "DayOfWeek" NOT NULL,
+
+    CONSTRAINT "weekend_days_pkey" PRIMARY KEY ("day")
+);
+
+-- CreateTable
+CREATE TABLE "holidays" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "endDate" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "holidays_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "teachers_nid_key" ON "teachers"("nid");
 
@@ -206,3 +238,6 @@ ALTER TABLE "payments" ADD CONSTRAINT "payments_studentId_fkey" FOREIGN KEY ("st
 
 -- AddForeignKey
 ALTER TABLE "discount" ADD CONSTRAINT "discount_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "attendances" ADD CONSTRAINT "attendances_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -64,9 +64,10 @@ model Student {
   classroomId String
   monthlyFee  Float?
 
-  classroom Classroom  @relation(fields: [classroomId], references: [id])
-  payments  Payment[]
-  discounts Discount[]
+  classroom  Classroom    @relation(fields: [classroomId], references: [id])
+  payments   Payment[]
+  discounts  Discount[]
+  Attendance Attendance[]
 
   @@map("students")
 }
@@ -199,5 +200,34 @@ model Attendance {
   date      DateTime @default(now())
   createdAt DateTime @default(now())
 
+  student Student @relation(fields: [studentId], references: [id])
+
   @@map("attendances")
+}
+
+model WeekendDay {
+  day DayOfWeek @id
+
+  @@map("weekend_days")
+}
+
+enum DayOfWeek {
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+}
+
+model HoliDay {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  startDate   DateTime
+  endDate     DateTime
+  createdAt   DateTime @default(now())
+
+  @@map("holidays")
 }
