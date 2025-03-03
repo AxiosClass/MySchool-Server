@@ -9,7 +9,7 @@ const attendanceRouter = Router();
 
 attendanceRouter.post(
   '/',
-  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  // authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
   validationHandler(attendanceValidation.addAttendanceSchema),
   attendanceController.addAttendance,
 );
