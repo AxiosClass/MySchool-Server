@@ -5,12 +5,7 @@ import { holidayController } from './holiday.controller';
 
 const holidayRouter = Router();
 
-holidayRouter.put(
-  '/weekend',
-  validationHandler(holidayValidation.addOrUpdateWeekendSchema),
-  holidayController.addOrUpdateWeekend,
-);
-
-holidayRouter.get('/weekends', holidayController.getWeekends);
+holidayRouter.post('/', validationHandler(holidayValidation.addHolidaySchema), holidayController.addHoliday);
+holidayRouter.get('/', holidayController.getHolidays);
 
 export { holidayRouter };

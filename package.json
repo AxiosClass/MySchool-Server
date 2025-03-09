@@ -7,8 +7,8 @@
     "start": "node ./dist/app/server",
     "build": "npx tsc",
     "pretty": "npx prettier --write .",
-    "seed-super-admin": "ts-node-dev --transpile-only src/seeding/seedSuperAdmin.ts",
     "format": "npx prettier --write .",
+    "seed:super-admin": "ts-node-dev --transpile-only src/seeding/seedSuperAdmin.ts",
     "db:migrate": "npx prisma migrate dev",
     "db:generate": "npx prisma generate",
     "postinstall": "npx prisma generate"

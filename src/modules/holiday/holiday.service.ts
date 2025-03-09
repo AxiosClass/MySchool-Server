@@ -1,33 +1,32 @@
+import { metaGenerator, paginationPropertyGenerator } from '../../helpers/common';
 import { prismaClient } from '../../app/prisma';
-import { TAddOrUpdateWeekendPayload } from './holiday.validation';
+import { TAddHolidayPayload } from './holiday.validation';
+import { AppError } from '../../utils/appError';
+import { TObject } from '../../utils/types';
 
-const addOrUpdateWeekends = async (payload: TAddOrUpdateWeekendPayload) => {
-  const weekendDays = await prismaClient.weekendDay.findMany();
+const addHoliday = async (payload: TAddHolidayPayload) => {
+  const holiday = await prismaClient.holiDay.create({ data: payload, select: { id: true } });
+  if (!holiday.id) throw new AppError('Failed to create holiday', 400);
 
-  const weekendDaysToAdd = payload.days
-    .filter((day) => !weekendDays.find((d) => d.day === day))
-    .map((day) => ({ day }));
+  return 'Holiday created successfully';
+};
 
-  const weekendDaysToRemove = weekendDays.filter((each) => !payload.days.includes(each.day));
+const getHolidays = async (query: TObject) => {
+  const getAll = query.get_all === 'true';
+  const search = query.search;
+  const { skip, limit, page } = paginationPropertyGenerator(query);
 
-  console.log(weekendDaysToRemove, weekendDaysToAdd);
+  const dbQuery = { ...(search && { name: { contains: search } }) };
 
-  await prismaClient.$transaction(async (client) => {
-    if (weekendDaysToRemove.length) {
-      const toRemoveDays = weekendDaysToRemove.map((each) => each.day);
-      await client.weekendDay.deleteMany({ where: { day: { in: toRemoveDays } } });
-    }
-
-    if (weekendDaysToAdd.length) {
-      await client.weekendDay.createMany({ data: weekendDaysToAdd });
-    }
+  const holidays = await prismaClient.holiDay.findMany({
+    where: dbQuery,
+    orderBy: { startDate: 'desc' },
+    ...(!getAll && { skip, take: limit }),
   });
 
-  return 'Weekend Modified Successfully';
+  const total = await prismaClient.holiDay.count({ where: dbQuery });
+
+  return { holidays, meta: metaGenerator({ page, limit, total }) };
 };
 
-const getWeekends = async () => {
-  return prismaClient.weekendDay.findMany();
-};
-
-export const holidayService = { addOrUpdateWeekends, getWeekends };
+export const holidayService = { addHoliday, getHolidays };

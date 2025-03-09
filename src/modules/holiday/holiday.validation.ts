@@ -1,11 +1,13 @@
-import { DayOfWeek } from '@prisma/client';
 import { z } from 'zod';
 
-const addOrUpdateWeekendSchema = z.object({
-  days: z.nativeEnum(DayOfWeek).array().min(1, { message: 'Add minimum a day' }),
+const addHolidaySchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  description: z.string().optional(),
+  startDate: z.string().datetime(),
+  endDate: z.string().datetime(),
 });
 
-type TAddOrUpdateWeekendPayload = z.infer<typeof addOrUpdateWeekendSchema>;
+type TAddHolidayPayload = z.infer<typeof addHolidaySchema>;
 
-export const holidayValidation = { addOrUpdateWeekendSchema };
-export { TAddOrUpdateWeekendPayload };
+export const holidayValidation = { addHolidaySchema };
+export { TAddHolidayPayload };

@@ -1,4 +1,4 @@
-import { IMeta } from '../utils/types';
+import { IMeta, TObject } from '../utils/types';
 
 // ***** Check Valid date ***** \\
 export const isValidDate = (date: string) => {
@@ -61,7 +61,19 @@ export const partialMatchPicker = (keys: string[], obj: Record<string, any>) => 
   }, {});
 };
 
+// ***** Pagination Property Generator ***** \\
+export const paginationPropertyGenerator = (query: TObject) => {
+  const page = Number(query.page) || 1;
+  const limit = Number(query.limit) || 20;
+  const skip = (page - 1) * limit;
+
+  return { skip, limit, page };
+};
+
 // ***** Meta Generator ***** \\
-export const metaGenerator = ({ page, limit, total }: Pick<IMeta, 'page' | 'limit' | 'total'>): IMeta => {
+export const metaGenerator: TMetaGenerator = ({ page, limit, total }) => {
   return { page, limit, total, totalPages: Math.ceil(total / limit) };
 };
+
+// types
+type TMetaGenerator = (args: Pick<IMeta, 'limit' | 'page' | 'total'>) => IMeta;

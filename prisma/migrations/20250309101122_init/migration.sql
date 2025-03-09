@@ -10,9 +10,6 @@ CREATE TYPE "PaymentType" AS ENUM ('ADMISSION_FEE', 'MONTHLY_FEE', 'OTHERS');
 -- CreateEnum
 CREATE TYPE "NoticeFor" AS ENUM ('TEACHER', 'STUDENT', 'ALL');
 
--- CreateEnum
-CREATE TYPE "DayOfWeek" AS ENUM ('SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY');
-
 -- CreateTable
 CREATE TABLE "admins" (
     "id" TEXT NOT NULL,
@@ -164,13 +161,6 @@ CREATE TABLE "attendances" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "attendances_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "weekend_days" (
-    "day" "DayOfWeek" NOT NULL,
-
-    CONSTRAINT "weekend_days_pkey" PRIMARY KEY ("day")
 );
 
 -- CreateTable

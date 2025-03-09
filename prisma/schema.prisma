@@ -205,22 +205,6 @@ model Attendance {
   @@map("attendances")
 }
 
-model WeekendDay {
-  day DayOfWeek @id
-
-  @@map("weekend_days")
-}
-
-enum DayOfWeek {
-  SUNDAY
-  MONDAY
-  TUESDAY
-  WEDNESDAY
-  THURSDAY
-  FRIDAY
-  SATURDAY
-}
-
 model HoliDay {
   id          String   @id @default(uuid())
   name        String
