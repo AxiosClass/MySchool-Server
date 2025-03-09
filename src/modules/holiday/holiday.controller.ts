@@ -9,8 +9,8 @@ const addHoliday = catchAsync(async (req, res) => {
 });
 
 const getHolidays = catchAsync(async (req, res) => {
-  const holidays = await holidayService.getHolidays(req.query as TObject);
-  sendSuccessResponse(res, { message: 'Holidays fetched successfully', data: holidays });
+  const { holidays, meta } = await holidayService.getHolidays(req.query as TObject);
+  sendSuccessResponse(res, { message: 'Holidays fetched successfully', meta, data: holidays });
 });
 
 export const holidayController = { addHoliday, getHolidays };
