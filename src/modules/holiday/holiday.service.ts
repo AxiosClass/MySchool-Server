@@ -12,7 +12,7 @@ const addHoliday = async (payload: TAddHolidayPayload) => {
 };
 
 const getHolidays = async (query: TObject) => {
-  const getAll = query.get_all === 'true';
+  const getAll = query.getAll === 'true';
   const search = query.search;
   const { skip, limit, page } = paginationPropertyGenerator(query);
 

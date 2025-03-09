@@ -10,8 +10,12 @@ const examRouter = Router();
 examRouter.post(
   '/',
   authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
-  validationHandler(examValidation.addExam),
+  validationHandler(examValidation.addExamSchema),
   examController.addExam,
 );
 
-export { examRouter };
+const examsRouter = Router();
+
+examsRouter.get('/', authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN), examController.getExams);
+
+export { examRouter, examsRouter };

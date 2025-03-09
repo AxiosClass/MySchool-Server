@@ -1,12 +1,17 @@
 import { z } from 'zod';
 
-const addExam = z.object({
+const addExamSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   year: z.number().min(2024, 'Invalid Year'),
   isOngoing: z.boolean().optional(),
 });
 
-type TAddExamPayload = z.infer<typeof addExam>;
+const updateExamSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+});
 
-export const examValidation = { addExam };
-export type { TAddExamPayload };
+type TAddExamPayload = z.infer<typeof addExamSchema>;
+type TUpdateExamPayload = z.infer<typeof updateExamSchema>;
+
+export const examValidation = { addExamSchema, updateExamSchema };
+export type { TAddExamPayload, TUpdateExamPayload };
