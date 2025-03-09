@@ -13,4 +13,9 @@ const getExams = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message: 'Exams fetched successfully', meta, data: exams });
 });
 
-export const examController = { addExam, getExams };
+const updateExam = catchAsync(async (req, res) => {
+  const message = await examService.updateExam(req.params.examId, req.body);
+  sendSuccessResponse(res, { message, data: null });
+});
+
+export const examController = { addExam, getExams, updateExam };

@@ -21,6 +21,7 @@ export const globalErrorHandler: ErrorRequestHandler = (error, _, res, __) => {
         const { code, expected, received, path, message } = issue;
         let msg: string = '';
         if (code === 'invalid_type') msg = `In ${path[0]} expected "${expected}" received "${received}"`;
+        else msg = issue.message;
         return msg;
       })
       .join(' | ');

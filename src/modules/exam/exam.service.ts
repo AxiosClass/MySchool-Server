@@ -1,8 +1,9 @@
 import { AppError } from '../../utils/appError';
-import { prismaClient } from '../../app/prisma';
-import { TAddExamPayload } from './exam.validation';
 import { TObject } from '../../utils/types';
+import { prismaClient } from '../../app/prisma';
+import { TAddExamPayload, TUpdateExamPayload } from './exam.validation';
 import { metaGenerator, paginationPropertyGenerator } from '../../helpers/common';
+import { ExamStatus } from '@prisma/client';
 
 const addExam = async (payload: TAddExamPayload) => {
   const isExamExists = await prismaClient.exam.findFirst({ where: { name: payload.name, year: payload.year } });
@@ -35,4 +36,31 @@ const getExams = async (query: TObject) => {
   return { exams, meta: metaGenerator({ page, limit, total }) };
 };
 
-export const examService = { addExam, getExams };
+const updateExam = async (examId: string, payload: TUpdateExamPayload) => {
+  const isExamExist = await prismaClient.exam.findUnique({ where: { id: examId } });
+  if (!isExamExist) throw new AppError('Exam not found', 404);
+
+  const currentStatus = isExamExist?.status;
+
+  // check if status is provided and if it is, check if it is allowed to be changed
+  if (payload.status) {
+    const examStatus = {
+      [ExamStatus.PAUSED]: 1,
+      [ExamStatus.ONGOING]: 2,
+      [ExamStatus.COMPLETED]: 3,
+    };
+
+    const currentStatusIndex = examStatus[currentStatus];
+    const newStatusIndex = examStatus[payload?.status];
+    if (currentStatusIndex > newStatusIndex) throw new AppError('Status can not be changed', 400);
+  }
+
+  await prismaClient.exam.update({
+    where: { id: examId },
+    data: payload,
+  });
+
+  return 'Exam updated successfully';
+};
+
+export const examService = { addExam, getExams, updateExam };

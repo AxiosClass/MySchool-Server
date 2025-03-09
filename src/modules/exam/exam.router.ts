@@ -14,6 +14,13 @@ examRouter.post(
   examController.addExam,
 );
 
+examRouter.patch(
+  '/:examId',
+  authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
+  validationHandler(examValidation.updateExamSchema),
+  examController.updateExam,
+);
+
 const examsRouter = Router();
 
 examsRouter.get('/', authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN), examController.getExams);
