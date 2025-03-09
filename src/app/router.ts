@@ -10,6 +10,7 @@ import { noticeRouter, noticesRouter } from '../modules/notice/notice.router';
 import { subjectsRouter } from '../modules/subjects/subject.router';
 import { attendanceRouter } from '../modules/attendance/attendance.router';
 import { holidayRouter, holidaysRouter } from '../modules/holiday/holiday.router';
+import { examRouter } from '../modules/exam/exam.router';
 
 export const appRouter = Router();
 
@@ -30,6 +31,7 @@ const routes: { path: string; router: Router }[] = [
   { path: '/attendance', router: attendanceRouter },
   { path: '/holiday', router: holidayRouter },
   { path: '/holidays', router: holidaysRouter },
+  { path: '/exam', router: examRouter },
 ];
 
 routes.forEach(({ path, router }) => appRouter.use(path, router));

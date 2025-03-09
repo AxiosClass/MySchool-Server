@@ -5,6 +5,9 @@ CREATE TYPE "AdminRole" AS ENUM ('SUPER_ADMIN', 'ADMIN', 'ACCOUNTANT');
 CREATE TYPE "UserStatus" AS ENUM ('ACTIVE', 'BLOCKED');
 
 -- CreateEnum
+CREATE TYPE "ExamStatus" AS ENUM ('PAUSED', 'ONGOING', 'COMPLETED');
+
+-- CreateEnum
 CREATE TYPE "PaymentType" AS ENUM ('ADMISSION_FEE', 'MONTHLY_FEE', 'OTHERS');
 
 -- CreateEnum
@@ -113,6 +116,7 @@ CREATE TABLE "exams" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "year" INTEGER NOT NULL,
+    "status" "ExamStatus" NOT NULL DEFAULT 'PAUSED',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "exams_pkey" PRIMARY KEY ("id")
