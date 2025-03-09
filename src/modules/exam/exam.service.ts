@@ -37,7 +37,7 @@ const getExams = async (query: TObject) => {
 };
 
 const updateExam = async (examId: string, payload: TUpdateExamPayload) => {
-  const isExamExist = await prismaClient.exam.findUnique({ where: { id: examId } });
+  const isExamExist = await prismaClient.exam.findUnique({ where: { id: examId }, select: { status: true } });
   if (!isExamExist) throw new AppError('Exam not found', 404);
 
   const currentStatus = isExamExist?.status;
@@ -45,7 +45,7 @@ const updateExam = async (examId: string, payload: TUpdateExamPayload) => {
   // check if status is provided and if it is, check if it is allowed to be changed
   if (payload.status) {
     const examStatus = {
-      [ExamStatus.PAUSED]: 1,
+      [ExamStatus.PENDING]: 1,
       [ExamStatus.ONGOING]: 2,
       [ExamStatus.COMPLETED]: 3,
     };
@@ -63,4 +63,14 @@ const updateExam = async (examId: string, payload: TUpdateExamPayload) => {
   return 'Exam updated successfully';
 };
 
-export const examService = { addExam, getExams, updateExam };
+const deleteExam = async (examId: string) => {
+  const isExamExist = await prismaClient.exam.findUnique({ where: { id: examId }, select: { status: true } });
+  if (!isExamExist) throw new AppError('Exam not found', 404);
+
+  if (isExamExist.status !== ExamStatus.PENDING) throw new AppError('You are not allowed to delete this exam', 400);
+
+  await prismaClient.exam.delete({ where: { id: examId } });
+  return 'Exam deleted successfully';
+};
+
+export const examService = { addExam, getExams, updateExam, deleteExam };

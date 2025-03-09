@@ -21,6 +21,8 @@ examRouter.patch(
   examController.updateExam,
 );
 
+examRouter.delete('/:examId', authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN), examController.deleteExam);
+
 const examsRouter = Router();
 
 examsRouter.get('/', authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN), examController.getExams);

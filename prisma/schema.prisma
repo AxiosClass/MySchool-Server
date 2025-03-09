@@ -141,14 +141,14 @@ model Exam {
   id        String     @id @default(uuid())
   name      String
   year      Int
-  status    ExamStatus @default(PAUSED)
+  status    ExamStatus @default(PENDING)
   createdAt DateTime   @default(now())
 
   @@map("exams")
 }
 
 enum ExamStatus {
-  PAUSED
+  PENDING
   ONGOING
   COMPLETED
 }

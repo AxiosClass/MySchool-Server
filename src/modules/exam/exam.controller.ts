@@ -18,4 +18,9 @@ const updateExam = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message, data: null });
 });
 
-export const examController = { addExam, getExams, updateExam };
+const deleteExam = catchAsync(async (req, res) => {
+  const message = await examService.deleteExam(req.params.examId);
+  sendSuccessResponse(res, { message, data: null });
+});
+
+export const examController = { addExam, getExams, updateExam, deleteExam };
