@@ -44,21 +44,14 @@ const updateExam = async (examId: string, payload: TUpdateExamPayload) => {
 
   // check if status is provided and if it is, check if it is allowed to be changed
   if (payload.status) {
-    const examStatus = {
-      [ExamStatus.PENDING]: 1,
-      [ExamStatus.ONGOING]: 2,
-      [ExamStatus.COMPLETED]: 3,
-    };
+    const examStatus = { [ExamStatus.PENDING]: 1, [ExamStatus.ONGOING]: 2, [ExamStatus.COMPLETED]: 3 };
 
     const currentStatusIndex = examStatus[currentStatus];
     const newStatusIndex = examStatus[payload?.status];
     if (currentStatusIndex > newStatusIndex) throw new AppError('Status can not be changed', 400);
   }
 
-  await prismaClient.exam.update({
-    where: { id: examId },
-    data: payload,
-  });
+  await prismaClient.exam.update({ where: { id: examId }, data: payload });
 
   return 'Exam updated successfully';
 };
