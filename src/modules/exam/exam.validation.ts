@@ -14,7 +14,7 @@ const addExamSchema = z.object({
 });
 
 const updateExamSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
+  name: z.string().min(1, 'Name is required').optional(),
   year: yearSchema.optional(),
   status: z.nativeEnum(ExamStatus, { message: 'Invalid Status' }).optional(),
 });
