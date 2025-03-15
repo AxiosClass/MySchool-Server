@@ -1,8 +1,8 @@
 import moment from 'moment';
 
 import { metaGenerator, paginationPropertyGenerator } from '../../helpers/common';
-import { prismaClient } from '../../app/prisma';
 import { TAddHolidayPayload } from './holiday.validation';
+import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
 import { TObject } from '../../utils/types';
 
@@ -16,6 +16,7 @@ const addHoliday = async (payload: TAddHolidayPayload) => {
     data: { ...payload, endDate: endDateEnd },
     select: { id: true },
   });
+
   if (!holiday.id) throw new AppError('Failed to create holiday', 400);
 
   return 'Holiday created successfully';
