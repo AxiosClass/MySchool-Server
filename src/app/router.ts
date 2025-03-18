@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { authRouter } from '../modules/auth/auth.router';
-import { classroomRouter } from '../modules/classroom/classroom.router';
+import { classroomRouter, classroomsRouter } from '../modules/classroom/classroom.router';
 import { classesRouter, classRouter } from '../modules/class/class.router';
 import { teacherRouter, teachersRouter } from '../modules/teacher/teacher.router';
 import { paymentRouter, paymentsRouter } from '../modules/payment/payment.router';
@@ -21,6 +21,7 @@ const routes: { path: string; router: Router }[] = [
   { path: '/class', router: classRouter },
   { path: '/classes', router: classesRouter },
   { path: '/classroom', router: classroomRouter },
+  { path: '/classrooms', router: classroomsRouter },
   { path: '/student', router: studentRouter },
   { path: '/students', router: studentsRouter },
   { path: '/payment', router: paymentRouter },

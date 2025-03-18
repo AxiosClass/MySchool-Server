@@ -48,6 +48,26 @@ const getSubjectListWithTeacher = async (classroomId: string) => {
   return subjectList;
 };
 
+const getClassroomListForTeacher = async (teacherId: string) => {
+  const classroomsWhereTeacherIsClassTeacher = await prismaClient.classroom.findMany({
+    where: { classTeacherId: teacherId },
+    select: { id: true, name: true, class: true },
+  });
+  const classroomWhereTeacherIsSubjectTeacher = await prismaClient.classroom.findMany({
+    where: { classroomSubjectTeachers: { some: { teacherId: teacherId } } },
+    select: { id: true, name: true, class: true },
+  });
+
+  const onlyClassroomWhereTeacherIsSubjectTeacher = classroomWhereTeacherIsSubjectTeacher.filter(
+    (classroom) => !classroomsWhereTeacherIsClassTeacher.some((cls) => cls.id === classroom.id),
+  );
+
+  return {
+    asClassTeacher: classroomsWhereTeacherIsClassTeacher,
+    asSubjectTeacher: onlyClassroomWhereTeacherIsSubjectTeacher,
+  };
+};
+
 // types
 type TSubjectWithTeacher = {
   id: string;
@@ -62,4 +82,5 @@ export const classroomService = {
   assignSubjectTeacher,
   removeSubjectTeacher,
   getSubjectListWithTeacher,
+  getClassroomListForTeacher,
 };

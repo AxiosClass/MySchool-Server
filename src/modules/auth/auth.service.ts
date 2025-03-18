@@ -25,14 +25,7 @@ const login = async (payload: TLoginPayload, type: string) => {
     case 'ADMIN': {
       const adminInfo = await prismaClient.admin.findUnique({
         where: { id: payload.id },
-        select: {
-          id: true,
-          name: true,
-          password: true,
-          role: true,
-          status: true,
-          needPasswordChange: true,
-        },
+        select: { id: true, name: true, password: true, role: true, status: true, needPasswordChange: true },
       });
 
       if (!adminInfo) throw new AppError('Admin not found', 404);
@@ -50,6 +43,27 @@ const login = async (payload: TLoginPayload, type: string) => {
         name: adminInfo.name,
         role: adminInfo.role as USER_ROLES,
         needPasswordChange: adminInfo.needPasswordChange,
+      };
+
+      break;
+    }
+    case 'TEACHER': {
+      const teacherInfo = await prismaClient.teacher.findUnique({
+        where: { id: payload.id },
+        select: { id: true, name: true, password: true, status: true },
+      });
+
+      if (!teacherInfo) throw new AppError('Teacher not found', 404);
+      if (teacherInfo.status === UserStatus.BLOCKED) throw new AppError('You are blocked please contact to admin', 400);
+
+      const isPasswordMatched = await comparePassword(payload.password, teacherInfo.password);
+      if (!isPasswordMatched) throw new AppError('Password does not match', 400);
+
+      tokenPayload = {
+        id: teacherInfo.id,
+        name: teacherInfo.name,
+        role: USER_ROLES.TEACHER,
+        needPasswordChange: false,
       };
 
       break;

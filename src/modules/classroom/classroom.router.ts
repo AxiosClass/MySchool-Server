@@ -33,4 +33,12 @@ classroomRouter.get(
   classroomController.getSubjectListWithTeacher,
 );
 
-export { classroomRouter };
+const classroomsRouter = Router();
+
+classroomsRouter.get(
+  '/teacher/:teacherId',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  classroomController.getClassroomListForTeacher,
+);
+
+export { classroomRouter, classroomsRouter };
