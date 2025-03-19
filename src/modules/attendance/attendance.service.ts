@@ -60,4 +60,9 @@ const getAttendancesForClassroom = async (classroomId: string) => {
   return { attendaceList };
 };
 
-export const attendanceService = { addAttendance, getAttendancesForClassroom };
+const removeAttendance = async (attendanceId: string) => {
+  await prismaClient.attendance.delete({ where: { id: attendanceId } });
+  return 'Attendance Removed Successfully';
+};
+
+export const attendanceService = { addAttendance, getAttendancesForClassroom, removeAttendance };

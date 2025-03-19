@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { authGuard } from '../../middlewares/authGuard';
+
 import { USER_ROLES } from '../../utils/types';
+import { authGuard } from '../../middlewares/authGuard';
 import { validationHandler } from '../../middlewares/validationHandler';
 import { attendanceValidation } from './attendance.validation';
 import { attendanceController } from './attendance.controller';
@@ -12,6 +13,12 @@ attendanceRouter.post(
   authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER),
   validationHandler(attendanceValidation.addAttendanceSchema),
   attendanceController.addAttendance,
+);
+
+attendanceRouter.delete(
+  '/:attendanceId',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER),
+  attendanceController.removeAttendance,
 );
 
 const attendancesRouter = Router();
