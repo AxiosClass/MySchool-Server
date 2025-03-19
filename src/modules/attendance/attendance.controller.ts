@@ -7,4 +7,9 @@ const addAttendance = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message, data: null });
 });
 
-export const attendanceController = { addAttendance };
+const getAttendancesForClassroom = catchAsync(async (req, res) => {
+  const attendances = await attendanceService.getAttendancesForClassroom(req.params.classroomId);
+  sendSuccessResponse(res, { message: 'Attendance fetched successfully', data: attendances });
+});
+
+export const attendanceController = { addAttendance, getAttendancesForClassroom };

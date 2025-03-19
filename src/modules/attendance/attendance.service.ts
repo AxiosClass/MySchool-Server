@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
 import { attendanceHelper } from './attendance.helper';
@@ -19,4 +21,31 @@ const addAttendance = async (payload: TAddAttendancePayload) => {
   return 'Attendance Added Successfully';
 };
 
-export const attendanceService = { addAttendance };
+const getAttendancesForClassroom = async (classroomId: string) => {
+  const now = new Date();
+  const start = moment(now).startOf('day').toDate();
+  const end = moment(now).endOf('day').toDate();
+
+  const attendances = await prismaClient.attendance.findMany({
+    where: { student: { classroomId }, date: { gte: start, lte: end } },
+    select: { id: true, date: true, studentId: true, createdAt: true },
+  });
+
+  const students = await prismaClient.student.findMany({ where: { classroomId } });
+
+  const attendanceList = students.map((student) => {
+    const attendance = attendances.find((attendance) => attendance.studentId === student.id);
+
+    return {
+      attendanceId: attendance?.id ?? null,
+      studentId: student.id,
+      name: student.name,
+      forDate: attendance?.date ?? null,
+      attendanceCreatedAt: attendance?.createdAt ?? null,
+    };
+  });
+
+  return attendanceList;
+};
+
+export const attendanceService = { addAttendance, getAttendancesForClassroom };

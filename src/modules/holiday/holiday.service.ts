@@ -9,11 +9,12 @@ import { TObject } from '../../utils/types';
 const addHoliday = async (payload: TAddHolidayPayload) => {
   const { startDate, endDate } = payload;
 
-  if (startDate > endDate) throw new AppError('Start date can not be greated than end date', 400);
+  if (startDate > endDate) throw new AppError('Start date can not be greater than end date', 400);
+  const startDateStart = moment(startDate).endOf('day').toDate();
   const endDateEnd = moment(endDate).endOf('day').toDate();
 
   const holiday = await prismaClient.holiDay.create({
-    data: { ...payload, endDate: endDateEnd },
+    data: { ...payload, startDate: startDateStart, endDate: endDateEnd },
     select: { id: true },
   });
 

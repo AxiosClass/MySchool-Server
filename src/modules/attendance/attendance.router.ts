@@ -9,9 +9,17 @@ const attendanceRouter = Router();
 
 attendanceRouter.post(
   '/',
-  // authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER),
   validationHandler(attendanceValidation.addAttendanceSchema),
   attendanceController.addAttendance,
 );
 
-export { attendanceRouter };
+const attendancesRouter = Router();
+
+attendancesRouter.get(
+  '/classroom/:classroomId',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER),
+  attendanceController.getAttendancesForClassroom,
+);
+
+export { attendanceRouter, attendancesRouter };
