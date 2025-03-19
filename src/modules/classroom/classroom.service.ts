@@ -68,6 +68,14 @@ const getClassroomListForTeacher = async (teacherId: string) => {
   };
 };
 
+const getStudentList = async (classroomId: string) => {
+  const students = await prismaClient.student.findMany({
+    where: { classroomId },
+    select: { id: true, name: true, class: true },
+  });
+  return students;
+};
+
 // types
 type TSubjectWithTeacher = {
   id: string;
@@ -83,4 +91,5 @@ export const classroomService = {
   removeSubjectTeacher,
   getSubjectListWithTeacher,
   getClassroomListForTeacher,
+  getStudentList,
 };
