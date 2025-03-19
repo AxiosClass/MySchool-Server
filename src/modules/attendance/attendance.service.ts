@@ -23,8 +23,20 @@ const addAttendance = async (payload: TAddAttendancePayload) => {
 
 const getAttendancesForClassroom = async (classroomId: string) => {
   const now = new Date();
+  const isWeekend = weekendDays.includes(now.getDay());
+
+  // check if it is weekend
+  if (isWeekend) return { isWeekend: true };
+
   const start = moment(now).startOf('day').toDate();
   const end = moment(now).endOf('day').toDate();
+  // check if it is holiday
+  const holiday = await prismaClient.holiDay.findFirst({
+    where: { startDate: { gte: start }, endDate: { gte: end } },
+    select: { id: true },
+  });
+
+  if (holiday?.id) return { isHoliday: true };
 
   const attendances = await prismaClient.attendance.findMany({
     where: { student: { classroomId }, date: { gte: start, lte: end } },
@@ -33,7 +45,7 @@ const getAttendancesForClassroom = async (classroomId: string) => {
 
   const students = await prismaClient.student.findMany({ where: { classroomId } });
 
-  const attendanceList = students.map((student) => {
+  const attendaceList = students.map((student) => {
     const attendance = attendances.find((attendance) => attendance.studentId === student.id);
 
     return {
@@ -45,7 +57,7 @@ const getAttendancesForClassroom = async (classroomId: string) => {
     };
   });
 
-  return attendanceList;
+  return { attendaceList };
 };
 
 export const attendanceService = { addAttendance, getAttendancesForClassroom };
