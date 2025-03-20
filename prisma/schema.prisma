@@ -68,6 +68,7 @@ model Student {
   payments   Payment[]
   discounts  Discount[]
   Attendance Attendance[]
+  Grade      Grade[]
 
   @@map("students")
 }
@@ -100,6 +101,7 @@ model ClassSubject {
   class Class @relation(fields: [classId], references: [id])
 
   classroomSubjectTeacher ClassroomSubjectTeacher[]
+  Grade                   Grade[]
 
   @@unique([name, classId])
   @@map("class_subjects")
@@ -143,6 +145,7 @@ model Exam {
   year      Int
   status    ExamStatus @default(PENDING)
   createdAt DateTime   @default(now())
+  Grade     Grade[]
 
   @@map("exams")
 }
@@ -221,4 +224,21 @@ model HoliDay {
   createdAt   DateTime @default(now())
 
   @@map("holidays")
+}
+
+model Grade {
+  id         String @id @default(uuid())
+  subjectId  String
+  studentId  String
+  examId     String
+  marks      Float
+  totalMarks Float
+  grade      String
+
+  subject ClassSubject @relation(fields: [subjectId], references: [id])
+  student Student      @relation(fields: [studentId], references: [id])
+  exam    Exam         @relation(fields: [examId], references: [id])
+
+  @@unique([subjectId, studentId, examId])
+  @@map("grades")
 }
