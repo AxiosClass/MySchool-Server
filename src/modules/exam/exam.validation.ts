@@ -18,6 +18,7 @@ const updateExamSchema = z.object({
   name: z.string().min(1, 'Name is required').optional(),
   year: yearSchema.optional(),
   status: z.nativeEnum(ExamStatus, { message: 'Invalid Status' }).optional(),
+  percentile: z.number().positive().max(100).optional(),
 });
 
 type TAddExamPayload = z.infer<typeof addExamSchema>;

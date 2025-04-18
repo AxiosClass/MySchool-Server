@@ -37,10 +37,22 @@ const getExams = async (query: TObject) => {
 };
 
 const updateExam = async (examId: string, payload: TUpdateExamPayload) => {
-  const isExamExist = await prismaClient.exam.findUnique({ where: { id: examId }, select: { status: true } });
+  const isExamExist = await prismaClient.exam.findUnique({
+    where: { id: examId },
+    select: { status: true, percentile: true, year: true },
+  });
   if (!isExamExist) throw new AppError('Exam not found', 404);
 
   const currentStatus = isExamExist?.status;
+
+  if (payload.percentile && isExamExist.percentile !== payload.percentile) {
+    const exams = await prismaClient.exam.findMany({ where: { year: isExamExist.year }, select: { percentile: true } });
+    const totalPercentile = exams.reduce((acc, exam) => acc + exam.percentile, 0);
+    const remainingPercentile = 100 - totalPercentile;
+
+    if (remainingPercentile < payload.percentile)
+      throw new AppError('Percentile can not be greater than remaining percentile ', 400);
+  }
 
   // check if status is provided and if it is, check if it is allowed to be changed
   if (payload.status) {
