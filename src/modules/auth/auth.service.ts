@@ -47,6 +47,7 @@ const login = async (payload: TLoginPayload, type: string) => {
 
       break;
     }
+
     case 'TEACHER': {
       const teacherInfo = await prismaClient.teacher.findUnique({
         where: { id: payload.id },

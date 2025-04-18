@@ -45,7 +45,7 @@ const getAttendancesForClassroom = async (classroomId: string) => {
 
   const students = await prismaClient.student.findMany({ where: { classroomId } });
 
-  const attendaceList = students.map((student) => {
+  const attendanceList = students.map((student) => {
     const attendance = attendances.find((attendance) => attendance.studentId === student.id);
 
     return {
@@ -57,7 +57,7 @@ const getAttendancesForClassroom = async (classroomId: string) => {
     };
   });
 
-  return { attendaceList };
+  return { attendanceList };
 };
 
 const removeAttendance = async (attendanceId: string) => {

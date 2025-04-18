@@ -11,6 +11,7 @@ const addExamSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   year: yearSchema,
   isOngoing: z.boolean().optional(),
+  percentile: z.number().positive().max(100),
 });
 
 const updateExamSchema = z.object({

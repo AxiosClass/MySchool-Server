@@ -141,12 +141,12 @@ model ClassroomSubjectTeacher {
 }
 
 model Exam {
-  id          String     @id @default(uuid())
-  name        String
-  year        Int
-  percentiale Int
-  status      ExamStatus @default(PENDING)
-  createdAt   DateTime   @default(now())
+  id         String     @id @default(uuid())
+  name       String
+  year       Int
+  percentile Int
+  status     ExamStatus @default(PENDING)
+  createdAt  DateTime   @default(now())
 
   grades    Grade[]
   examRules ExamRule[]

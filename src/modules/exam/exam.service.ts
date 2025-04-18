@@ -10,7 +10,7 @@ const addExam = async (payload: TAddExamPayload) => {
   if (isExamExists) throw new AppError('You have already created this exam', 400);
 
   const exam = await prismaClient.exam.create({
-    data: { name: payload.name, year: payload.year, ...(payload.isOngoing && { status: 'ONGOING' }) },
+    data: { ...payload, ...(payload.isOngoing && { status: 'ONGOING' }) },
     select: { id: true },
   });
 
