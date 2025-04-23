@@ -27,19 +27,20 @@ enum AdminRole {
 }
 
 model Teacher {
-  id         String     @id
-  password   String
-  name       String
-  nid        String     @unique
-  phone      String     @unique
-  dob        DateTime
-  bloodGroup String
-  salary     Float
-  address    String
-  education  Json
-  joinedAt   DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  status     UserStatus @default(ACTIVE)
+  id                 String     @id
+  password           String
+  name               String
+  nid                String     @unique
+  phone              String     @unique
+  dob                DateTime
+  bloodGroup         String
+  salary             Float
+  address            String
+  education          Json
+  joinedAt           DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  status             UserStatus @default(ACTIVE)
+  needPasswordChange Boolean    @default(true)
 
   classroomsClassTeacher  Classroom?
   classroomSubjectTeacher ClassroomSubjectTeacher[]
@@ -48,21 +49,22 @@ model Teacher {
 }
 
 model Student {
-  id          String     @id
-  password    String
-  name        String
-  birthId     String     @unique
-  dob         DateTime
-  bloodGroup  String
-  address     String
-  parents     Json
-  guardian    Json
-  admittedAt  DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  status      UserStatus @default(ACTIVE)
-  class       String
-  classroomId String
-  monthlyFee  Float?
+  id                 String     @id
+  password           String
+  name               String
+  birthId            String     @unique
+  dob                DateTime
+  bloodGroup         String
+  address            String
+  parents            Json
+  guardian           Json
+  admittedAt         DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  status             UserStatus @default(ACTIVE)
+  class              String
+  classroomId        String
+  monthlyFee         Float?
+  needPasswordChange Boolean    @default(true)
 
   classroom  Classroom    @relation(fields: [classroomId], references: [id])
   payments   Payment[]

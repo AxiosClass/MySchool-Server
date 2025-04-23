@@ -44,7 +44,7 @@ const classroomsRouter = Router();
 
 classroomsRouter.get(
   '/teacher/:teacherId',
-  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  authGuard(USER_ROLES.TEACHER),
   classroomController.getClassroomListForTeacher,
 );
 

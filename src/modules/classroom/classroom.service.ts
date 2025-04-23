@@ -51,11 +51,12 @@ const getSubjectListWithTeacher = async (classroomId: string) => {
 const getClassroomListForTeacher = async (teacherId: string) => {
   const classroomsWhereTeacherIsClassTeacher = await prismaClient.classroom.findMany({
     where: { classTeacherId: teacherId },
-    select: { id: true, name: true, class: true },
+    select: { id: true, name: true, class: { select: { name: true } } },
   });
+
   const classroomWhereTeacherIsSubjectTeacher = await prismaClient.classroom.findMany({
     where: { classroomSubjectTeachers: { some: { teacherId: teacherId } } },
-    select: { id: true, name: true, class: true },
+    select: { id: true, name: true, class: { select: { name: true } } },
   });
 
   const onlyClassroomWhereTeacherIsSubjectTeacher = classroomWhereTeacherIsSubjectTeacher.filter(

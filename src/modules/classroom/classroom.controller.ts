@@ -23,6 +23,7 @@ const getSubjectListWithTeacher = catchAsync(async (req, res) => {
 });
 
 const getClassroomListForTeacher = catchAsync(async (req, res) => {
+  console.log(req.user);
   const classrooms = await classroomService.getClassroomListForTeacher(req.user.id);
   sendSuccessResponse(res, { message: 'Classrooms fetched successfully', data: classrooms });
 });

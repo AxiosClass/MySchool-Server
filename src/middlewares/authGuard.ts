@@ -7,7 +7,6 @@ import { UserStatus } from '@prisma/client';
 import { AppError } from '../utils/appError';
 
 const BEARER = 'bearer';
-
 const ADMIN_ROLES = [USER_ROLES.ADMIN, USER_ROLES.ACCOUNTANT, USER_ROLES.SUPER_ADMIN];
 
 export const authGuard = (...requiredRoles: USER_ROLES[]) => {
@@ -38,6 +37,21 @@ export const authGuard = (...requiredRoles: USER_ROLES[]) => {
 
       const { name, role, needPasswordChange } = adminInfo;
       req.user = { id, name, role: role as USER_ROLES, needPasswordChange };
+    }
+
+    const isTeacher = role === USER_ROLES.TEACHER && requiredRoles.includes(USER_ROLES.TEACHER);
+
+    if (isTeacher) {
+      const teacherInfo = await prismaClient.teacher.findFirstOrThrow({
+        where: { id },
+        select: { name: true, status: true, needPasswordChange: true },
+      });
+
+      if (teacherInfo.status === UserStatus.BLOCKED)
+        throw new AppError('You are blocked, please contact to the admin', 400);
+
+      const { name, needPasswordChange } = teacherInfo;
+      req.user = { id, name, role: USER_ROLES.TEACHER, needPasswordChange };
     }
 
     next();
