@@ -8,7 +8,7 @@ const addAttendance = catchAsync(async (req, res) => {
 });
 
 const getAttendancesForClassroom = catchAsync(async (req, res) => {
-  const result = await attendanceService.getAttendancesForClassroom(req.params.classroomId);
+  const result = await attendanceService.getAttendancesForClassroom(req.params.classroomId, Number(req.query.range));
   sendSuccessResponse(res, { message: 'Attendance fetched successfully', data: result });
 });
 

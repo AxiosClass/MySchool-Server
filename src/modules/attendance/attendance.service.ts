@@ -4,6 +4,7 @@ import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
 import { attendanceHelper } from './attendance.helper';
 import { TAddAttendancePayload } from './attendance.validation';
+import { weekendDays } from './utils';
 
 const addAttendance = async (payload: TAddAttendancePayload) => {
   const date = payload.date ? new Date(payload.date) : new Date();
@@ -21,15 +22,26 @@ const addAttendance = async (payload: TAddAttendancePayload) => {
   return 'Attendance Added Successfully';
 };
 
-const getAttendancesForClassroom = async (classroomId: string) => {
+const getAttendancesForClassroom = async (classroomId: string, range: number = 7) => {
   const now = new Date();
-  const isWeekend = weekendDays.includes(now.getDay());
+  // const isWeekend = weekendDays.includes(now.getDay());
 
   // check if it is weekend
-  if (isWeekend) return { isWeekend: true };
+  // if (isWeekend) return { isWeekend: true };
 
-  const start = moment(now).startOf('day').toDate();
+  const start = moment(now)
+    .subtract(range - 1, 'days')
+    .startOf('day')
+    .toDate();
+
   const end = moment(now).endOf('day').toDate();
+
+  // fetching student's attendance data
+  const attendances = await prismaClient.attendance.findMany({
+    where: { student: { classroomId }, date: { gte: start, lte: end } },
+    select: { id: true, date: true, studentId: true, createdAt: true, student: { select: { name: true } } },
+  });
+
   // check if it is holiday
   const holiday = await prismaClient.holiDay.findFirst({
     where: { startDate: { gte: start }, endDate: { gte: end } },
@@ -38,10 +50,7 @@ const getAttendancesForClassroom = async (classroomId: string) => {
 
   if (holiday?.id) return { isHoliday: true };
 
-  const attendances = await prismaClient.attendance.findMany({
-    where: { student: { classroomId }, date: { gte: start, lte: end } },
-    select: { id: true, date: true, studentId: true, createdAt: true },
-  });
+  console.log({ attendances });
 
   const students = await prismaClient.student.findMany({ where: { classroomId } });
 
