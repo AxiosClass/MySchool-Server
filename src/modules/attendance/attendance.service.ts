@@ -4,7 +4,6 @@ import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
 import { attendanceHelper } from './attendance.helper';
 import { TAddAttendancePayload } from './attendance.validation';
-import { weekendDays } from './utils';
 
 const addAttendance = async (payload: TAddAttendancePayload) => {
   const date = payload.date ? new Date(payload.date) : new Date();
@@ -24,13 +23,9 @@ const addAttendance = async (payload: TAddAttendancePayload) => {
 
 const getAttendancesForClassroom = async (classroomId: string, range: number = 7) => {
   const now = new Date();
-  // const isWeekend = weekendDays.includes(now.getDay());
-
-  // check if it is weekend
-  // if (isWeekend) return { isWeekend: true };
 
   const start = moment(now)
-    .subtract(range - 1, 'days')
+    .subtract(range - 1, 'day')
     .startOf('day')
     .toDate();
 
@@ -39,34 +34,26 @@ const getAttendancesForClassroom = async (classroomId: string, range: number = 7
   // fetching student's attendance data
   const attendances = await prismaClient.attendance.findMany({
     where: { student: { classroomId }, date: { gte: start, lte: end } },
-    select: { id: true, date: true, studentId: true, createdAt: true, student: { select: { name: true } } },
+    select: { id: true, date: true, studentId: true },
   });
 
-  // check if it is holiday
-  const holiday = await prismaClient.holiDay.findFirst({
-    where: { startDate: { gte: start }, endDate: { gte: end } },
-    select: { id: true },
+  // getting holiday list
+  const holidays = await prismaClient.holiDay.findMany({
+    where: { OR: [{ startDate: { gte: start } }, { endDate: { lte: end } }] },
+    select: { id: true, startDate: true, endDate: true },
   });
 
-  if (holiday?.id) return { isHoliday: true };
+  // fetching all student list
+  const students = await prismaClient.student.findMany({ where: { classroomId }, select: { id: true, name: true } });
+  const dates = attendanceHelper.generateDateArray({ start, end });
+  const attendanceMap = attendanceHelper.generateAttendanceMap(attendances);
+  const holidayMap = attendanceHelper.generateHolidayMap(holidays);
 
-  console.log({ attendances });
+  const attendanceList = students.map((student) =>
+    attendanceHelper.generateAttendance({ attendanceMap, dates, holidayMap, student }),
+  );
 
-  const students = await prismaClient.student.findMany({ where: { classroomId } });
-
-  const attendanceList = students.map((student) => {
-    const attendance = attendances.find((attendance) => attendance.studentId === student.id);
-
-    return {
-      attendanceId: attendance?.id ?? null,
-      studentId: student.id,
-      name: student.name,
-      forDate: attendance?.date ?? null,
-      attendanceCreatedAt: attendance?.createdAt ?? null,
-    };
-  });
-
-  return { attendanceList };
+  return attendanceList;
 };
 
 const removeAttendance = async (attendanceId: string) => {
