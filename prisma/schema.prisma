@@ -65,6 +65,7 @@ model Student {
   classroomId        String
   monthlyFee         Float?
   needPasswordChange Boolean    @default(true)
+  cardId             String?
 
   classroom  Classroom    @relation(fields: [classroomId], references: [id])
   payments   Payment[]

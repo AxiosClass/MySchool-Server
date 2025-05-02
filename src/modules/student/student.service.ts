@@ -1,5 +1,5 @@
 import { encryptPassword } from '../../helpers/encryptionHelper';
-import { TAddStudentPayload } from './student.validation';
+import { TAddStudentPayload, TIssueNfcCardPayload } from './student.validation';
 import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
 
@@ -60,4 +60,16 @@ const getStudents = async () => {
   return { student };
 };
 
-export const studentService = { addStudent, getStudents };
+const issueNfcCard = async (payload: TIssueNfcCardPayload) => {
+  const isCardIssued = await prismaClient.student.findFirst({
+    where: { cardId: payload.cardId },
+    select: { id: true },
+  });
+
+  if (isCardIssued?.id) throw new AppError('This card has already been issued', 400);
+  await prismaClient.student.update({ where: { id: payload.studentId }, data: { cardId: payload.cardId } });
+
+  return 'Card has been issued';
+};
+
+export const studentService = { addStudent, getStudents, issueNfcCard };

@@ -7,9 +7,14 @@ const addStudent = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { status: 201, message: 'Student added successfully', data: { id, password } });
 });
 
-const getStudents = catchAsync(async (req, res) => {
+const getStudents = catchAsync(async (_, res) => {
   const { student } = await studentService.getStudents();
   sendSuccessResponse(res, { message: 'Student retrieved successfully', data: student });
 });
 
-export const studentController = { addStudent, getStudents };
+const issueNfcCard = catchAsync(async (req, res) => {
+  const message = await studentService.issueNfcCard(req.body);
+  sendSuccessResponse(res, { message, data: null });
+});
+
+export const studentController = { addStudent, getStudents, issueNfcCard };

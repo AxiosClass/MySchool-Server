@@ -15,6 +15,13 @@ studentRouter.post(
   studentController.addStudent,
 );
 
+studentRouter.post(
+  '/issue-nfc',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  validationHandler(studentValidation.issueNfcCardSchema),
+  studentController.issueNfcCard,
+);
+
 const studentsRouter = Router();
 
 studentsRouter.get(

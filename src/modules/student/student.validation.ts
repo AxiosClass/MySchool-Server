@@ -1,5 +1,5 @@
-import { bloodGroups } from '../../global/global.constants';
 import { z } from 'zod';
+import { bloodGroups } from '../../global/global.constants';
 import { dateGenerator, enumGenerator } from '../../helpers/zodHelper';
 
 const parentSubSchema = z.object({
@@ -25,7 +25,13 @@ const addStudentSchema = z.object({
   classroomId: z.string().min(1, { message: 'Student class id is required.' }),
 });
 
-type TAddStudentPayload = z.infer<typeof addStudentSchema>;
+const issueNfcCardSchema = z.object({
+  cardId: z.string().min(1, 'Card id is required'),
+  studentId: z.string().min(1, 'StudentId is required'),
+});
 
-export const studentValidation = { addStudentSchema };
-export { TAddStudentPayload };
+type TAddStudentPayload = z.infer<typeof addStudentSchema>;
+type TIssueNfcCardPayload = z.infer<typeof issueNfcCardSchema>;
+
+export const studentValidation = { addStudentSchema, issueNfcCardSchema };
+export { TAddStudentPayload, TIssueNfcCardPayload };
