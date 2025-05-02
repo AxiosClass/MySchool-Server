@@ -31,10 +31,10 @@ const generateAttendanceMap = (attendances: TAttendance[]) => {
   const attendanceMap: TAttendanceMap = {};
 
   attendances.forEach((attendance) => {
-    const { date, studentId } = attendance;
+    const { date, studentId, id } = attendance;
     const formattedDate = moment(date).format(dateFormatString);
     if (!attendanceMap[formattedDate]) attendanceMap[formattedDate] = {};
-    attendanceMap[formattedDate][studentId] = true;
+    attendanceMap[formattedDate][studentId] = id;
   });
 
   return attendanceMap;
@@ -62,12 +62,16 @@ const generateAttendance = ({ dates, student, holidayMap, attendanceMap }: TGene
     name: student.name,
     attendances: dates.map((date) => {
       let status: TAttendanceStatus = 'ABSENT';
+      let attendanceId = '';
       const formattedDate = moment(date).format(dateFormatString);
 
       if (holidayMap[formattedDate]) status = 'HOLIDAY';
-      else if (attendanceMap[formattedDate]?.[student.id]) status = 'PRESENT';
+      else if (attendanceMap[formattedDate]?.[student.id]) {
+        status = 'PRESENT';
+        attendanceId = attendanceMap[formattedDate][student.id];
+      }
 
-      return { date: formattedDate, status };
+      return { date: formattedDate, status, attendanceId };
     }),
   };
 };
@@ -84,7 +88,7 @@ type TGenerateAttendanceArgs = {
 
 type TAttendanceStatus = 'PRESENT' | 'ABSENT' | 'HOLIDAY';
 type TAttendance = Pick<Attendance, 'id' | 'date' | 'studentId'>;
-type TAttendanceMap = Record<string, Record<string, boolean>>;
+type TAttendanceMap = Record<string, Record<string, string>>;
 type THolidayMap = Record<string, boolean>;
 
 export const attendanceHelper = {

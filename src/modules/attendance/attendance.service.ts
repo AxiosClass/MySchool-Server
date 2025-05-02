@@ -31,6 +31,11 @@ const getAttendancesForClassroom = async (classroomId: string, range: number = 7
 
   const end = moment(now).endOf('day').toDate();
 
+  const classroomInfo = await prismaClient.classroom.findUnique({
+    where: { id: classroomId },
+    select: { name: true, class: true },
+  });
+
   // fetching student's attendance data
   const attendances = await prismaClient.attendance.findMany({
     where: { student: { classroomId }, date: { gte: start, lte: end } },
@@ -53,7 +58,7 @@ const getAttendancesForClassroom = async (classroomId: string, range: number = 7
     attendanceHelper.generateAttendance({ attendanceMap, dates, holidayMap, student }),
   );
 
-  return attendanceList;
+  return { attendanceList, classroomInfo };
 };
 
 const removeAttendance = async (attendanceId: string) => {
