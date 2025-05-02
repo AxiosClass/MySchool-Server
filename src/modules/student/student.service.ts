@@ -54,6 +54,7 @@ const getStudents = async () => {
       admittedAt: true,
       class: true,
       classroom: { select: { name: true } },
+      cardId: true,
     },
   });
 
