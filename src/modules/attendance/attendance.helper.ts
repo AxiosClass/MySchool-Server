@@ -65,7 +65,8 @@ const generateAttendance = ({ dates, student, holidayMap, attendanceMap }: TGene
       let attendanceId = '';
       const formattedDate = moment(date).format(dateFormatString);
 
-      if (holidayMap[formattedDate]) status = 'HOLIDAY';
+      if (weekendDays.includes(date.getDay())) status = 'HOLIDAY';
+      else if (holidayMap[formattedDate]) status = 'HOLIDAY';
       else if (attendanceMap[formattedDate]?.[student.id]) {
         status = 'PRESENT';
         attendanceId = attendanceMap[formattedDate][student.id];
