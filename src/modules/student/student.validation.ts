@@ -27,7 +27,7 @@ const addStudentSchema = z.object({
 
 const issueNfcCardSchema = z.object({
   cardId: z.string().min(1, 'Card id is required'),
-  studentId: z.string().min(1, 'StudentId is required'),
+  id: z.string().min(1, 'StudentId is required'),
 });
 
 type TAddStudentPayload = z.infer<typeof addStudentSchema>;

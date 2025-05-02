@@ -68,7 +68,7 @@ const issueNfcCard = async (payload: TIssueNfcCardPayload) => {
   });
 
   if (isCardIssued?.id) throw new AppError('This card has already been issued', 400);
-  await prismaClient.student.update({ where: { id: payload.studentId }, data: { cardId: payload.cardId } });
+  await prismaClient.student.update({ where: { id: payload.id }, data: { cardId: payload.cardId } });
 
   return 'Card has been issued';
 };
