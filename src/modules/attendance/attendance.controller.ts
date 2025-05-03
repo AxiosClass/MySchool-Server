@@ -1,6 +1,7 @@
 import { sendSuccessResponse } from '../../helpers/responseHelper';
 import { attendanceService } from './attendance.service';
 import { catchAsync } from '../../middlewares/catchAsync';
+import { TObject } from '../../utils/types';
 
 const addAttendance = catchAsync(async (req, res) => {
   const message = await attendanceService.addAttendance(req.body);
@@ -17,6 +18,11 @@ const getAttendancesForClassroom = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message: 'Attendance fetched successfully', data: result });
 });
 
+const getAttendancesForStudent = catchAsync(async (req, res) => {
+  const result = await attendanceService.getAttendancesForStudent(req.user.id, req.query as TObject);
+  sendSuccessResponse(res, { message: 'Attendance fetched successfully', data: result });
+});
+
 const removeAttendance = catchAsync(async (req, res) => {
   const message = await attendanceService.removeAttendance(req.params.attendanceId);
   sendSuccessResponse(res, { message, data: null });
@@ -26,5 +32,6 @@ export const attendanceController = {
   addAttendance,
   addAttendanceFormNfc,
   getAttendancesForClassroom,
+  getAttendancesForStudent,
   removeAttendance,
 };

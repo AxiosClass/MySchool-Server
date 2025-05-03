@@ -35,4 +35,6 @@ attendancesRouter.get(
   attendanceController.getAttendancesForClassroom,
 );
 
+attendancesRouter.get('/student', authGuard(USER_ROLES.STUDENT), attendanceController.getAttendancesForStudent);
+
 export { attendanceRouter, attendancesRouter };

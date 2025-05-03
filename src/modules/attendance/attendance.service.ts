@@ -4,6 +4,7 @@ import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
 import { attendanceHelper } from './attendance.helper';
 import { TAddAttendanceFromNfcPayload, TAddAttendancePayload } from './attendance.validation';
+import { TObject } from '../../utils/types';
 
 const addAttendance = async (payload: TAddAttendancePayload) => {
   const date = payload.date ? new Date(payload.date) : new Date();
@@ -85,9 +86,50 @@ const getAttendancesForClassroom = async (classroomId: string, range: number = 7
   return { attendanceList, classroomInfo };
 };
 
+const getAttendancesForStudent = async (studentId: string, query: TObject) => {
+  const student = await prismaClient.student.findUnique({
+    where: { id: studentId },
+    select: { id: true, name: true },
+  });
+
+  if (!student) throw new AppError('Student not found', 404);
+
+  const start = query.start
+    ? moment(query.start).toDate()
+    : moment(new Date()).subtract(30, 'day').endOf('day').toDate();
+
+  const end = query.end ? moment(query.end).toDate() : moment(new Date()).startOf('day').toDate();
+
+  const attendances = await prismaClient.attendance.findMany({
+    where: { student: { id: studentId }, date: { gte: start, lte: end } },
+    select: { id: true, date: true, studentId: true },
+  });
+
+  const holidays = await prismaClient.holiDay.findMany({
+    where: { startDate: { gte: start }, endDate: { lte: end } },
+    select: { id: true, startDate: true, endDate: true },
+  });
+
+  const dates = attendanceHelper.generateDateArray({ start, end });
+  const attendanceMap = attendanceHelper.generateAttendanceMap(attendances);
+  const holidayMap = attendanceHelper.generateHolidayMap(holidays);
+
+  console.log({ start, end });
+
+  const attendanceList = attendanceHelper.generateAttendance({ dates, attendanceMap, holidayMap, student });
+
+  return attendanceList;
+};
+
 const removeAttendance = async (attendanceId: string) => {
   await prismaClient.attendance.delete({ where: { id: attendanceId } });
   return 'Attendance Removed Successfully';
 };
 
-export const attendanceService = { addAttendance, addAttendanceFormNfc, getAttendancesForClassroom, removeAttendance };
+export const attendanceService = {
+  addAttendance,
+  addAttendanceFormNfc,
+  getAttendancesForClassroom,
+  getAttendancesForStudent,
+  removeAttendance,
+};
