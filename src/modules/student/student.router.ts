@@ -22,6 +22,8 @@ studentRouter.post(
   studentController.issueNfcCard,
 );
 
+studentRouter.get('/mine', authGuard(USER_ROLES.STUDENT), studentController.getStudentInfo);
+
 const studentsRouter = Router();
 
 studentsRouter.get(

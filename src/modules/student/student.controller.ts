@@ -17,4 +17,9 @@ const issueNfcCard = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message, data: null });
 });
 
-export const studentController = { addStudent, getStudents, issueNfcCard };
+const getStudentInfo = catchAsync(async (req, res) => {
+  const result = await studentService.getStudentInfo(req.user.id);
+  sendSuccessResponse(res, { message: 'Student Info Fetched Successfully', data: result });
+});
+
+export const studentController = { addStudent, getStudents, issueNfcCard, getStudentInfo };

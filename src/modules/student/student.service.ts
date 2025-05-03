@@ -73,4 +73,14 @@ const issueNfcCard = async (payload: TIssueNfcCardPayload) => {
   return 'Card has been issued';
 };
 
-export const studentService = { addStudent, getStudents, issueNfcCard };
+const getStudentInfo = async (studentId: string) => {
+  const studentInfo = await prismaClient.student.findUnique({
+    where: { id: studentId },
+    select: { id: true, name: true, class: true, classroom: { select: { name: true } } },
+  });
+
+  if (!studentInfo) throw new AppError('Student not found', 404);
+  return studentInfo;
+};
+
+export const studentService = { addStudent, getStudents, issueNfcCard, getStudentInfo };
