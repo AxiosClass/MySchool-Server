@@ -69,6 +69,20 @@ const login = async (payload: TLoginPayload, type: string) => {
 
       break;
     }
+
+    case 'STUDENT': {
+      const studentInfo = await prismaClient.student.findUnique({
+        where: { id: payload.id },
+        select: { id: true, name: true, needPasswordChange: true },
+      });
+
+      if (!studentInfo) throw new AppError('Student not found', 404);
+
+      const { id, name, needPasswordChange } = studentInfo;
+      tokenPayload = { id, name, needPasswordChange, role: USER_ROLES.STUDENT };
+
+      break;
+    }
   }
 
   const accessToken = generateAccessToken(tokenPayload);
