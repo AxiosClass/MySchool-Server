@@ -15,6 +15,12 @@ attendanceRouter.post(
   attendanceController.addAttendance,
 );
 
+attendanceRouter.post(
+  '/nfc',
+  validationHandler(attendanceValidation.addAttendanceFormNfcSchema),
+  attendanceController.addAttendanceFormNfc,
+);
+
 attendanceRouter.delete(
   '/:attendanceId',
   authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER),

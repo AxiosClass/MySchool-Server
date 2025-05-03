@@ -5,7 +5,10 @@ const addAttendanceSchema = z.object({
   date: z.string().datetime({ message: 'Invalid date' }).optional(),
 });
 
-type TAddAttendancePayload = z.infer<typeof addAttendanceSchema>;
+const addAttendanceFormNfcSchema = z.object({ cardId: z.string().min(1, 'Card Id is required') });
 
-export const attendanceValidation = { addAttendanceSchema };
-export { TAddAttendancePayload };
+type TAddAttendancePayload = z.infer<typeof addAttendanceSchema>;
+type TAddAttendanceFromNfcPayload = z.infer<typeof addAttendanceFormNfcSchema>;
+
+export const attendanceValidation = { addAttendanceSchema, addAttendanceFormNfcSchema };
+export { TAddAttendancePayload, TAddAttendanceFromNfcPayload };
