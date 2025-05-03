@@ -114,8 +114,6 @@ const getAttendancesForStudent = async (studentId: string, query: TObject) => {
   const attendanceMap = attendanceHelper.generateAttendanceMap(attendances);
   const holidayMap = attendanceHelper.generateHolidayMap(holidays);
 
-  console.log({ start, end });
-
   const attendanceList = attendanceHelper.generateAttendance({ dates, attendanceMap, holidayMap, student });
 
   return attendanceList;
