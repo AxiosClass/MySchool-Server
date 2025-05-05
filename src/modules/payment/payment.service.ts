@@ -17,14 +17,14 @@ const takePayment = async (payload: TTakePaymentPayload) => {
 
 const getPayments = async (query: TObject) => {
   const exactMatchProperties = exactMatchPicker(['month', 'year', 'type', 'studentId'], query);
-  const page = Number(query.page) || 1;
-  const limit = Number(query.limit) || 20;
+  const page = Number(query.page);
+  const limit = Number(query.limit);
 
   const payments = await prismaClient.payment.findMany({
     where: exactMatchProperties,
     orderBy: { createdAt: 'desc' },
-    skip: (page - 1) * limit,
-    take: limit,
+    // apply pagination when page and limit is been passed
+    ...(page && limit && { skip: (page - 1) * limit, take: limit }),
     select: {
       id: true,
       student: { select: { id: true, name: true, class: true, classroom: { select: { name: true } } } },
