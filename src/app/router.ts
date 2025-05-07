@@ -11,6 +11,7 @@ import { subjectsRouter } from '../modules/subjects/subject.router';
 import { attendanceRouter, attendancesRouter } from '../modules/attendance/attendance.router';
 import { holidayRouter, holidaysRouter } from '../modules/holiday/holiday.router';
 import { examRouter, examsRouter } from '../modules/exam/exam.router';
+import { metaDataRouter } from '../modules/meta-data/meta-data.router';
 
 export const appRouter = Router();
 
@@ -35,6 +36,7 @@ const routes: { path: string; router: Router }[] = [
   { path: '/holidays', router: holidaysRouter },
   { path: '/exam', router: examRouter },
   { path: '/exams', router: examsRouter },
+  { path: '/meta-data', router: metaDataRouter },
 ];
 
 routes.forEach(({ path, router }) => appRouter.use(path, router));
