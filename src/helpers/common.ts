@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { IMeta, TObject } from '../utils/types';
 
 // ***** Check Valid date ***** \\
@@ -71,9 +72,21 @@ export const paginationPropertyGenerator = (query: TObject) => {
 };
 
 // ***** Meta Generator ***** \\
+type TMetaGenerator = (args: Pick<IMeta, 'limit' | 'page' | 'total'>) => IMeta;
 export const metaGenerator: TMetaGenerator = ({ page, limit, total }) => {
   return { page, limit, total, totalPages: Math.ceil(total / limit) };
 };
 
-// types
-type TMetaGenerator = (args: Pick<IMeta, 'limit' | 'page' | 'total'>) => IMeta;
+// ***** Generate Date Array ***** \\
+type TGenerateDateArrayArgs = { start: Date; end: Date };
+export const generateDateArray = ({ start, end }: TGenerateDateArrayArgs) => {
+  const dateArray = [];
+  let currentDate = moment(start).clone();
+
+  while (currentDate.isSameOrBefore(end, 'day')) {
+    dateArray.push(currentDate.toDate());
+    currentDate.add(1, 'day');
+  }
+
+  return dateArray;
+};

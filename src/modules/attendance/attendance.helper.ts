@@ -1,6 +1,7 @@
 import moment from 'moment';
 
 import { Attendance, HoliDay, Student } from '@prisma/client';
+import { generateDateArray } from '../../helpers/common';
 
 // const
 const weekendDays = [5, 6];
@@ -12,18 +13,6 @@ const getDayRange = (date: Date) => {
   const end = moment(date).endOf('day').toDate();
 
   return { start, end };
-};
-
-const generateDateArray = ({ start, end }: TGenerateDateArrayArgs) => {
-  const dateArray = [];
-  let currentDate = moment(start).clone();
-
-  while (currentDate.isSameOrBefore(end, 'day')) {
-    dateArray.push(currentDate.toDate());
-    currentDate.add(1, 'day');
-  }
-
-  return dateArray;
 };
 
 const generateAttendanceMap = (attendances: TAttendance[]) => {
@@ -78,8 +67,6 @@ const generateAttendance = ({ dates, student, holidayMap, attendanceMap }: TGene
 };
 
 // types
-type TGenerateDateArrayArgs = { start: Date; end: Date };
-
 type TGenerateAttendanceArgs = {
   dates: Date[];
   student: Pick<Student, 'id' | 'name'>;
@@ -94,7 +81,6 @@ type THolidayMap = Record<string, boolean>;
 
 export const attendanceHelper = {
   getDayRange,
-  generateDateArray,
   generateAttendanceMap,
   generateHolidayMap,
   generateAttendance,

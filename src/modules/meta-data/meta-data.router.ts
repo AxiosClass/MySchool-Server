@@ -11,4 +11,10 @@ metaDataRouter.get(
   metaDataController.getAttendanceSummary,
 );
 
+metaDataRouter.get(
+  '/attendance/trends',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  metaDataController.getAttendanceTrends,
+);
+
 export { metaDataRouter };
