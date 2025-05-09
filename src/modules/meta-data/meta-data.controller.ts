@@ -12,4 +12,9 @@ const getAttendanceTrends = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message: 'Attendance trends fetched successfully', data: attendanceTrends });
 });
 
-export const metaDataController = { getAttendanceSummary, getAttendanceTrends };
+const generatePaymentTrends = catchAsync(async (req, res) => {
+  const paymentTrends = await metaDataService.getPaymentTrends();
+  sendSuccessResponse(res, { message: 'Payment trends fetched successfully', data: paymentTrends });
+});
+
+export const metaDataController = { getAttendanceSummary, getAttendanceTrends, generatePaymentTrends };

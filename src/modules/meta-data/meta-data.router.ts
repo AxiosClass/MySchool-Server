@@ -17,4 +17,10 @@ metaDataRouter.get(
   metaDataController.getAttendanceTrends,
 );
 
+metaDataRouter.get(
+  '/payment/trends',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  metaDataController.generatePaymentTrends,
+);
+
 export { metaDataRouter };

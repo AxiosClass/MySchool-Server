@@ -95,26 +95,29 @@ export const generateDateArray = ({ start, end }: TGenerateDateArrayArgs) => {
 export const generateHalfYearArray = () => {
   const date = moment(new Date());
   const month = date.month();
-  const monthNames = moment.months();
+  const year = date.year();
+  const formatStr = 'MMM-YYYY';
+  const isFirst = month >= 0 && month <= 5;
+  const start = isFirst ? 0 : 6;
+  const end = start + 6;
 
-  if (month >= 0 && month <= 5) return monthNames.slice(0, 6);
-  return monthNames.slice(6, 12);
+  const months = [];
+
+  for (let i = start; i < end; i++) {
+    const monthFormatted = moment().month(i).year(year).format(formatStr);
+    months.push(monthFormatted);
+  }
+
+  return months;
 };
 
 // ***** Generate HalfYearly Date Range ***** \\
 export const generateHalfYearlyDateRange = () => {
   const date = moment(new Date());
   const month = date.month();
-  let start;
-  let end;
-
-  if (month >= 0 && month <= 5) {
-    start = date.startOf('year').toDate();
-    end = date.month(5).endOf('month').toDate();
-  } else {
-    start = date.month(6).startOf('month').toDate();
-    end = date.endOf('year').toDate();
-  }
+  const isFirst = month >= 0 && month <= 5;
+  const start = isFirst ? date.startOf('year').toDate() : date.month(6).startOf('month').toDate();
+  const end = isFirst ? date.month(5).endOf('month').toDate() : date.endOf('year').toDate();
 
   return { start, end };
 };

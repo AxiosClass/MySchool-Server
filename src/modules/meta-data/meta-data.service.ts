@@ -43,11 +43,10 @@ const getAttendanceTrends = async (range: number) => {
 
   const datesArray = generateDateArray({ start, end });
 
-  const attendanceFormatted = datesArray.reduce((acc: { date: string; count: number }[], day) => {
+  const attendanceFormatted = datesArray.map((day) => {
     const dateFormatted = moment(day).format(dateFormatStr);
-    acc.push({ date: dateFormatted, count: attendanceMap[dateFormatted] || 0 });
-    return acc;
-  }, []);
+    return { date: dateFormatted, count: attendanceMap[dateFormatted] || 0 };
+  });
 
   return attendanceFormatted;
 };
@@ -60,11 +59,18 @@ const getPaymentTrends = async () => {
     select: { amount: true, createdAt: true },
   });
 
-  const datesArray = generateHalfYearArray();
+  const dateFormatStr = 'MMM-YYYY';
 
-  const paymentMap = datesArray.reduce((acc, date) => {
+  const paymentMap = payments.reduce((acc: Record<string, number>, payment) => {
+    const month = moment(payment.createdAt).format(dateFormatStr);
+    acc[month] = (acc[month] || 0) + payment.amount;
     return acc;
-  }, []);
+  }, {});
+
+  const monthsArray = generateHalfYearArray();
+  const paymentTrends = monthsArray.map((month) => ({ month, amount: paymentMap[month] || 0 }));
+
+  return paymentTrends;
 };
 
 export const metaDataService = { getAttendanceSummary, getAttendanceTrends, getPaymentTrends };
