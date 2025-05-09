@@ -28,24 +28,24 @@ const getAttendanceTrends = async (range: number) => {
     .toDate();
 
   const end = moment(date).endOf('day').toDate();
+  const dateFormatStr = 'DD-MMM-YYYY';
 
   const attendances = await prismaClient.attendance.findMany({
     where: { date: { gte: start, lte: end } },
     select: { id: true, date: true },
   });
 
+  const attendanceMap = attendances.reduce((acc: Record<string, number>, attendance) => {
+    const dateFormatted = moment(attendance.date).format(dateFormatStr);
+    acc[dateFormatted] = (acc[dateFormatted] || 0) + 1;
+    return acc;
+  }, {});
+
   const datesArray = generateDateArray({ start, end });
 
   const attendanceFormatted = datesArray.reduce((acc: { date: string; count: number }[], day) => {
-    const dateFormat = moment(day).format('DD-MMM-YYYY');
-
-    const matched = attendances.filter((attendance) => {
-      const attendanceDateFormat = moment(attendance.date).format('DD-MMM-YYYY');
-      return attendanceDateFormat === dateFormat;
-    });
-
-    acc.push({ date: dateFormat, count: matched.length });
-
+    const dateFormatted = moment(day).format(dateFormatStr);
+    acc.push({ date: dateFormatted, count: attendanceMap[dateFormatted] || 0 });
     return acc;
   }, []);
 
