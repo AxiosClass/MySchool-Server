@@ -28,7 +28,7 @@ const getAttendanceTrends = async (range: number) => {
     .toDate();
 
   const end = moment(date).endOf('day').toDate();
-  const dateFormatStr = 'DD-MMM-YYYY';
+  const dateFormatStr = 'DD MMM YYYY';
 
   const attendances = await prismaClient.attendance.findMany({
     where: { date: { gte: start, lte: end } },
@@ -59,7 +59,7 @@ const getPaymentTrends = async () => {
     select: { amount: true, createdAt: true },
   });
 
-  const dateFormatStr = 'MMM-YYYY';
+  const dateFormatStr = 'MMM YYYY';
 
   const paymentMap = payments.reduce((acc: Record<string, number>, payment) => {
     const month = moment(payment.createdAt).format(dateFormatStr);
