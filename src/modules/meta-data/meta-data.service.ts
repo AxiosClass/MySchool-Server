@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 import { prismaClient } from '../../app/prisma';
-import { generateDateArray } from '../../helpers/common';
+import { generateDateArray, generateHalfYearArray, generateHalfYearlyDateRange } from '../../helpers/common';
 
 const getAttendanceSummary = async () => {
   const studentsCount = await prismaClient.student.count({ where: { status: 'ACTIVE' } });
@@ -52,4 +52,19 @@ const getAttendanceTrends = async (range: number) => {
   return attendanceFormatted;
 };
 
-export const metaDataService = { getAttendanceSummary, getAttendanceTrends };
+const getPaymentTrends = async () => {
+  const { start, end } = generateHalfYearlyDateRange();
+
+  const payments = await prismaClient.payment.findMany({
+    where: { createdAt: { gte: start, lte: end } },
+    select: { amount: true, createdAt: true },
+  });
+
+  const datesArray = generateHalfYearArray();
+
+  const paymentMap = datesArray.reduce((acc, date) => {
+    return acc;
+  }, []);
+};
+
+export const metaDataService = { getAttendanceSummary, getAttendanceTrends, getPaymentTrends };

@@ -90,3 +90,31 @@ export const generateDateArray = ({ start, end }: TGenerateDateArrayArgs) => {
 
   return dateArray;
 };
+
+// ***** Generate HalfYear Array ***** \\
+export const generateHalfYearArray = () => {
+  const date = moment(new Date());
+  const month = date.month();
+  const monthNames = moment.months();
+
+  if (month >= 0 && month <= 5) return monthNames.slice(0, 6);
+  return monthNames.slice(6, 12);
+};
+
+// ***** Generate HalfYearly Date Range ***** \\
+export const generateHalfYearlyDateRange = () => {
+  const date = moment(new Date());
+  const month = date.month();
+  let start;
+  let end;
+
+  if (month >= 0 && month <= 5) {
+    start = date.startOf('year').toDate();
+    end = date.month(5).endOf('month').toDate();
+  } else {
+    start = date.month(6).startOf('month').toDate();
+    end = date.endOf('year').toDate();
+  }
+
+  return { start, end };
+};
