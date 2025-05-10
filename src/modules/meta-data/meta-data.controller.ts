@@ -8,7 +8,7 @@ const getAttendanceSummary = catchAsync(async (_, res) => {
 });
 
 const getAttendanceTrends = catchAsync(async (req, res) => {
-  const attendanceTrends = await metaDataService.getAttendanceTrends(Number(req.query.range) || 30);
+  const attendanceTrends = await metaDataService.getAttendanceTrends(Number(req.query.range) || 7);
   sendSuccessResponse(res, { message: 'Attendance trends fetched successfully', data: attendanceTrends });
 });
 

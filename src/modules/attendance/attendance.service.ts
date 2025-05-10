@@ -5,6 +5,7 @@ import { AppError } from '../../utils/appError';
 import { attendanceHelper } from './attendance.helper';
 import { TAddAttendanceFromNfcPayload, TAddAttendancePayload } from './attendance.validation';
 import { TObject } from '../../utils/types';
+import { generateDateArray } from '../../helpers/common';
 
 const addAttendance = async (payload: TAddAttendancePayload) => {
   const date = payload.date ? new Date(payload.date) : new Date();
@@ -75,7 +76,7 @@ const getAttendancesForClassroom = async (classroomId: string, range: number = 7
 
   // fetching all student list
   const students = await prismaClient.student.findMany({ where: { classroomId }, select: { id: true, name: true } });
-  const dates = attendanceHelper.generateDateArray({ start, end });
+  const dates = generateDateArray({ start, end });
   const attendanceMap = attendanceHelper.generateAttendanceMap(attendances);
   const holidayMap = attendanceHelper.generateHolidayMap(holidays);
 
@@ -110,7 +111,7 @@ const getAttendancesForStudent = async (studentId: string, query: TObject) => {
     select: { id: true, startDate: true, endDate: true },
   });
 
-  const dates = attendanceHelper.generateDateArray({ start, end });
+  const dates = generateDateArray({ start, end });
   const attendanceMap = attendanceHelper.generateAttendanceMap(attendances);
   const holidayMap = attendanceHelper.generateHolidayMap(holidays);
 

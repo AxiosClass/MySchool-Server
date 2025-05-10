@@ -96,7 +96,7 @@ export const generateHalfYearArray = () => {
   const date = moment(new Date());
   const month = date.month();
   const year = date.year();
-  const formatStr = 'MMM-YYYY';
+  const formatStr = 'MMM YYYY';
   const isFirst = month >= 0 && month <= 5;
   const start = isFirst ? 0 : 6;
   const end = start + 6;

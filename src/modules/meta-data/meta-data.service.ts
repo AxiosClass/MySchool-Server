@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment, { relativeTimeRounding } from 'moment';
 
 import { prismaClient } from '../../app/prisma';
 import { generateDateArray, generateHalfYearArray, generateHalfYearlyDateRange } from '../../helpers/common';
@@ -60,7 +60,6 @@ const getPaymentTrends = async () => {
   });
 
   const dateFormatStr = 'MMM YYYY';
-
   const paymentMap = payments.reduce((acc: Record<string, number>, payment) => {
     const month = moment(payment.createdAt).format(dateFormatStr);
     acc[month] = (acc[month] || 0) + payment.amount;
@@ -68,9 +67,7 @@ const getPaymentTrends = async () => {
   }, {});
 
   const monthsArray = generateHalfYearArray();
-  const paymentTrends = monthsArray.map((month) => ({ month, amount: paymentMap[month] || 0 }));
-
-  return paymentTrends;
+  return monthsArray.map((month) => ({ month, amount: paymentMap[month] || 0 }));
 };
 
 export const metaDataService = { getAttendanceSummary, getAttendanceTrends, getPaymentTrends };
