@@ -25,6 +25,7 @@ noticeRouter.delete('/:noticeId', authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_A
 
 const noticesRouter = Router();
 
-noticesRouter.get('/', noticeController.getNotices);
+noticesRouter.get('/', authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN), noticeController.getNotices);
+noticesRouter.get('/mine', authGuard(USER_ROLES.TEACHER, USER_ROLES.STUDENT), noticeController.getMyNotices);
 
 export { noticeRouter, noticesRouter };

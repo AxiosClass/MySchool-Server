@@ -21,9 +21,11 @@ export const authGuard = (...requiredRoles: USER_ROLES[]) => {
     if (!decodedUser) throw new AppError('Invalid token', 400);
 
     const { id, role } = decodedUser;
+    if (!requiredRoles.includes(role)) throw new AppError('Un authorized access', 401);
+
     const isAdmin = ADMIN_ROLES.includes(role);
-    const isTeacher = role === USER_ROLES.TEACHER && requiredRoles.includes(USER_ROLES.TEACHER);
-    const isStudent = role === USER_ROLES.STUDENT && requiredRoles.includes(USER_ROLES.STUDENT);
+    const isTeacher = role === USER_ROLES.TEACHER;
+    const isStudent = role === USER_ROLES.STUDENT;
 
     if (isAdmin) {
       const adminInfo = await prismaClient.admin.findUnique({
