@@ -31,7 +31,6 @@ const getMyNotices = async (role: 'TEACHER' | 'STUDENT' | null) => {
 
   const notices = await prismaClient.notice.findMany({
     where: { OR: [{ noticeFor: 'ALL' }, { noticeFor: role }] },
-    select: { id: true, title: true, description: true, createdAt: true },
   });
 
   return notices;
