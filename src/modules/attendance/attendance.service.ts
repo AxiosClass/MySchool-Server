@@ -117,7 +117,7 @@ const getAttendancesForStudent = async (studentId: string, query: TObject) => {
 
   const attendanceList = attendanceHelper.generateAttendance({ dates, attendanceMap, holidayMap, student });
 
-  return attendanceList;
+  return { ...attendanceList, attendances: attendanceList.attendances.reverse() };
 };
 
 const removeAttendance = async (attendanceId: string) => {
