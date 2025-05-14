@@ -99,7 +99,7 @@ const getAttendancesForStudent = async (studentId: string, query: TObject) => {
     ? moment(query.start).toDate()
     : moment(new Date()).subtract(30, 'day').endOf('day').toDate();
 
-  const end = query.end ? moment(query.end).toDate() : moment(new Date()).startOf('day').toDate();
+  const end = query.end ? moment(query.end).toDate() : moment(new Date()).endOf('day').toDate();
 
   const attendances = await prismaClient.attendance.findMany({
     where: { student: { id: studentId }, date: { gte: start, lte: end } },
