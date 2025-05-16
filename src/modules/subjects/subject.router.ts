@@ -5,19 +5,13 @@ import { USER_ROLES } from '../../utils/types';
 import { subjectValidation } from './subject.validation';
 import { validationHandler } from '../../middlewares/validationHandler';
 
-const subjectsRouter = Router();
+const subjectRouter = Router();
 
-subjectsRouter.put(
+subjectRouter.post(
   '/',
   authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
-  validationHandler(subjectValidation.assignSubjectsSchema),
-  subjectController.assignSubject,
+  validationHandler(subjectValidation.createSubjectSchema),
+  subjectController.createSubject,
 );
 
-subjectsRouter.get(
-  '/',
-  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER, USER_ROLES.STUDENT),
-  subjectController.getSubjects,
-);
-
-export { subjectsRouter };
+export { subjectRouter };

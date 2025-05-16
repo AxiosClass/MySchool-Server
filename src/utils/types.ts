@@ -9,7 +9,7 @@ export interface ISuccessResponse {
   message: string;
   status?: number;
   meta?: IMeta;
-  data: unknown;
+  data?: unknown;
 }
 
 export interface IErrorResponse {

@@ -4,17 +4,17 @@ import { classroomService } from './classroom.service';
 
 const createClassroom = catchAsync(async (req, res) => {
   const message = await classroomService.createClassroom(req.body);
-  sendSuccessResponse(res, { status: 201, message, data: null });
+  sendSuccessResponse(res, { status: 201, message });
 });
 
 const assignSubjectTeacher = catchAsync(async (req, res) => {
   const message = await classroomService.assignSubjectTeacher(req.body);
-  sendSuccessResponse(res, { status: 201, message, data: null });
+  sendSuccessResponse(res, { status: 201, message });
 });
 
 const removeSubjectTeacher = catchAsync(async (req, res) => {
   const message = await classroomService.removeSubjectTeacher(req.params.classroomSubjectTeacherId);
-  sendSuccessResponse(res, { message, data: null });
+  sendSuccessResponse(res, { message });
 });
 
 const getSubjectListWithTeacher = catchAsync(async (req, res) => {

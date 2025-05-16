@@ -95,6 +95,27 @@ model Class {
   @@map("classes")
 }
 
+model Subject {
+  id          String      @id @default(uuid())
+  name        String
+  type        SubjectType
+  parentId    String?
+  description String?
+
+  parentSubject Subject?  @relation("subject-to-subject", fields: [parentId], references: [id])
+  childSUbject  Subject[] @relation("subject-to-subject")
+
+  @@map("subjects")
+}
+
+enum SubjectType {
+  CQ_MCQ
+  CQ_MCQ_PRACTICAL
+  WRITTEN_FULL
+  WRITTEN_HALF
+  COMBINED
+}
+
 model ClassSubject {
   id        String   @id @default(uuid())
   name      String

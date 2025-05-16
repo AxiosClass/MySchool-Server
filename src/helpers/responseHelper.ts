@@ -2,7 +2,7 @@ import type { Response } from 'express';
 import { ISuccessResponse, IErrorResponse } from '../utils/types';
 
 export const sendSuccessResponse = (res: Response, payload: ISuccessResponse) => {
-  const { message, meta, data, status = 200 } = payload;
+  const { message, meta, data = null, status = 200 } = payload;
   return res.status(status).json({ ok: true, message, meta, data });
 };
 

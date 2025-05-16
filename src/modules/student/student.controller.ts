@@ -14,7 +14,7 @@ const getStudents = catchAsync(async (_, res) => {
 
 const issueNfcCard = catchAsync(async (req, res) => {
   const message = await studentService.issueNfcCard(req.body);
-  sendSuccessResponse(res, { message, data: null });
+  sendSuccessResponse(res, { message });
 });
 
 const getStudentInfo = catchAsync(async (req, res) => {

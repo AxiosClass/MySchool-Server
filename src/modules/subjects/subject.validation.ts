@@ -1,12 +1,17 @@
 import { z } from 'zod';
-import { zodCapital } from '../../helpers/zodHelper';
+import { SubjectType } from '@prisma/client';
 
-const assignSubjectsSchema = z.object({
-  subjects: zodCapital('Subject name is required').array().min(1, { message: 'Please select at least one subject' }),
-  classId: z.string().min(1, { message: 'Class ID is required' }),
+const subjectSubSchema = z.object({
+  name: z.string().min(1, 'Subject name is required').toUpperCase().trim(),
+  type: z.nativeEnum(SubjectType),
+  description: z.string().min(1, 'Too Short description').optional(),
 });
 
-type TAssignSubjectsPayload = z.infer<typeof assignSubjectsSchema>;
+const createSubjectSchema = subjectSubSchema.extend({
+  children: subjectSubSchema.array().optional(),
+});
 
-export const subjectValidation = { assignSubjectsSchema };
-export { TAssignSubjectsPayload };
+type TCreateSubjectPayload = z.infer<typeof createSubjectSchema>;
+
+export const subjectValidation = { createSubjectSchema };
+export { TCreateSubjectPayload };

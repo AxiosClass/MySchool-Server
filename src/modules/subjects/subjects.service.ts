@@ -1,47 +1,41 @@
 import { prismaClient } from '../../app/prisma';
-import { TObject } from '../../utils/types';
-import { TAssignSubjectsPayload } from './subject.validation';
+import { AppError } from '../../utils/appError';
+import { TCreateSubjectPayload } from './subject.validation';
 
-const assignSubject = async (payload: TAssignSubjectsPayload) => {
-  const classInfo = await prismaClient.classSubject.findMany({ where: { classId: payload.classId } });
-  const subjectsToRemove = classInfo.filter(
-    (subject) => !payload.subjects.map((subject) => subject.toLowerCase()).includes(subject.name.toLowerCase()),
-  );
+const createSubject = async (payload: TCreateSubjectPayload) => {
+  const hasChildren = payload.children && payload.children.length;
 
-  const subjectsToAdd = payload.subjects
-    .filter((subject) => !classInfo.find((s) => s.name.toLowerCase() === subject.toLowerCase()))
-    .map((subject) => ({ name: subject, classId: payload.classId }));
+  const payloadData = {
+    name: payload.name,
+    type: payload.type,
+    ...(payload.description && { description: payload.description }),
+  };
 
-  await prismaClient.$transaction(async (client) => {
-    if (subjectsToRemove.length) {
-      const subjectIds = subjectsToRemove.map((subject) => subject.id);
-      await client.classSubject.deleteMany({ where: { id: { in: subjectIds } } });
-    }
+  if (!hasChildren) {
+    const subject = await prismaClient.subject.create({
+      data: payloadData,
+      select: { id: true },
+    });
 
-    if (subjectsToAdd.length) {
-      await client.classSubject.createMany({ data: subjectsToAdd });
-    }
+    if (!subject?.id) throw new AppError('Failed to create subject', 400);
+
+    return 'Subject created successfully';
+  }
+
+  // when it has children
+  const result = await prismaClient.$transaction(async (client) => {
+    const subject = await client.subject.create({ data: payloadData, select: { id: true } });
+    if (!subject?.id) throw new AppError('Failed to create subject', 400);
+
+    // now creating children
+    const childrenData = payload.children?.map((sub) => ({ parentId: subject.id, ...sub })) || [];
+    const childrenSubjectResult = await client.subject.createMany({ data: childrenData });
+    if (!childrenSubjectResult.count) throw new AppError('Failed to create sub subject', 400);
+
+    return 'Subject Created Successfully';
   });
 
-  return `Subject Assigned successfully`;
+  return result;
 };
 
-const getSubjects = (query: TObject) => {
-  const classId = query.classId;
-  const classroomId = query.classroomId;
-
-  return prismaClient.classSubject.findMany({
-    where: {
-      ...(classId && { classId }),
-      ...(classroomId && { class: { classrooms: { every: { id: classroomId } } } }),
-    },
-
-    select: {
-      id: true,
-      name: true,
-      classId: true,
-    },
-  });
-};
-
-export const subjectService = { assignSubject, getSubjects };
+export const subjectService = { createSubject };

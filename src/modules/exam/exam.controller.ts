@@ -5,7 +5,7 @@ import { TObject } from '../../utils/types';
 
 const addExam = catchAsync(async (req, res) => {
   const message = await examService.addExam(req.body);
-  sendSuccessResponse(res, { message, data: null });
+  sendSuccessResponse(res, { message });
 });
 
 const getExams = catchAsync(async (req, res) => {
@@ -15,12 +15,12 @@ const getExams = catchAsync(async (req, res) => {
 
 const updateExam = catchAsync(async (req, res) => {
   const message = await examService.updateExam(req.params.examId, req.body);
-  sendSuccessResponse(res, { message, data: null });
+  sendSuccessResponse(res, { message });
 });
 
 const deleteExam = catchAsync(async (req, res) => {
   const message = await examService.deleteExam(req.params.examId);
-  sendSuccessResponse(res, { message, data: null });
+  sendSuccessResponse(res, { message });
 });
 
 export const examController = { addExam, getExams, updateExam, deleteExam };
