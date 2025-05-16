@@ -4,7 +4,7 @@ import { gradeService } from './grade.service';
 
 const addOrUpdateGrade = catchAsync(async (req, res) => {
   const message = await gradeService.addOrUpdateGrade(req.body, req.user.id);
-  sendSuccessResponse(res, { message, data: null });
+  sendSuccessResponse(res, { message });
 });
 
 export const gradeController = { addOrUpdateGrade };

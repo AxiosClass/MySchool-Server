@@ -4,7 +4,7 @@ import { teacherService } from './teacher.service';
 
 const addTeacher = catchAsync(async (req, res) => {
   const message = await teacherService.addTeacher(req.body);
-  sendSuccessResponse(res, { status: 201, message, data: null });
+  sendSuccessResponse(res, { status: 201, message });
 });
 
 const getTeachers = catchAsync(async (_, res) => {

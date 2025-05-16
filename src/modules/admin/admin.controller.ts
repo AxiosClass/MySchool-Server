@@ -5,7 +5,7 @@ import { adminService } from './admin.service';
 
 const createAdmin = catchAsync(async (req, res) => {
   const message = await adminService.createAdmin(req.body);
-  sendSuccessResponse(res, { message, data: null });
+  sendSuccessResponse(res, { message });
 });
 
 const getAdmins = catchAsync(async (req, res) => {
@@ -15,12 +15,12 @@ const getAdmins = catchAsync(async (req, res) => {
 
 const deleteAdmin = catchAsync(async (req, res) => {
   const message = await adminService.deleteAdmin(req.params.email);
-  sendSuccessResponse(res, { message, data: null });
+  sendSuccessResponse(res, { message });
 });
 
 const resetPassword = catchAsync(async (req, res) => {
   const message = await adminService.resetPassword(req.params.email);
-  sendSuccessResponse(res, { message, data: null });
+  sendSuccessResponse(res, { message });
 });
 
 export const adminController = { createAdmin, getAdmins, deleteAdmin, resetPassword };

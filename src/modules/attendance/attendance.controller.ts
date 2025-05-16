@@ -5,12 +5,12 @@ import { TObject } from '../../utils/types';
 
 const addAttendance = catchAsync(async (req, res) => {
   const message = await attendanceService.addAttendance(req.body);
-  sendSuccessResponse(res, { message, data: null });
+  sendSuccessResponse(res, { message });
 });
 
 const addAttendanceFormNfc = catchAsync(async (req, res) => {
   const message = await attendanceService.addAttendanceFormNfc(req.body);
-  sendSuccessResponse(res, { message, data: null });
+  sendSuccessResponse(res, { message });
 });
 
 const getAttendancesForClassroom = catchAsync(async (req, res) => {
@@ -25,7 +25,7 @@ const getAttendancesForStudent = catchAsync(async (req, res) => {
 
 const removeAttendance = catchAsync(async (req, res) => {
   const message = await attendanceService.removeAttendance(req.params.attendanceId);
-  sendSuccessResponse(res, { message, data: null });
+  sendSuccessResponse(res, { message });
 });
 
 export const attendanceController = {

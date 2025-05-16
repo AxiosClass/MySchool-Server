@@ -5,7 +5,7 @@ import { TObject } from '../../utils/types';
 
 const addHoliday = catchAsync(async (req, res) => {
   const message = await holidayService.addHoliday(req.body);
-  sendSuccessResponse(res, { message, data: null });
+  sendSuccessResponse(res, { message });
 });
 
 const getHolidays = catchAsync(async (req, res) => {
