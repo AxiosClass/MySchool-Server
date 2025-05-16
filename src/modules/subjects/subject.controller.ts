@@ -1,7 +1,7 @@
 import { sendSuccessResponse } from '../../helpers/responseHelper';
 import { catchAsync } from '../../middlewares/catchAsync';
 import { TObject } from '../../utils/types';
-import { subjectService } from './subjects.service';
+import { subjectService } from './subject.service';
 
 const createSubject = catchAsync(async (req, res) => {
   const message = await subjectService.createSubject(req.body);
@@ -13,4 +13,9 @@ const getSubjects = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message: 'Subjects fetched successfully', data: subjects });
 });
 
-export const subjectController = { createSubject, getSubjects };
+const updateSubject = catchAsync(async (req, res) => {
+  const message = await subjectService.updateSubject(req.body, req.params.subjectId);
+  sendSuccessResponse(res, { message });
+});
+
+export const subjectController = { createSubject, getSubjects, updateSubject };

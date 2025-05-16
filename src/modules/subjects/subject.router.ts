@@ -14,6 +14,13 @@ subjectRouter.post(
   subjectController.createSubject,
 );
 
+subjectRouter.patch(
+  '/:subjectId',
+  authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
+  validationHandler(subjectValidation.updateSubjectSchema),
+  subjectController.updateSubject,
+);
+
 const subjectsRouter = Router();
 
 subjectsRouter.get('/', authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN), subjectController.getSubjects);
