@@ -12,10 +12,13 @@ import { attendanceRouter, attendancesRouter } from '../modules/attendance/atten
 import { holidayRouter, holidaysRouter } from '../modules/holiday/holiday.router';
 import { examRouter, examsRouter } from '../modules/exam/exam.router';
 import { metaDataRouter } from '../modules/meta-data/meta-data.router';
+import { adminRouter, adminsRouter } from '../modules/admin/admin.router';
 
 export const appRouter = Router();
 
 const routes: { path: string; router: Router }[] = [
+  { path: '/admin', router: adminRouter },
+  { path: '/admins', router: adminsRouter },
   { path: '/auth', router: authRouter },
   { path: '/teacher', router: teacherRouter },
   { path: '/teachers', router: teachersRouter },

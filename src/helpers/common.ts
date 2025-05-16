@@ -8,12 +8,12 @@ export const isValidDate = (date: string) => {
 };
 
 // ***** Generate Random Characters ***** \\
-const chars = ['abcdefghijklmnopqrstuv0123456789'];
+const chars = 'abcdefghijklmnopqrstuv0123456789';
 export const generateRandomCharacters = (len: number) => {
   let char = '';
   for (let i = 1; i <= len; i++) {
     const index = Math.ceil(Math.random() * chars.length);
-    char = chars[index];
+    char += chars[index];
   }
 
   return char;
