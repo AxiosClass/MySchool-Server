@@ -18,4 +18,9 @@ const deleteAdmin = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message, data: null });
 });
 
-export const adminController = { createAdmin, getAdmins, deleteAdmin };
+const resetPassword = catchAsync(async (req, res) => {
+  const message = await adminService.resetPassword(req.params.email);
+  sendSuccessResponse(res, { message, data: null });
+});
+
+export const adminController = { createAdmin, getAdmins, deleteAdmin, resetPassword };

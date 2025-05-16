@@ -65,4 +65,27 @@ const deleteAdmin = async (email: string) => {
   return 'Admin Deleted Successfully';
 };
 
-export const adminService = { createAdmin, getAdmins, deleteAdmin };
+const resetPassword = async (email: string) => {
+  const isAdminExist = await prismaClient.admin.findUnique({ where: { id: email }, select: { id: true } });
+  if (!isAdminExist) throw new AppError('Admin not found', 404);
+
+  const password = generateRandomCharacters(4);
+  const hashPassword = await encryptPassword(password);
+  await prismaClient.admin.update({ where: { id: email }, data: { password: hashPassword } });
+  try {
+    const response = await transporter.sendMail({
+      ...generateMailOption(email),
+      subject: 'You Password hase been reset',
+      text: `Your passsword is ${password}\nDo not share this with other`,
+      html: generatePasseordEmailTemplate(password),
+    });
+
+    if (!response.accepted) throw new Error('Failed to send email');
+
+    return 'Password has been reset';
+  } catch (error) {
+    return `Failed to send Email\nPassword:${password}`;
+  }
+};
+
+export const adminService = { createAdmin, getAdmins, deleteAdmin, resetPassword };

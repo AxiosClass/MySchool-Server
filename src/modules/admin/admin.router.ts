@@ -15,6 +15,7 @@ adminRouter.post(
 );
 
 adminRouter.delete('/:email', authGuard(USER_ROLES.SUPER_ADMIN), adminController.deleteAdmin);
+adminRouter.patch('/reset-password/:email', authGuard(USER_ROLES.SUPER_ADMIN), adminController.resetPassword);
 
 const adminsRouter = Router();
 
