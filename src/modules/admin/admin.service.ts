@@ -36,4 +36,12 @@ const createAdmin = async (payload: TCreateAdminPayload) => {
   }
 };
 
-export const adminService = { createAdmin };
+const deleteAdmin = async (email: string) => {
+  const isAdminExist = await prismaClient.admin.findUnique({ where: { id: email }, select: { id: true } });
+  if (!isAdminExist) throw new AppError('Admin not found', 404);
+
+  await prismaClient.admin.delete({ where: { id: email } });
+  return 'Admin Deleted Successfully';
+};
+
+export const adminService = { createAdmin, deleteAdmin };

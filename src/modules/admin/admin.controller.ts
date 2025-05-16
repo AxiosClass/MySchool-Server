@@ -7,4 +7,9 @@ const createAdmin = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message, data: null });
 });
 
-export const adminController = { createAdmin };
+const deleteAdmin = catchAsync(async (req, res) => {
+  const message = await adminService.deleteAdmin(req.params.email);
+  sendSuccessResponse(res, { message, data: null });
+});
+
+export const adminController = { createAdmin, deleteAdmin };

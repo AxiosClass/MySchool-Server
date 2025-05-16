@@ -14,4 +14,6 @@ adminRouter.post(
   adminController.createAdmin,
 );
 
+adminRouter.delete('/:email', authGuard(USER_ROLES.SUPER_ADMIN), adminController.deleteAdmin);
+
 export { adminRouter };
