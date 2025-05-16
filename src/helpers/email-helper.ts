@@ -5,7 +5,7 @@ export const transporter = NodeMailer.createTransport({ service: 'gmail', auth: 
 export const generateMailOption = (revicerEmail: string) => ({ form: EMAIL, to: revicerEmail });
 
 // Email Templates
-export const generatePasseordEmailTemplate = (password: string) => {
+export const generatePasswordEmailTemplate = (password: string) => {
   return `
     <!doctype html>
     <html lang="en">
