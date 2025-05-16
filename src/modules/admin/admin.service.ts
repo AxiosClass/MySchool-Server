@@ -1,10 +1,10 @@
-import { generateMailOption, generatePasseordEmailTemplate, transporter } from '../../helpers/email-helper';
+import { generateMailOption, generatePasswordEmailTemplate, transporter } from '../../helpers/email-helper';
 import { AppError } from '../../utils/appError';
 import { prismaClient } from '../../app/prisma';
 import { generateRandomCharacters } from '../../helpers/common';
 import { encryptPassword } from '../../helpers/encryptionHelper';
 import { TCreateAdminPayload } from './admin.validation';
-import { TObject } from '../../utils/types';
+import { TObject, USER_ROLES } from '../../utils/types';
 import { AdminRole } from '@prisma/client';
 
 const createAdmin = async (payload: TCreateAdminPayload) => {
@@ -25,8 +25,8 @@ const createAdmin = async (payload: TCreateAdminPayload) => {
     const response = await transporter.sendMail({
       ...generateMailOption(payload.email),
       subject: 'You account has been created',
-      text: `Your passsword is ${password}\nDo not share this with other`,
-      html: generatePasseordEmailTemplate(password),
+      text: `Your password is ${password}\nDo not share this with other`,
+      html: generatePasswordEmailTemplate(password),
     });
 
     if (!response.accepted) throw new AppError('Failed to send email', 500);
@@ -38,15 +38,15 @@ const createAdmin = async (payload: TCreateAdminPayload) => {
 };
 
 const getAdmins = async (query: TObject) => {
-  const searchTearm = query.searchTearm as string;
+  const searchTerm = query.searchTerm as string;
   const role = query.role;
 
   const admins = await prismaClient.admin.findMany({
     where: {
-      ...(searchTearm && {
+      ...(searchTerm && {
         OR: [
-          { id: { contains: searchTearm, mode: 'insensitive' } },
-          { name: { contains: searchTearm, mode: 'insensitive' } },
+          { id: { contains: searchTerm, mode: 'insensitive' } },
+          { name: { contains: searchTerm, mode: 'insensitive' } },
         ],
       }),
       ...(role && Object.values(AdminRole).includes(role as AdminRole) && { role: role as AdminRole }),
@@ -58,8 +58,9 @@ const getAdmins = async (query: TObject) => {
 };
 
 const deleteAdmin = async (email: string) => {
-  const isAdminExist = await prismaClient.admin.findUnique({ where: { id: email }, select: { id: true } });
+  const isAdminExist = await prismaClient.admin.findUnique({ where: { id: email }, select: { id: true, role: true } });
   if (!isAdminExist) throw new AppError('Admin not found', 404);
+  if (isAdminExist.role === USER_ROLES.SUPER_ADMIN) throw new AppError('Super admin can not be deleted', 500);
 
   await prismaClient.admin.delete({ where: { id: email } });
   return 'Admin Deleted Successfully';
@@ -75,9 +76,9 @@ const resetPassword = async (email: string) => {
   try {
     const response = await transporter.sendMail({
       ...generateMailOption(email),
-      subject: 'You Password hase been reset',
-      text: `Your passsword is ${password}\nDo not share this with other`,
-      html: generatePasseordEmailTemplate(password),
+      subject: 'You Password has been reset',
+      text: `Your password is ${password}\nDo not share this with other`,
+      html: generatePasswordEmailTemplate(password),
     });
 
     if (!response.accepted) throw new Error('Failed to send email');
