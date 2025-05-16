@@ -16,4 +16,8 @@ adminRouter.post(
 
 adminRouter.delete('/:email', authGuard(USER_ROLES.SUPER_ADMIN), adminController.deleteAdmin);
 
-export { adminRouter };
+const adminsRouter = Router();
+
+adminsRouter.get('/', authGuard(USER_ROLES.SUPER_ADMIN), adminController.getAdmins);
+
+export { adminRouter, adminsRouter };

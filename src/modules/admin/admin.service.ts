@@ -4,6 +4,8 @@ import { prismaClient } from '../../app/prisma';
 import { generateRandomCharacters } from '../../helpers/common';
 import { encryptPassword } from '../../helpers/encryptionHelper';
 import { TCreateAdminPayload } from './admin.validation';
+import { TObject } from '../../utils/types';
+import { AdminRole } from '@prisma/client';
 
 const createAdmin = async (payload: TCreateAdminPayload) => {
   const isAdminExists = await prismaClient.admin.findUnique({ where: { id: payload.email }, select: { id: true } });
@@ -31,9 +33,28 @@ const createAdmin = async (payload: TCreateAdminPayload) => {
 
     return 'Account has been created';
   } catch (error) {
-    console.log({ error });
     return `Account has been created\nFailed to send Email\nPassword:${password}`;
   }
+};
+
+const getAdmins = async (query: TObject) => {
+  const searchTearm = query.searchTearm as string;
+  const role = query.role;
+
+  const admins = await prismaClient.admin.findMany({
+    where: {
+      ...(searchTearm && {
+        OR: [
+          { id: { contains: searchTearm, mode: 'insensitive' } },
+          { name: { contains: searchTearm, mode: 'insensitive' } },
+        ],
+      }),
+      ...(role && Object.values(AdminRole).includes(role as AdminRole) && { role: role as AdminRole }),
+    },
+    select: { id: true, name: true, role: true },
+  });
+
+  return admins;
 };
 
 const deleteAdmin = async (email: string) => {
@@ -44,4 +65,4 @@ const deleteAdmin = async (email: string) => {
   return 'Admin Deleted Successfully';
 };
 
-export const adminService = { createAdmin, deleteAdmin };
+export const adminService = { createAdmin, getAdmins, deleteAdmin };

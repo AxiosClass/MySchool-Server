@@ -1,5 +1,6 @@
 import { sendSuccessResponse } from '../../helpers/responseHelper';
 import { catchAsync } from '../../middlewares/catchAsync';
+import { TObject } from '../../utils/types';
 import { adminService } from './admin.service';
 
 const createAdmin = catchAsync(async (req, res) => {
@@ -7,9 +8,14 @@ const createAdmin = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message, data: null });
 });
 
+const getAdmins = catchAsync(async (req, res) => {
+  const admins = await adminService.getAdmins(req.query as TObject);
+  sendSuccessResponse(res, { message: 'Admins retrieved successfully', data: admins });
+});
+
 const deleteAdmin = catchAsync(async (req, res) => {
   const message = await adminService.deleteAdmin(req.params.email);
   sendSuccessResponse(res, { message, data: null });
 });
 
-export const adminController = { createAdmin, deleteAdmin };
+export const adminController = { createAdmin, getAdmins, deleteAdmin };
