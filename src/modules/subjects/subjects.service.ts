@@ -1,6 +1,8 @@
+import { TCreateSubjectPayload } from './subject.validation';
 import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
-import { TCreateSubjectPayload } from './subject.validation';
+import { TObject } from '../../utils/types';
+import { SubjectType } from '@prisma/client';
 
 const createSubject = async (payload: TCreateSubjectPayload) => {
   const hasChildren = payload.children && payload.children.length;
@@ -38,4 +40,23 @@ const createSubject = async (payload: TCreateSubjectPayload) => {
   return result;
 };
 
-export const subjectService = { createSubject };
+const getSubjects = async (query: TObject) => {
+  const searchTerm = query.searchTerm;
+  const type = query.type;
+
+  const subjects = await prismaClient.subject.findMany({
+    where: {
+      ...(searchTerm && {
+        OR: [
+          { name: { contains: searchTerm, mode: 'insensitive' } },
+          { description: { contains: searchTerm, mode: 'insensitive' } },
+        ],
+      }),
+      ...(type && Object.values(SubjectType).includes(type as SubjectType) && { type: type as SubjectType }),
+    },
+  });
+
+  return subjects;
+};
+
+export const subjectService = { createSubject, getSubjects };

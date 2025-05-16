@@ -1,17 +1,21 @@
 import { Router } from 'express';
+import { validationHandler } from '../../middlewares/validationHandler';
 import { subjectController } from './subject.controller';
 import { authGuard } from '../../middlewares/authGuard';
 import { USER_ROLES } from '../../utils/types';
 import { subjectValidation } from './subject.validation';
-import { validationHandler } from '../../middlewares/validationHandler';
 
 const subjectRouter = Router();
 
 subjectRouter.post(
   '/',
-  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
   validationHandler(subjectValidation.createSubjectSchema),
   subjectController.createSubject,
 );
 
-export { subjectRouter };
+const subjectsRouter = Router();
+
+subjectsRouter.get('/', authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN), subjectController.getSubjects);
+
+export { subjectRouter, subjectsRouter };
