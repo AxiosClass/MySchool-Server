@@ -13,7 +13,6 @@ const createSubjectSchema = subjectSubSchema.extend({
 
 const updateSubjectSchema = z.object({
   name: z.string().min(1, 'Subject name is too short').optional(),
-  type: z.nativeEnum(SubjectType).optional(),
   description: z.string().min(1, 'Description is too short').optional(),
   parentId: z.string().min(1, 'Parent id is too short').nullable().optional(),
 });

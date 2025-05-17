@@ -53,6 +53,7 @@ const getSubjects = async (query: TObject) => {
         ],
       }),
       ...(type && Object.values(SubjectType).includes(type as SubjectType) && { type: type as SubjectType }),
+      isDeleted: false,
     },
   });
 
@@ -64,4 +65,9 @@ const updateSubject = async (payload: TUpdateSubjectPayload, subjectId: string) 
   return 'Subject updated successfully';
 };
 
-export const subjectService = { createSubject, getSubjects, updateSubject };
+const deleteSubject = async (subjectId: string) => {
+  await prismaClient.subject.update({ where: { id: subjectId }, data: { isDeleted: true } });
+  return 'Subject deleted successfully';
+};
+
+export const subjectService = { createSubject, getSubjects, updateSubject, deleteSubject };

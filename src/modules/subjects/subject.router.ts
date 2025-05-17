@@ -21,6 +21,12 @@ subjectRouter.patch(
   subjectController.updateSubject,
 );
 
+subjectRouter.delete(
+  '/:subjectId',
+  authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
+  subjectController.deleteSubject,
+);
+
 const subjectsRouter = Router();
 
 subjectsRouter.get('/', authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN), subjectController.getSubjects);
