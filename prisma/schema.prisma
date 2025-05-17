@@ -102,9 +102,10 @@ model Subject {
   description String?
   isDeleted   Boolean     @default(false)
 
-  parentSubject Subject?       @relation("subject-to-subject", fields: [parentId], references: [id])
-  childSUbject  Subject[]      @relation("subject-to-subject")
-  classSubject  ClassSubject[]
+  parentSubject           Subject?                  @relation("subject-to-subject", fields: [parentId], references: [id])
+  childSUbject            Subject[]                 @relation("subject-to-subject")
+  classSubject            ClassSubject[]
+  ClassroomSubjectTeacher ClassroomSubjectTeacher[]
 
   @@map("subjects")
 }
@@ -118,15 +119,12 @@ enum SubjectType {
 }
 
 model ClassSubject {
-  id String @id @default(uuid())
-
-  classId String?
-  class   Class?  @relation(fields: [classId], references: [id])
-
+  id        String  @id @default(uuid())
+  classId   String?
   subjectId String
-  subject   Subject @relation(fields: [subjectId], references: [id])
 
-  classroomSubjectTeacher ClassroomSubjectTeacher[]
+  class   Class?  @relation(fields: [classId], references: [id])
+  subject Subject @relation(fields: [subjectId], references: [id])
 
   @@map("class_subjects")
 }
@@ -149,17 +147,17 @@ model Classroom {
 }
 
 model ClassroomSubjectTeacher {
-  id             String   @id @default(uuid())
-  assignedAt     DateTime @default(now())
-  classSubjectId String
-  classroomId    String
-  teacherId      String
+  id          String   @id @default(uuid())
+  subjectId   String
+  classroomId String
+  teacherId   String
+  assignedAt  DateTime @default(now())
 
-  subject   ClassSubject @relation(fields: [classSubjectId], references: [id])
-  classroom Classroom    @relation(fields: [classroomId], references: [id])
-  teacher   Teacher      @relation(fields: [teacherId], references: [id])
+  subject   Subject   @relation(fields: [subjectId], references: [id])
+  classroom Classroom @relation(fields: [classroomId], references: [id])
+  teacher   Teacher   @relation(fields: [teacherId], references: [id])
 
-  @@unique([classSubjectId, classroomId, teacherId])
+  @@unique([subjectId, classroomId, teacherId])
   @@map("classroom_subject_teacher")
 }
 

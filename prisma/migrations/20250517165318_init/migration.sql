@@ -117,10 +117,10 @@ CREATE TABLE "classrooms" (
 -- CreateTable
 CREATE TABLE "classroom_subject_teacher" (
     "id" TEXT NOT NULL,
-    "assignedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "classSubjectId" TEXT NOT NULL,
+    "subjectId" TEXT NOT NULL,
     "classroomId" TEXT NOT NULL,
     "teacherId" TEXT NOT NULL,
+    "assignedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "classroom_subject_teacher_pkey" PRIMARY KEY ("id")
 );
@@ -204,7 +204,7 @@ CREATE UNIQUE INDEX "classrooms_classTeacherId_key" ON "classrooms"("classTeache
 CREATE UNIQUE INDEX "classrooms_classId_name_key" ON "classrooms"("classId", "name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "classroom_subject_teacher_classSubjectId_classroomId_teache_key" ON "classroom_subject_teacher"("classSubjectId", "classroomId", "teacherId");
+CREATE UNIQUE INDEX "classroom_subject_teacher_subjectId_classroomId_teacherId_key" ON "classroom_subject_teacher"("subjectId", "classroomId", "teacherId");
 
 -- AddForeignKey
 ALTER TABLE "students" ADD CONSTRAINT "students_classroomId_fkey" FOREIGN KEY ("classroomId") REFERENCES "classrooms"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -225,7 +225,7 @@ ALTER TABLE "classrooms" ADD CONSTRAINT "classrooms_classId_fkey" FOREIGN KEY ("
 ALTER TABLE "classrooms" ADD CONSTRAINT "classrooms_classTeacherId_fkey" FOREIGN KEY ("classTeacherId") REFERENCES "teachers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "classroom_subject_teacher" ADD CONSTRAINT "classroom_subject_teacher_classSubjectId_fkey" FOREIGN KEY ("classSubjectId") REFERENCES "class_subjects"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "classroom_subject_teacher" ADD CONSTRAINT "classroom_subject_teacher_subjectId_fkey" FOREIGN KEY ("subjectId") REFERENCES "subjects"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "classroom_subject_teacher" ADD CONSTRAINT "classroom_subject_teacher_classroomId_fkey" FOREIGN KEY ("classroomId") REFERENCES "classrooms"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
