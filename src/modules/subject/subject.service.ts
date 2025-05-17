@@ -70,6 +70,27 @@ const deleteSubject = async (subjectId: string) => {
   return 'Subject deleted successfully';
 };
 
-const assignSubjects = async (payload: TAssignSubjectsPayload, classId: string) => {};
+const assignSubjects = async (payload: TAssignSubjectsPayload, classId: string) => {
+  const existingSubjects = await prismaClient.classSubject.findMany({
+    where: { classId },
+    select: { subjectId: true },
+  });
 
-export const subjectService = { createSubject, getSubjects, updateSubject, deleteSubject };
+  const existingSubjectIds = existingSubjects.map(({ subjectId }) => subjectId);
+
+  // now finding subjects to add
+  const subjectsToAdd = payload.subjectIds.filter((subjectId) => !existingSubjectIds.includes(subjectId));
+  const subjectsToRemove = existingSubjectIds.filter((id) => !payload.subjectIds.includes(id));
+
+  if (subjectsToAdd.length)
+    await prismaClient.classSubject.createMany({ data: subjectsToAdd.map((subjectId) => ({ subjectId, classId })) });
+
+  if (subjectsToRemove.length)
+    await prismaClient.classSubject.deleteMany({
+      where: { OR: subjectsToRemove.map((subjectId) => ({ subjectId, classId })) },
+    });
+
+  return 'Subject list updated successfully';
+};
+
+export const subjectService = { createSubject, getSubjects, updateSubject, deleteSubject, assignSubjects };
