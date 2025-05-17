@@ -8,7 +8,7 @@ const createClassroom = z.object({
 
 const assignSubjectTeacher = z.object({
   classroomId: z.string().min(1, { message: 'Classroom id is required' }),
-  classSubjectId: z.string().min(1, { message: 'Subject id is required' }),
+  subjectId: z.string().min(1, { message: 'Subject id is required' }),
   teacherId: z.string().min(1, { message: 'Teacher id is required' }),
 });
 

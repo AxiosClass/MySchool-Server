@@ -1,4 +1,4 @@
-import { TCreateSubjectPayload, TUpdateSubjectPayload } from './subject.validation';
+import { TAssignSubjectsPayload, TCreateSubjectPayload, TUpdateSubjectPayload } from './subject.validation';
 import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
 import { TObject } from '../../utils/types';
@@ -53,6 +53,7 @@ const getSubjects = async (query: TObject) => {
         ],
       }),
       ...(type && Object.values(SubjectType).includes(type as SubjectType) && { type: type as SubjectType }),
+      isDeleted: false,
     },
   });
 
@@ -64,4 +65,32 @@ const updateSubject = async (payload: TUpdateSubjectPayload, subjectId: string) 
   return 'Subject updated successfully';
 };
 
-export const subjectService = { createSubject, getSubjects, updateSubject };
+const deleteSubject = async (subjectId: string) => {
+  await prismaClient.subject.update({ where: { id: subjectId }, data: { isDeleted: true } });
+  return 'Subject deleted successfully';
+};
+
+const assignSubjects = async (payload: TAssignSubjectsPayload, classId: string) => {
+  const existingSubjects = await prismaClient.classSubject.findMany({
+    where: { classId },
+    select: { subjectId: true },
+  });
+
+  const existingSubjectIds = existingSubjects.map(({ subjectId }) => subjectId);
+
+  // now finding subjects to add
+  const subjectsToAdd = payload.subjectIds.filter((subjectId) => !existingSubjectIds.includes(subjectId));
+  const subjectsToRemove = existingSubjectIds.filter((id) => !payload.subjectIds.includes(id));
+
+  if (subjectsToAdd.length)
+    await prismaClient.classSubject.createMany({ data: subjectsToAdd.map((subjectId) => ({ subjectId, classId })) });
+
+  if (subjectsToRemove.length)
+    await prismaClient.classSubject.deleteMany({
+      where: { OR: subjectsToRemove.map((subjectId) => ({ subjectId, classId })) },
+    });
+
+  return 'Subject list updated successfully';
+};
+
+export const subjectService = { createSubject, getSubjects, updateSubject, deleteSubject, assignSubjects };

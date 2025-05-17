@@ -23,7 +23,6 @@ const getClasses = () => {
       level: true,
       admissionFee: true,
       monthlyFee: true,
-      subjects: { select: { id: true, name: true } },
       classrooms: { select: { id: true, students: { select: { id: true } } } },
     },
   });

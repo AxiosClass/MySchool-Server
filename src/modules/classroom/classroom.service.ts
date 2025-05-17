@@ -9,7 +9,7 @@ const createClassroom = async (payload: TCreateClassroomPayload) => {
 
 const assignSubjectTeacher = async (payload: TAssignSubjectTeacher) => {
   const isSubjectTeacherAssigned = await prismaClient.classroomSubjectTeacher.findFirst({
-    where: { classroomId: payload.classroomId, classSubjectId: payload.classSubjectId },
+    where: { ...payload },
     select: { subject: { select: { name: true } } },
   });
 
@@ -23,29 +23,6 @@ const assignSubjectTeacher = async (payload: TAssignSubjectTeacher) => {
 const removeSubjectTeacher = async (classroomSubjectTeacherId: string) => {
   await prismaClient.classroomSubjectTeacher.delete({ where: { id: classroomSubjectTeacherId } });
   return 'Teacher removed successfully';
-};
-
-const getSubjectListWithTeacher = async (classroomId: string) => {
-  const subjectsWithTeacher = await prismaClient.classroomSubjectTeacher.findMany({
-    where: { classroomId },
-    select: { id: true, subject: { select: { id: true, name: true } }, teacher: { select: { id: true, name: true } } },
-  });
-
-  const subjects = await prismaClient.classSubject.findMany({
-    where: { class: { classrooms: { every: { id: classroomId } } } },
-    select: { name: true, id: true },
-  });
-
-  const subjectList = subjects.reduce((acc: TSubjectWithTeacher[], subject) => {
-    const targetSubject = subjectsWithTeacher.find((eachSubject) => eachSubject.subject.id === subject.id);
-    if (targetSubject)
-      acc.push({ ...subject, classroomSubjectTeacherId: targetSubject.id, teacher: { ...targetSubject.teacher } });
-    else acc.push({ ...subject });
-
-    return acc;
-  }, []);
-
-  return subjectList;
 };
 
 const getClassroomListForTeacher = async (teacherId: string) => {
@@ -92,7 +69,6 @@ export const classroomService = {
   createClassroom,
   assignSubjectTeacher,
   removeSubjectTeacher,
-  getSubjectListWithTeacher,
   getClassroomListForTeacher,
   getStudentList,
 };

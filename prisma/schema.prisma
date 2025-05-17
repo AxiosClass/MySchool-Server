@@ -71,7 +71,6 @@ model Student {
   payments   Payment[]
   discounts  Discount[]
   Attendance Attendance[]
-  grades     Grade[]
 
   @@map("students")
 }
@@ -101,9 +100,12 @@ model Subject {
   type        SubjectType
   parentId    String?
   description String?
+  isDeleted   Boolean     @default(false)
 
-  parentSubject Subject?  @relation("subject-to-subject", fields: [parentId], references: [id])
-  childSUbject  Subject[] @relation("subject-to-subject")
+  parentSubject           Subject?                  @relation("subject-to-subject", fields: [parentId], references: [id])
+  childSUbject            Subject[]                 @relation("subject-to-subject")
+  classSubject            ClassSubject[]
+  ClassroomSubjectTeacher ClassroomSubjectTeacher[]
 
   @@map("subjects")
 }
@@ -117,18 +119,13 @@ enum SubjectType {
 }
 
 model ClassSubject {
-  id        String   @id @default(uuid())
-  name      String
-  createdAt DateTime @default(now())
-  classId   String
+  id        String  @id @default(uuid())
+  classId   String?
+  subjectId String
 
-  class Class @relation(fields: [classId], references: [id])
+  class   Class?  @relation(fields: [classId], references: [id])
+  subject Subject @relation(fields: [subjectId], references: [id])
 
-  classroomSubjectTeacher ClassroomSubjectTeacher[]
-  grades                  Grade[]
-  examRules               ExamRule[]
-
-  @@unique([name, classId])
   @@map("class_subjects")
 }
 
@@ -150,65 +147,18 @@ model Classroom {
 }
 
 model ClassroomSubjectTeacher {
-  id             String   @id @default(uuid())
-  assignedAt     DateTime @default(now())
-  classSubjectId String
-  classroomId    String
-  teacherId      String
+  id          String   @id @default(uuid())
+  subjectId   String
+  classroomId String
+  teacherId   String
+  assignedAt  DateTime @default(now())
 
-  subject   ClassSubject @relation(fields: [classSubjectId], references: [id])
-  classroom Classroom    @relation(fields: [classroomId], references: [id])
-  teacher   Teacher      @relation(fields: [teacherId], references: [id])
+  subject   Subject   @relation(fields: [subjectId], references: [id])
+  classroom Classroom @relation(fields: [classroomId], references: [id])
+  teacher   Teacher   @relation(fields: [teacherId], references: [id])
 
-  @@unique([classSubjectId, classroomId, teacherId])
+  @@unique([subjectId, classroomId, teacherId])
   @@map("classroom_subject_teacher")
-}
-
-model Exam {
-  id         String     @id @default(uuid())
-  name       String
-  year       Int
-  percentile Int
-  status     ExamStatus @default(PENDING)
-  createdAt  DateTime   @default(now())
-
-  grades    Grade[]
-  examRules ExamRule[]
-
-  @@map("exams")
-}
-
-enum ExamStatus {
-  PENDING
-  ONGOING
-  COMPLETED
-}
-
-model Grade {
-  id        String @id @default(uuid())
-  subjectId String
-  studentId String
-  examId    String
-  marks     Float
-
-  subject ClassSubject @relation(fields: [subjectId], references: [id])
-  student Student      @relation(fields: [studentId], references: [id])
-  exam    Exam         @relation(fields: [examId], references: [id])
-
-  @@unique([subjectId, studentId, examId])
-  @@map("grades")
-}
-
-model ExamRule {
-  id         String @id @default(uuid())
-  examId     String
-  subjectId  String
-  totalMarks Float
-
-  exam    Exam         @relation(fields: [examId], references: [id])
-  subject ClassSubject @relation(fields: [subjectId], references: [id])
-
-  @@map("exam_rules")
 }
 
 model Payment {
