@@ -1,4 +1,4 @@
-import { TCreateSubjectPayload, TUpdateSubjectPayload } from './subject.validation';
+import { TAssignSubjectsPayload, TCreateSubjectPayload, TUpdateSubjectPayload } from './subject.validation';
 import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
 import { TObject } from '../../utils/types';
@@ -69,5 +69,7 @@ const deleteSubject = async (subjectId: string) => {
   await prismaClient.subject.update({ where: { id: subjectId }, data: { isDeleted: true } });
   return 'Subject deleted successfully';
 };
+
+const assignSubjects = async (payload: TAssignSubjectsPayload, classId: string) => {};
 
 export const subjectService = { createSubject, getSubjects, updateSubject, deleteSubject };

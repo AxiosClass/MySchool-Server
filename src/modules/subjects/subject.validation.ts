@@ -17,8 +17,13 @@ const updateSubjectSchema = z.object({
   parentId: z.string().min(1, 'Parent id is too short').nullable().optional(),
 });
 
+const assignSubjectsSchema = z.object({
+  subjectIds: z.string().min(1, 'SubjectId is too short').array().min(1, 'Please provide minimum one subject'),
+});
+
 type TCreateSubjectPayload = z.infer<typeof createSubjectSchema>;
 type TUpdateSubjectPayload = z.infer<typeof updateSubjectSchema>;
+type TAssignSubjectsPayload = z.infer<typeof assignSubjectsSchema>;
 
-export const subjectValidation = { createSubjectSchema, updateSubjectSchema };
-export { TCreateSubjectPayload, TUpdateSubjectPayload };
+export const subjectValidation = { createSubjectSchema, updateSubjectSchema, assignSubjectsSchema };
+export { TCreateSubjectPayload, TUpdateSubjectPayload, TAssignSubjectsPayload };
