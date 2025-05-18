@@ -70,7 +70,15 @@ const getSubjects = async (query: TObject) => {
 };
 
 const deleteSubject = async (subjectId: string) => {
-  await prismaClient.subject.update({ where: { id: subjectId }, data: { isDeleted: true } });
+  try {
+    await prismaClient.$transaction(async (client) => {
+      await client.subject.update({ where: { id: subjectId }, data: { isDeleted: true } });
+      await client.subject.updateMany({ where: { parentId: subjectId }, data: { isDeleted: true } });
+    });
+  } catch {
+    return 'Failed to delete subject';
+  }
+
   return 'Subject deleted successfully';
 };
 
