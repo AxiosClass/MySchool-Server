@@ -1,4 +1,4 @@
-import { TAssignSubjectsPayload, TCreateSubjectPayload, TUpdateSubjectPayload } from './subject.validation';
+import { TAssignSubjectsPayload, TCreateSubjectPayload } from './subject.validation';
 import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
 import { TObject } from '../../utils/types';
