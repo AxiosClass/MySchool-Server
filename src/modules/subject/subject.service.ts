@@ -46,6 +46,7 @@ const getSubjects = async (query: TObject) => {
 
   const subjects = await prismaClient.subject.findMany({
     where: {
+      parentId: null,
       ...(searchTerm && {
         OR: [
           { name: { contains: searchTerm, mode: 'insensitive' } },
@@ -55,14 +56,17 @@ const getSubjects = async (query: TObject) => {
       ...(type && Object.values(SubjectType).includes(type as SubjectType) && { type: type as SubjectType }),
       isDeleted: false,
     },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      type: true,
+      childSubject: { select: { id: true, name: true, type: true } },
+    },
+    orderBy: { name: 'asc' },
   });
 
   return subjects;
-};
-
-const updateSubject = async (payload: TUpdateSubjectPayload, subjectId: string) => {
-  await prismaClient.subject.update({ where: { id: subjectId }, data: payload });
-  return 'Subject updated successfully';
 };
 
 const deleteSubject = async (subjectId: string) => {
@@ -93,4 +97,4 @@ const assignSubjects = async (payload: TAssignSubjectsPayload, classId: string) 
   return 'Subject list updated successfully';
 };
 
-export const subjectService = { createSubject, getSubjects, updateSubject, deleteSubject, assignSubjects };
+export const subjectService = { createSubject, getSubjects, deleteSubject, assignSubjects };
