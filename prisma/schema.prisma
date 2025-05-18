@@ -103,7 +103,7 @@ model Subject {
   isDeleted   Boolean     @default(false)
 
   parentSubject           Subject?                  @relation("subject-to-subject", fields: [parentId], references: [id])
-  childSUbject            Subject[]                 @relation("subject-to-subject")
+  childSubject            Subject[]                 @relation("subject-to-subject")
   classSubject            ClassSubject[]
   ClassroomSubjectTeacher ClassroomSubjectTeacher[]
 

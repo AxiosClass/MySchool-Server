@@ -13,11 +13,6 @@ const getSubjects = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message: 'Subjects fetched successfully', data: subjects });
 });
 
-const updateSubject = catchAsync(async (req, res) => {
-  const message = await subjectService.updateSubject(req.body, req.params.subjectId);
-  sendSuccessResponse(res, { message });
-});
-
 const deleteSubject = catchAsync(async (req, res) => {
   const message = await subjectService.deleteSubject(req.params.subjectId);
   sendSuccessResponse(res, { message });
@@ -28,4 +23,4 @@ const assignSubjects = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message });
 });
 
-export const subjectController = { createSubject, getSubjects, updateSubject, deleteSubject, assignSubjects };
+export const subjectController = { createSubject, getSubjects, deleteSubject, assignSubjects };
