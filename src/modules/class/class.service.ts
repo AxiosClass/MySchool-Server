@@ -68,7 +68,7 @@ const getClassroomList = async (level: string) => {
 const getAssignedClassSubjects = async (classId: string) => {
   const subjects = await prismaClient.classSubject.findMany({
     where: { classId },
-    select: { subject: { select: { id: true, name: true, description: true } } },
+    select: { subject: { select: { id: true, name: true, description: true, type: true } } },
   });
 
   return subjects.map((eachSubject) => eachSubject.subject);
