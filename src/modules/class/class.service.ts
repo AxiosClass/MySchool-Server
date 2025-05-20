@@ -1,6 +1,6 @@
 import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
-import type { TAddClassPayload, TAssignSubjectsPayload } from './class.validation';
+import type { TAddClassPayload, TAssignClassSubjectsPayload } from './class.validation';
 
 const addClass = async (payload: TAddClassPayload) => {
   const isClassExist = await prismaClient.class.findFirst({
@@ -65,10 +65,61 @@ const getClassroomList = async (level: string) => {
   return classDetails.classrooms;
 };
 
+const getAssignedClassSubjects = async (classId: string) => {
+  const subjects = await prismaClient.classSubject.findMany({
+    where: { classId },
+    select: { subject: { select: { id: true, name: true, description: true } } },
+  });
+
+  return subjects.map((eachSubject) => eachSubject.subject);
+};
+
+const updateAssignedSubjectList = async (payload: TAssignClassSubjectsPayload) => {
+  const { subjectIds, classId } = payload;
+
+  const assignedSubjects = await prismaClient.classSubject.findMany({
+    where: { classId },
+    select: { subjectId: true },
+  });
+
+  const assignedSubjectIds = assignedSubjects.map((subject) => subject.subjectId);
+
+  const newSet = new Set(subjectIds);
+  const oldSet = new Set(assignedSubjectIds);
+
+  const subjectIdsToAdd = subjectIds.filter((id) => !oldSet.has(id));
+  const subjectIdsToRemove = assignedSubjectIds.filter((id) => !newSet.has(id));
+
+  // assign subjects
+  if (subjectIdsToAdd.length > 0) {
+    await prismaClient.classSubject.createMany({
+      data: subjectIdsToAdd.map((subjectId) => ({
+        classId,
+        subjectId,
+      })),
+      skipDuplicates: true, // Prevent error if some already exist
+    });
+  }
+
+  // Remove unassigned subjects
+  if (subjectIdsToRemove.length > 0) {
+    await prismaClient.classSubject.deleteMany({
+      where: {
+        classId,
+        subjectId: { in: subjectIdsToRemove },
+      },
+    });
+  }
+
+  return 'Assigned subject list updated!';
+};
+
 export const classService = {
   addClass,
   getClasses,
   getClassDetails,
   getClassList,
   getClassroomList,
+  getAssignedClassSubjects,
+  updateAssignedSubjectList,
 };

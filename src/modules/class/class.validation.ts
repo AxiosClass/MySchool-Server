@@ -8,13 +8,13 @@ const addClassSchema = z.object({
   admissionFee: z.number().positive({ message: 'Admission fee can not be negative' }),
 });
 
-const assignSubjectsSchema = z.object({
-  subjects: zodCapital('Subject name is required').array().min(1, { message: 'Please select at least one subject' }),
+const assignClassSubjectsSchema = z.object({
+  subjectIds: z.string().min(1, 'SubjectId is too short').array().min(1, 'Minimum send one subject'),
   classId: z.string().min(1, { message: 'Class ID is required' }),
 });
 
 type TAddClassPayload = z.infer<typeof addClassSchema>;
-type TAssignSubjectsPayload = z.infer<typeof assignSubjectsSchema>;
+type TAssignClassSubjectsPayload = z.infer<typeof assignClassSubjectsSchema>;
 
-export const classValidation = { addClassSchema, assignSubjectsSchema };
-export { TAddClassPayload, TAssignSubjectsPayload };
+export const classValidation = { addClassSchema, assignClassSubjectsSchema };
+export { TAddClassPayload, TAssignClassSubjectsPayload };
