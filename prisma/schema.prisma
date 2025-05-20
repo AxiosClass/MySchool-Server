@@ -141,6 +141,7 @@ model Classroom {
 
   students                 Student[]
   classroomSubjectTeachers ClassroomSubjectTeacher[]
+  educationalMaterials     EducationalMaterial[]
 
   @@unique([classId, name])
   @@map("classrooms")
@@ -229,4 +230,26 @@ model HoliDay {
   createdAt   DateTime @default(now())
 
   @@map("holidays")
+}
+
+model EducationalMaterial {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  fileUrl     String
+  fileType    MaterialType
+  publicId    String
+  classroomId String
+  uploadedAt  DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  classroom Classroom @relation(fields: [classroomId], references: [id])
+
+  @@map("educational_materials")
+}
+
+enum MaterialType {
+  PDF
+  IMAGE
+  VIDEO
 }

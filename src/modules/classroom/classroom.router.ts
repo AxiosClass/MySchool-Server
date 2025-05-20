@@ -5,6 +5,7 @@ import { classroomValidation } from './classroom.validation';
 import { classroomController } from './classroom.controller';
 import { authGuard } from '../../middlewares/authGuard';
 import { USER_ROLES } from '../../utils/types';
+import multer from 'multer';
 
 const classroomRouter = Router();
 
@@ -41,5 +42,27 @@ classroomsRouter.get(
   authGuard(USER_ROLES.TEACHER),
   classroomController.getClassroomListForTeacher,
 );
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024,
+  },
+});
+
+classroomsRouter.post(
+  '/upload-material',
+  authGuard(USER_ROLES.TEACHER),
+  upload.single('file'),
+  classroomController.uploadMaterial,
+);
+
+classroomsRouter.get(
+  '/materials/:classroomId',
+  authGuard(USER_ROLES.TEACHER, USER_ROLES.STUDENT),
+  classroomController.getMaterials,
+);
+
+classroomsRouter.delete('/materials/:materialId', authGuard(USER_ROLES.TEACHER), classroomController.deleteMaterial);
 
 export { classroomRouter, classroomsRouter };

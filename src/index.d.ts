@@ -1,9 +1,16 @@
-import { IUserInfo } from './utils/types';
+import { JwtPayload } from 'jsonwebtoken';
 
 declare global {
   namespace Express {
     interface Request {
-      user: IUserInfo;
+      user: JwtPayload & {
+        id: string;
+        role: string;
+        name: string;
+        needPasswordChange: boolean;
+      };
     }
   }
 }
+
+export {};
