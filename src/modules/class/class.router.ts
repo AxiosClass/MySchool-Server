@@ -22,12 +22,14 @@ classRouter.get(
 
 const classesRouter = Router();
 
+// getting detailed class info
 classesRouter.get(
   '/',
   authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER, USER_ROLES.STUDENT),
   classController.getClasses,
 );
 
+// getting short class info like name and id
 classesRouter.get(
   '/list',
   authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER, USER_ROLES.STUDENT),
@@ -38,6 +40,18 @@ classesRouter.get(
   '/list/classroom/:level',
   authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER, USER_ROLES.STUDENT),
   classController.getClassroomList,
+);
+
+classesRouter.get(
+  '/:classId/subjects',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  classController.getAssignedClassSubject,
+);
+
+classRouter.patch(
+  '/subject',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  classController.updateAssignedSubjectList,
 );
 
 export { classRouter, classesRouter };

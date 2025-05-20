@@ -24,11 +24,4 @@ const subjectsRouter = Router();
 
 subjectsRouter.get('/', authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN), subjectController.getSubjects);
 
-subjectsRouter.patch(
-  '/:classId',
-  authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
-  validationHandler(subjectValidation.assignSubjectsSchema),
-  subjectController.assignSubjects,
-);
-
 export { subjectRouter, subjectsRouter };
