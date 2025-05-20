@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { zodCapital } from '../../helpers/zodHelper';
 
 const addClassSchema = z.object({
   name: z.string().min(1, { message: 'Class Name is required' }),
