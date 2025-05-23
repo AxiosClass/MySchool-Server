@@ -20,6 +20,12 @@ classRouter.get(
   classController.getClassDetails,
 );
 
+classRouter.patch(
+  '/subjects',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  classController.updateAssignedSubjectList,
+);
+
 const classesRouter = Router();
 
 // getting detailed class info
@@ -46,12 +52,6 @@ classesRouter.get(
   '/:classId/subjects',
   authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
   classController.getAssignedClassSubject,
-);
-
-classRouter.patch(
-  '/subject',
-  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
-  classController.updateAssignedSubjectList,
 );
 
 export { classRouter, classesRouter };
