@@ -56,12 +56,14 @@ const getStudentList = async (classroomId: string) => {
   return students;
 };
 
-// types
-type TSubjectWithTeacher = {
-  id: string;
-  name: string;
-  classroomSubjectTeacherId?: string;
-  teacher?: { id: string; name: string };
+const getClassroomDetailsById = async (classroomId: string) => {
+  const classroom = await prismaClient.classroom.findUnique({
+    where: { id: classroomId },
+    select: { name: true, class: { select: { level: true } } },
+  });
+
+  if (!classroom) throw new AppError('Classroom not found', 404);
+  return { name: classroom.name, level: classroom.class.level };
 };
 
 // exports
@@ -71,4 +73,5 @@ export const classroomService = {
   removeSubjectTeacher,
   getClassroomListForTeacher,
   getStudentList,
+  getClassroomDetailsById,
 };

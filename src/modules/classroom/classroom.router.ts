@@ -29,6 +29,12 @@ classroomRouter.delete(
 );
 
 classroomRouter.get(
+  '/:classroomId',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER, USER_ROLES.STUDENT),
+  classroomController.getClassroomDetailsById,
+);
+
+classroomRouter.get(
   '/:classroomId/students',
   authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER),
   classroomController.getStudentList,
