@@ -32,6 +32,11 @@ const getClassroomDetailsById = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message: 'Classroom Details', data: classroomDetails });
 });
 
+const getSubjectListForClassroom = catchAsync(async (req, res) => {
+  const subjects = await classroomService.getSubjectListForClassroom(req.params.classroomId);
+  sendSuccessResponse(res, { message: 'Subject retrieved successfully', data: subjects });
+});
+
 export const classroomController = {
   createClassroom,
   assignSubjectTeacher,
@@ -39,4 +44,5 @@ export const classroomController = {
   getClassroomListForTeacher,
   getStudentList,
   getClassroomDetailsById,
+  getSubjectListForClassroom,
 };

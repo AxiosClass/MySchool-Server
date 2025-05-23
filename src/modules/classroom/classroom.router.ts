@@ -40,6 +40,12 @@ classroomRouter.get(
   classroomController.getStudentList,
 );
 
+classroomRouter.get(
+  '/:classroomId/subjects',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  classroomController.getSubjectListForClassroom,
+);
+
 const classroomsRouter = Router();
 
 classroomsRouter.get(
