@@ -235,7 +235,7 @@ model HoliDay {
 model Note {
   id          String   @id @default(uuid())
   title       String
-  description String
+  description String?
   createdBy   String
   createdAt   DateTime @default(now())
 
@@ -250,7 +250,9 @@ model Media {
   url       String
   noteId    String
   type      MediaType
+  isDeleted Boolean @default(false)
   createdAt DateTime  @default(now())
+
 
   note Note @relation(fields: [noteId], references: [id])
 

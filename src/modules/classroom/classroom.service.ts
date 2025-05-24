@@ -1,4 +1,4 @@
-import { TAssignSubjectTeacher, TCreateClassroomPayload } from './classroom.validation';
+import { TAddNotePayload, TAssignSubjectTeacherPayload, TCreateClassroomPayload } from './classroom.validation';
 import { AppError } from '../../utils/appError';
 import { prismaClient } from '../../app/prisma';
 
@@ -48,7 +48,7 @@ const getClassroomDetailsById = async (classroomId: string) => {
   return { name: classroom.name, level: classroom.class.level };
 };
 
-const assignSubjectTeacher = async (payload: TAssignSubjectTeacher) => {
+const assignSubjectTeacher = async (payload: TAssignSubjectTeacherPayload) => {
   const isSubjectTeacherAssigned = await prismaClient.classroomSubjectTeacher.findFirst({
     where: { ...payload },
     select: { subject: { select: { name: true } } },
@@ -97,6 +97,25 @@ const removeSubjectTeacher = async (classroomSubjectTeacherId: string) => {
   return 'Teacher removed successfully';
 };
 
+const addNote = async (payload: TAddNotePayload, teacherId: string) => {
+  // creating note
+  const { title, description } = payload;
+  const result = await prismaClient.$transaction(async (client) => {
+    const note = await client.note.create({
+      data: { title, ...(description && { description }), createdBy: teacherId },
+    });
+
+    if (!note.id) throw new AppError('Failed to create note', 400);
+
+    if (payload.media?.length)
+      await client.media.createMany({ data: payload.media?.map((item) => ({ noteId: note.id, ...item })) || [] });
+
+    return 'Note created successfully';
+  });
+
+  return result;
+};
+
 // exports
 export const classroomService = {
   createClassroom,
@@ -106,4 +125,5 @@ export const classroomService = {
   removeSubjectTeacher,
   getSubjectListForClassroom,
   assignSubjectTeacher,
+  addNote,
 };
