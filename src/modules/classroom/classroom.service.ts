@@ -1,4 +1,10 @@
-import { TAddNotePayload, TAssignSubjectTeacherPayload, TCreateClassroomPayload } from './classroom.validation';
+import {
+  TAddNotePayload,
+  TAssignSubjectTeacherPayload,
+  TCreateClassroomPayload,
+  TUpdateNotePayload,
+} from './classroom.validation';
+
 import { AppError } from '../../utils/appError';
 import { prismaClient } from '../../app/prisma';
 
@@ -98,15 +104,16 @@ const removeSubjectTeacher = async (classroomSubjectTeacherId: string) => {
 };
 
 const addNote = async (payload: TAddNotePayload, teacherId: string) => {
-  // creating note
   const { title, description } = payload;
   const result = await prismaClient.$transaction(async (client) => {
+    // creating note
     const note = await client.note.create({
       data: { title, ...(description && { description }), createdBy: teacherId },
     });
 
     if (!note.id) throw new AppError('Failed to create note', 400);
 
+    // creating media
     if (payload.media?.length)
       await client.media.createMany({ data: payload.media?.map((item) => ({ noteId: note.id, ...item })) || [] });
 
@@ -114,6 +121,44 @@ const addNote = async (payload: TAddNotePayload, teacherId: string) => {
   });
 
   return result;
+};
+
+const updateNote = async (noteId: string, payload: TUpdateNotePayload) => {
+  const { title, description } = payload;
+
+  const isNoteExists = await prismaClient.note.findUnique({ where: { id: noteId }, select: { id: true } });
+  if (!isNoteExists) throw new AppError('Note not found', 404);
+
+  const result = await prismaClient.note.update({
+    where: { id: noteId },
+    data: { ...(title && { title }), ...(description && { description }) },
+    select: { id: true },
+  });
+
+  if (!result.id) throw new AppError('Failed to update note', 400);
+  return 'Note updated successfully';
+};
+
+const deleteNote = async (noteId: string) => {
+  const isNoteExists = await prismaClient.note.findUnique({ where: { id: noteId }, select: { id: true } });
+  if (!isNoteExists) throw new AppError('Note not found', 404);
+
+  await prismaClient.$transaction(async (client) => {
+    // delete media associated with the note
+    await client.media.deleteMany({ where: { noteId } });
+    // delete the note
+    await client.note.delete({ where: { id: noteId } });
+  });
+
+  return 'Note deleted successfully';
+};
+
+const deleteMedia = async (mediaId: string) => {
+  const isMediaExists = await prismaClient.media.findUnique({ where: { id: mediaId }, select: { id: true } });
+  if (!isMediaExists) throw new AppError('Media not found', 404);
+  await prismaClient.media.delete({ where: { id: mediaId } });
+
+  return 'Media deleted successfully';
 };
 
 // exports
@@ -126,4 +171,6 @@ export const classroomService = {
   getSubjectListForClassroom,
   assignSubjectTeacher,
   addNote,
+  updateNote,
+  deleteMedia,
 };

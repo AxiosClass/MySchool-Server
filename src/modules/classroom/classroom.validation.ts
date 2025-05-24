@@ -26,9 +26,21 @@ const addNoteSchema = z.object({
   media: mediaSubSchema.array().optional(),
 });
 
+const updateNoteSchema = z.object({
+  title: z.string().min(1, { message: 'Title is required' }).optional(),
+  description: z.string().min(1, { message: 'Description is required' }).optional(),
+});
+
 type TCreateClassroomPayload = z.infer<typeof createClassroomSchema>;
 type TAssignSubjectTeacherPayload = z.infer<typeof assignSubjectTeacherSchema>;
 type TAddNotePayload = z.infer<typeof addNoteSchema>;
+type TUpdateNotePayload = z.infer<typeof updateNoteSchema>;
 
-export const classroomValidation = { createClassroomSchema, assignSubjectTeacherSchema, addNoteSchema };
-export { TCreateClassroomPayload, TAssignSubjectTeacherPayload, TAddNotePayload };
+export const classroomValidation = {
+  createClassroomSchema,
+  assignSubjectTeacherSchema,
+  addNoteSchema,
+  updateNoteSchema,
+};
+
+export { TCreateClassroomPayload, TAssignSubjectTeacherPayload, TAddNotePayload, TUpdateNotePayload };
