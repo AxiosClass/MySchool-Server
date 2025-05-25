@@ -4,12 +4,12 @@ import { classroomService } from './classroom.service';
 
 const createClassroom = catchAsync(async (req, res) => {
   const message = await classroomService.createClassroom(req.body);
-  sendSuccessResponse(res, { status: 201, message });
+  sendSuccessResponse(res, { message });
 });
 
 const assignSubjectTeacher = catchAsync(async (req, res) => {
   const message = await classroomService.assignSubjectTeacher(req.body);
-  sendSuccessResponse(res, { status: 201, message });
+  sendSuccessResponse(res, { message });
 });
 
 const removeSubjectTeacher = catchAsync(async (req, res) => {
@@ -37,6 +37,21 @@ const getSubjectListForClassroom = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message: 'Subject retrieved successfully', data: subjects });
 });
 
+const addNote = catchAsync(async (req, res) => {
+  const message = await classroomService.addNote(req.body, req.user.id);
+  sendSuccessResponse(res, { message });
+});
+
+const updateNote = catchAsync(async (req, res) => {
+  const message = await classroomService.updateNote(req.params.noteId, req.body);
+  sendSuccessResponse(res, { message });
+});
+
+const deleteMedia = catchAsync(async (req, res) => {
+  const message = await classroomService.deleteMedia(req.params.mediaId);
+  sendSuccessResponse(res, { message });
+});
+
 export const classroomController = {
   createClassroom,
   assignSubjectTeacher,
@@ -45,4 +60,5 @@ export const classroomController = {
   getStudentList,
   getClassroomDetailsById,
   getSubjectListForClassroom,
+  addNote,
 };

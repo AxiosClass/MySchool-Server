@@ -44,6 +44,7 @@ model Teacher {
 
   classroomsClassTeacher  Classroom?
   classroomSubjectTeacher ClassroomSubjectTeacher[]
+  notes                   Note[]
 
   @@map("teachers")
 }
@@ -229,4 +230,30 @@ model HoliDay {
   createdAt   DateTime @default(now())
 
   @@map("holidays")
+}
+
+model Note {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  createdBy   String
+  createdAt   DateTime @default(now())
+
+  teacher Teacher @relation(fields: [createdBy], references: [id])
+  media   Media[]
+
+  @@map("notes")
+}
+
+model Media {
+  id        String   @id
+  url       String
+  noteId    String
+  type      String
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  note Note @relation(fields: [noteId], references: [id])
+
+  @@map("media")
 }

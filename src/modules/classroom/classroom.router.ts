@@ -11,14 +11,14 @@ const classroomRouter = Router();
 classroomRouter.post(
   '/',
   authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
-  validationHandler(classroomValidation.createClassroom),
+  validationHandler(classroomValidation.createClassroomSchema),
   classroomController.createClassroom,
 );
 
 classroomRouter.post(
   '/subject-teacher',
   authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
-  validationHandler(classroomValidation.assignSubjectTeacher),
+  validationHandler(classroomValidation.assignSubjectTeacherSchema),
   classroomController.assignSubjectTeacher,
 );
 
@@ -44,6 +44,13 @@ classroomRouter.get(
   '/:classroomId/subjects',
   authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
   classroomController.getSubjectListForClassroom,
+);
+
+classroomRouter.post(
+  '/note',
+  authGuard(USER_ROLES.TEACHER),
+  validationHandler(classroomValidation.addNoteSchema),
+  classroomController.addNote,
 );
 
 const classroomsRouter = Router();
