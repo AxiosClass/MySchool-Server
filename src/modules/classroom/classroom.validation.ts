@@ -1,4 +1,3 @@
-import { MediaType } from '@prisma/client';
 import { z } from 'zod';
 
 const createClassroomSchema = z.object({
@@ -15,7 +14,7 @@ const assignSubjectTeacherSchema = z.object({
 
 const mediaSubSchema = z.object({
   id: z.string().min(1, 'Media Id is required'),
-  type: z.nativeEnum(MediaType, { message: 'Invalid media type' }),
+  type: z.string().min(1, { message: 'Media type is required' }),
   url: z.string().min(1, 'Media url is required'),
 });
 

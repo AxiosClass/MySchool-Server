@@ -246,20 +246,14 @@ model Note {
 }
 
 model Media {
-  id        String    @id
+  id        String   @id
   url       String
   noteId    String
-  type      MediaType
-  isDeleted Boolean @default(false)
-  createdAt DateTime  @default(now())
-
+  type      String
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
 
   note Note @relation(fields: [noteId], references: [id])
 
   @@map("media")
-}
-
-enum MediaType {
-  IMAGE
-  PDF
 }
