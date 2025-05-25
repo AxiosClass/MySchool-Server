@@ -47,11 +47,11 @@ const getStudentList = async (classroomId: string) => {
 const getClassroomDetailsById = async (classroomId: string) => {
   const classroom = await prismaClient.classroom.findUnique({
     where: { id: classroomId },
-    select: { name: true, class: { select: { level: true } } },
+    select: { name: true, class: { select: { level: true } }, classTeacher: { select: { id: true, name: true } } },
   });
 
   if (!classroom) throw new AppError('Classroom not found', 404);
-  return { name: classroom.name, level: classroom.class.level };
+  return { name: classroom.name, level: classroom.class.level, classTeacher: { ...classroom.classTeacher } };
 };
 
 const assignSubjectTeacher = async (payload: TAssignSubjectTeacherPayload) => {
