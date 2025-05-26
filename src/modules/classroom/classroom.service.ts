@@ -104,11 +104,11 @@ const removeSubjectTeacher = async (classroomSubjectTeacherId: string) => {
 };
 
 const addNote = async (payload: TAddNotePayload, teacherId: string) => {
-  const { title, description } = payload;
+  const { title, description, classroomId } = payload;
   const result = await prismaClient.$transaction(async (client) => {
     // creating note
     const note = await client.note.create({
-      data: { title, ...(description && { description }), createdBy: teacherId },
+      data: { title, classroomId, ...(description && { description }), createdBy: teacherId },
     });
 
     if (!note.id) throw new AppError('Failed to create note', 400);
@@ -121,6 +121,22 @@ const addNote = async (payload: TAddNotePayload, teacherId: string) => {
   });
 
   return result;
+};
+
+const getNotes = async (classroomId: string) => {
+  const notes = await prismaClient.note.findMany({
+    where: { classroomId },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      createdAt: true,
+      teacher: { select: { id: true, name: true } },
+      media: { select: { id: true, url: true, type: true } },
+    },
+  });
+
+  return notes;
 };
 
 const updateNote = async (noteId: string, payload: TUpdateNotePayload) => {
@@ -171,6 +187,8 @@ export const classroomService = {
   getSubjectListForClassroom,
   assignSubjectTeacher,
   addNote,
+  getNotes,
   updateNote,
+  deleteNote,
   deleteMedia,
 };

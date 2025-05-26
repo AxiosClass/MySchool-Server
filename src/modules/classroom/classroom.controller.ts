@@ -42,6 +42,11 @@ const addNote = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message });
 });
 
+const getNotes = catchAsync(async (req, res) => {
+  const notes = await classroomService.getNotes(req.params.classroomId);
+  sendSuccessResponse(res, { message: 'Notes retrieved successfully', data: notes });
+});
+
 const updateNote = catchAsync(async (req, res) => {
   const message = await classroomService.updateNote(req.params.noteId, req.body);
   sendSuccessResponse(res, { message });
@@ -61,4 +66,7 @@ export const classroomController = {
   getClassroomDetailsById,
   getSubjectListForClassroom,
   addNote,
+  getNotes,
+  updateNote,
+  deleteMedia,
 };

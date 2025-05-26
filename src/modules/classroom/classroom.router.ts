@@ -53,6 +53,12 @@ classroomRouter.post(
   classroomController.addNote,
 );
 
+classroomRouter.get(
+  '/:classroomId/notes',
+  authGuard(USER_ROLES.TEACHER, USER_ROLES.STUDENT, USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  classroomController.getNotes,
+);
+
 const classroomsRouter = Router();
 
 classroomsRouter.get(

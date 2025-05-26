@@ -142,6 +142,7 @@ model Classroom {
 
   students                 Student[]
   classroomSubjectTeachers ClassroomSubjectTeacher[]
+  notes                    Note[]
 
   @@unique([classId, name])
   @@map("classrooms")
@@ -237,10 +238,12 @@ model Note {
   title       String
   description String?
   createdBy   String
+  classroomId String
   createdAt   DateTime @default(now())
 
-  teacher Teacher @relation(fields: [createdBy], references: [id])
-  media   Media[]
+  classroom Classroom @relation(fields: [classroomId], references: [id])
+  teacher   Teacher   @relation(fields: [createdBy], references: [id])
+  media     Media[]
 
   @@map("notes")
 }
