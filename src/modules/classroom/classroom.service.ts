@@ -131,6 +131,7 @@ const getNotes = async (classroomId: string) => {
       title: true,
       description: true,
       createdAt: true,
+      classroomId: true,
       teacher: { select: { id: true, name: true } },
       media: { select: { id: true, url: true, type: true } },
     },
