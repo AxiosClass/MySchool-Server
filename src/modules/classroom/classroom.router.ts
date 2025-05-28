@@ -53,6 +53,13 @@ classroomRouter.post(
   classroomController.addNote,
 );
 
+classroomRouter.patch(
+  '/note/:noteId',
+  authGuard(USER_ROLES.TEACHER, USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  validationHandler(classroomValidation.updateNoteSchema),
+  classroomController.updateNote,
+);
+
 classroomRouter.get(
   '/:classroomId/notes',
   authGuard(USER_ROLES.TEACHER, USER_ROLES.STUDENT, USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),

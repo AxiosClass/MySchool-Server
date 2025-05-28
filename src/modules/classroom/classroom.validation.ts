@@ -28,6 +28,10 @@ const addNoteSchema = z.object({
 const updateNoteSchema = z.object({
   title: z.string().min(1, { message: 'Title is required' }).optional(),
   description: z.string().min(1, { message: 'Description is required' }).optional(),
+  media: z.object({
+    old: mediaSubSchema.array(),
+    new: mediaSubSchema.array(),
+  }),
 });
 
 type TCreateClassroomPayload = z.infer<typeof createClassroomSchema>;

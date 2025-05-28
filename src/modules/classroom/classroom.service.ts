@@ -141,19 +141,32 @@ const getNotes = async (classroomId: string) => {
 };
 
 const updateNote = async (noteId: string, payload: TUpdateNotePayload) => {
-  const { title, description } = payload;
-
   const isNoteExists = await prismaClient.note.findUnique({ where: { id: noteId }, select: { id: true } });
   if (!isNoteExists) throw new AppError('Note not found', 404);
 
-  const result = await prismaClient.note.update({
-    where: { id: noteId },
-    data: { ...(title && { title }), ...(description && { description }) },
-    select: { id: true },
+  const message = await prismaClient.$transaction(async (client) => {
+    const { media, ...restPayload } = payload;
+    await client.note.update({ where: { id: noteId }, data: restPayload });
+
+    const mediaFromDB = await client.media.findMany({ where: { noteId }, select: { id: true } });
+    const oldMediaMap = new Map(payload.media.old.map((item) => [item.id, item]));
+
+    const mediaToDelete = mediaFromDB.filter((media) => !oldMediaMap.has(media.id));
+
+    if (mediaToDelete.length)
+      await client.media.deleteMany({ where: { id: { in: mediaToDelete.map((item) => item.id) } } });
+
+    // adding new media
+    if (media.new.length)
+      await prismaClient.media.createMany({
+        data: media.new.map((item) => ({ ...item, noteId })),
+        skipDuplicates: true,
+      });
+
+    return 'Note updated successfully';
   });
 
-  if (!result.id) throw new AppError('Failed to update note', 400);
-  return 'Note updated successfully';
+  return message;
 };
 
 const deleteNote = async (noteId: string) => {
@@ -170,14 +183,6 @@ const deleteNote = async (noteId: string) => {
   return 'Note deleted successfully';
 };
 
-const deleteMedia = async (mediaId: string) => {
-  const isMediaExists = await prismaClient.media.findUnique({ where: { id: mediaId }, select: { id: true } });
-  if (!isMediaExists) throw new AppError('Media not found', 404);
-  await prismaClient.media.delete({ where: { id: mediaId } });
-
-  return 'Media deleted successfully';
-};
-
 // exports
 export const classroomService = {
   createClassroom,
@@ -191,5 +196,4 @@ export const classroomService = {
   getNotes,
   updateNote,
   deleteNote,
-  deleteMedia,
 };

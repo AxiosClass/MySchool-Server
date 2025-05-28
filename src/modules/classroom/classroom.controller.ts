@@ -52,11 +52,6 @@ const updateNote = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message });
 });
 
-const deleteMedia = catchAsync(async (req, res) => {
-  const message = await classroomService.deleteMedia(req.params.mediaId);
-  sendSuccessResponse(res, { message });
-});
-
 export const classroomController = {
   createClassroom,
   assignSubjectTeacher,
@@ -68,5 +63,4 @@ export const classroomController = {
   addNote,
   getNotes,
   updateNote,
-  deleteMedia,
 };
