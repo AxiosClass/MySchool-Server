@@ -52,6 +52,11 @@ const updateNote = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message });
 });
 
+const deleteNote = catchAsync(async (req, res) => {
+  const message = await classroomService.deleteNote(req.params.noteId);
+  sendSuccessResponse(res, { message });
+});
+
 export const classroomController = {
   createClassroom,
   assignSubjectTeacher,
@@ -63,4 +68,5 @@ export const classroomController = {
   addNote,
   getNotes,
   updateNote,
+  deleteNote,
 };

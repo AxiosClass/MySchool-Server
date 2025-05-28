@@ -60,6 +60,12 @@ classroomRouter.patch(
   classroomController.updateNote,
 );
 
+classroomRouter.delete(
+  '/note/:noteId',
+  authGuard(USER_ROLES.TEACHER, USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  classroomController.deleteNote,
+);
+
 classroomRouter.get(
   '/:classroomId/notes',
   authGuard(USER_ROLES.TEACHER, USER_ROLES.STUDENT, USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
