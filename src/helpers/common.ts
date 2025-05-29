@@ -121,3 +121,9 @@ export const generateHalfYearlyDateRange = () => {
 
   return { start, end };
 };
+
+// ***** Generates Date Form A String ***** \\
+export const parseDate = (date: string) => {
+  const parsedDate = new Date(date);
+  return isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
+};

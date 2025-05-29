@@ -2,10 +2,10 @@ import moment from 'moment';
 
 import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
-import { attendanceHelper } from './attendance.helper';
+import { attendanceHelper, weekendDays } from './attendance.helper';
 import { TAddAttendanceFromNfcPayload, TAddAttendancePayload } from './attendance.validation';
 import { TObject } from '../../utils/types';
-import { generateDateArray } from '../../helpers/common';
+import { generateDateArray, parseDate } from '../../helpers/common';
 
 const addAttendance = async (payload: TAddAttendancePayload) => {
   const date = payload.date ? new Date(payload.date) : new Date();
@@ -47,44 +47,51 @@ const addAttendanceFormNfc = async (payload: TAddAttendanceFromNfcPayload) => {
   return 'Attendance Added Successfully';
 };
 
-const getAttendancesForClassroom = async (classroomId: string, range: number = 7) => {
-  const now = new Date();
+const getAttendancesForClassroom = async (classroomId: string, query: TObject) => {
+  const date = parseDate(query.date);
+  console.log({ date });
 
-  const start = moment(now)
-    .subtract(range - 1, 'day')
-    .startOf('day')
-    .toDate();
-
-  const end = moment(now).endOf('day').toDate();
+  const start = moment(date).startOf('day').toDate();
+  const end = moment(date).endOf('day').toDate();
+  const day = date.getDay();
 
   const classroomInfo = await prismaClient.classroom.findUnique({
     where: { id: classroomId },
-    select: { name: true, class: true },
+    select: { id: true, classTeacherId: true },
   });
 
-  // fetching student's attendance data
   const attendances = await prismaClient.attendance.findMany({
-    where: { student: { classroomId }, date: { gte: start, lte: end } },
+    where: { student: { classroomId: classroomId }, date: { gte: start, lte: end } },
     select: { id: true, date: true, studentId: true },
   });
 
-  // getting holiday list
-  const holidays = await prismaClient.holiDay.findMany({
-    where: { OR: [{ startDate: { gte: start } }, { endDate: { lte: end } }] },
-    select: { id: true, startDate: true, endDate: true },
+  const holiday = await prismaClient.holiDay.findFirst({ where: { startDate: { lte: start }, endDate: { gte: end } } });
+  const students = await prismaClient.student.findMany({ where: { classroomId }, select: { id: true, name: true } });
+
+  const attendanceMap = new Map(attendances.map((attendance) => [attendance.studentId, attendance]));
+
+  console.log({ attendances });
+
+  const isHoliday = !!holiday || weekendDays.includes(day);
+
+  const studentAttendanceList = students.map((student) => {
+    const isPresent = attendanceMap.has(student.id);
+
+    return {
+      date,
+      studentId: student.id,
+      name: student.name,
+      attendanceId: attendanceMap.get(student.id)?.id || '',
+      status: isPresent ? 'PRESENT' : isHoliday ? 'HOLIDAY' : 'ABSENT',
+    };
   });
 
-  // fetching all student list
-  const students = await prismaClient.student.findMany({ where: { classroomId }, select: { id: true, name: true } });
-  const dates = generateDateArray({ start, end });
-  const attendanceMap = attendanceHelper.generateAttendanceMap(attendances);
-  const holidayMap = attendanceHelper.generateHolidayMap(holidays);
-
-  const attendanceList = students.map((student) =>
-    attendanceHelper.generateAttendance({ attendanceMap, dates, holidayMap, student }),
-  );
-
-  return { attendanceList, classroomInfo };
+  return {
+    attendanceList: studentAttendanceList,
+    totalStudents: students.length,
+    totalPresent: attendanceMap.size,
+    classTeacherId: classroomInfo?.classTeacherId || '',
+  };
 };
 
 const getAttendancesForStudent = async (studentId: string, query: TObject) => {

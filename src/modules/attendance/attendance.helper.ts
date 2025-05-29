@@ -4,7 +4,7 @@ import { Attendance, HoliDay, Student } from '@prisma/client';
 import { generateDateArray } from '../../helpers/common';
 
 // const
-const weekendDays = [5, 6];
+export const weekendDays = [5, 6];
 const dateFormatString = 'YYYY-MM-DD';
 
 // helper functions

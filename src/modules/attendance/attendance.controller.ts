@@ -14,7 +14,7 @@ const addAttendanceFormNfc = catchAsync(async (req, res) => {
 });
 
 const getAttendancesForClassroom = catchAsync(async (req, res) => {
-  const result = await attendanceService.getAttendancesForClassroom(req.params.classroomId, Number(req.query.range));
+  const result = await attendanceService.getAttendancesForClassroom(req.params.classroomId, req.query as TObject);
   sendSuccessResponse(res, { message: 'Attendance fetched successfully', data: result });
 });
 
