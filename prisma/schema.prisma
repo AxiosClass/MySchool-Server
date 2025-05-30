@@ -120,11 +120,11 @@ enum SubjectType {
 }
 
 model ClassSubject {
-  id        String  @id @default(uuid())
-  classId   String?
+  id        String @id @default(uuid())
+  classId   String
   subjectId String
 
-  class   Class?  @relation(fields: [classId], references: [id])
+  class   Class   @relation(fields: [classId], references: [id])
   subject Subject @relation(fields: [subjectId], references: [id])
 
   @@map("class_subjects")

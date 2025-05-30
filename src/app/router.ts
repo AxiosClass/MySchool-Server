@@ -12,6 +12,7 @@ import { attendanceRouter, attendancesRouter } from '../modules/attendance/atten
 import { holidayRouter, holidaysRouter } from '../modules/holiday/holiday.router';
 import { metaDataRouter } from '../modules/meta-data/meta-data.router';
 import { adminRouter, adminsRouter } from '../modules/admin/admin.router';
+import { termRouter } from '../modules/term/term.router';
 
 export const appRouter = Router();
 
@@ -38,6 +39,7 @@ const routes: { path: string; router: Router }[] = [
   { path: '/holiday', router: holidayRouter },
   { path: '/holidays', router: holidaysRouter },
   { path: '/meta-data', router: metaDataRouter },
+  { path: '/term', router: termRouter },
 ];
 
 routes.forEach(({ path, router }) => appRouter.use(path, router));
