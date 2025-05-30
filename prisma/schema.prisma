@@ -260,3 +260,20 @@ model Media {
 
   @@map("media")
 }
+
+model Term {
+  id            String     @id @default(uuid())
+  name          String
+  year          String
+  status        TermStatus @default(PENDING)
+  classSubjects Json
+  StudentClass  Json
+
+  @@map("terms")
+}
+
+enum TermStatus {
+  PENDING
+  ONGOING
+  ENDED
+}
