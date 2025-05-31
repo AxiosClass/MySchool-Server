@@ -1,5 +1,6 @@
 import { sendSuccessResponse } from '../../helpers/responseHelper';
 import { catchAsync } from '../../middlewares/catchAsync';
+import { TObject } from '../../utils/types';
 import { termService } from './term.service';
 
 const addTerms = catchAsync(async (req, res) => {
@@ -7,4 +8,9 @@ const addTerms = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message });
 });
 
-export const termController = { addTerms };
+const getTerms = catchAsync(async (req, res) => {
+  const terms = await termService.getTerms(req.query as TObject);
+  sendSuccessResponse(res, { message: 'Terms fetched successfully', data: terms });
+});
+
+export const termController = { addTerms, getTerms };

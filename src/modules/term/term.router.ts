@@ -14,4 +14,8 @@ termRouter.post(
   termController.addTerms,
 );
 
-export { termRouter };
+const termsRouter = Router();
+
+termsRouter.get('/', authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN), termController.getTerms);
+
+export { termRouter, termsRouter };

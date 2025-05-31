@@ -1,5 +1,6 @@
 import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
+import { TObject } from '../../utils/types';
 import { TAddTermPayload } from './term.validation';
 
 const addTerm = async (payload: TAddTermPayload) => {
@@ -41,4 +42,18 @@ const addTerm = async (payload: TAddTermPayload) => {
   return 'Term added successfully';
 };
 
-export const termService = { addTerm };
+const getTerms = async (query: TObject) => {
+  const searchTerm = query.searchTerm;
+  const terms = await prismaClient.term.findMany({
+    where: {
+      ...(searchTerm && {
+        OR: [{ name: { contains: searchTerm, mode: 'insensitive' } }, { year: searchTerm }],
+      }),
+    },
+    select: { id: true, name: true, year: true, status: true },
+  });
+
+  return terms;
+};
+
+export const termService = { addTerm, getTerms };
