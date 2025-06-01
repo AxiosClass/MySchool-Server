@@ -10,8 +10,15 @@ const termRouter = Router();
 termRouter.post(
   '/',
   authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
-  validationHandler(termValidation.addTermSchema),
+  validationHandler(termValidation.addOrUpdateTermSchema),
   termController.addTerms,
+);
+
+termRouter.patch(
+  '/:termId',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  validationHandler(termValidation.addOrUpdateTermSchema),
+  termController.updateTerm,
 );
 
 const termsRouter = Router();

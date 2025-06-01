@@ -1,9 +1,9 @@
 import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
 import { TObject } from '../../utils/types';
-import { TAddTermPayload } from './term.validation';
+import { TAddOrUpdateTermPayload } from './term.validation';
 
-const addTerm = async (payload: TAddTermPayload) => {
+const addTerm = async (payload: TAddOrUpdateTermPayload) => {
   const previousTerm = await prismaClient.term.findMany({ where: { status: { in: ['ONGOING', 'PENDING'] } } });
   if (previousTerm.length) throw new AppError('There is an ongoing or pending term, First end the previous term', 400);
 
@@ -56,4 +56,12 @@ const getTerms = async (query: TObject) => {
   return terms;
 };
 
-export const termService = { addTerm, getTerms };
+const updateTerm = async (payload: TAddOrUpdateTermPayload, id: string) => {
+  const term = await prismaClient.term.findUnique({ where: { id }, select: { id: true } });
+  if (!term) throw new AppError('Term not found', 404);
+
+  await prismaClient.term.update({ where: { id }, data: payload });
+  return 'Term updated successfully';
+};
+
+export const termService = { addTerm, getTerms, updateTerm };
