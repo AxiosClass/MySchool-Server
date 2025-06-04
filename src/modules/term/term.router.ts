@@ -21,6 +21,13 @@ termRouter.patch(
   termController.updateTerm,
 );
 
+termRouter.patch(
+  '/:termId/status',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  validationHandler(termValidation.updateStatusSchema),
+  termController.updateStatus,
+);
+
 const termsRouter = Router();
 
 termsRouter.get('/', authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN), termController.getTerms);

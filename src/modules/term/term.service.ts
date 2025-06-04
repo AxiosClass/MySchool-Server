@@ -1,7 +1,9 @@
+import { TermStatus } from '@prisma/client';
 import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
 import { TObject } from '../../utils/types';
-import { TAddOrUpdateTermPayload } from './term.validation';
+import { TAddOrUpdateTermPayload, TUpdateStatusPayload } from './term.validation';
+import { transformer } from 'zod';
 
 const addTerm = async (payload: TAddOrUpdateTermPayload) => {
   const previousTerm = await prismaClient.term.findMany({ where: { status: { in: ['ONGOING', 'PENDING'] } } });
@@ -64,4 +66,21 @@ const updateTerm = async (payload: TAddOrUpdateTermPayload, id: string) => {
   return 'Term updated successfully';
 };
 
-export const termService = { addTerm, getTerms, updateTerm };
+const updateStatus = async (payload: TUpdateStatusPayload, termId: string) => {
+  const term = await prismaClient.term.findUnique({ where: { id: termId }, select: { id: true, status: true } });
+  if (!term) throw new AppError('No term found', 404);
+
+  if (term.status === 'ENDED') throw new AppError('Term has already been ended', 400);
+
+  const statues = [TermStatus.PENDING, TermStatus.ONGOING, TermStatus.ENDED];
+  const currentStatusIndex = statues.findIndex((s) => s === term.status);
+  const targetIndex = statues.findIndex((s) => s === payload.status);
+
+  const diff = targetIndex - currentStatusIndex;
+  if (diff !== 1) throw new AppError(`Can not change the status form ${term.status} to ${payload.status}`, 400);
+
+  await prismaClient.term.update({ where: { id: termId }, data: { status: payload.status } });
+  return 'Status Updated Successfully';
+};
+
+export const termService = { addTerm, getTerms, updateTerm, updateStatus };
