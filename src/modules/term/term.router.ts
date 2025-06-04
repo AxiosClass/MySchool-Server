@@ -28,6 +28,8 @@ termRouter.patch(
   termController.updateStatus,
 );
 
+termRouter.delete('/:termId', authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN), termController.deleteTerm);
+
 const termsRouter = Router();
 
 termsRouter.get('/', authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN), termController.getTerms);

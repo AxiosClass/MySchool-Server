@@ -83,4 +83,14 @@ const updateStatus = async (payload: TUpdateStatusPayload, termId: string) => {
   return 'Status Updated Successfully';
 };
 
-export const termService = { addTerm, getTerms, updateTerm, updateStatus };
+const deleteTerm = async (termId: string) => {
+  const term = await prismaClient.term.findUnique({ where: { id: termId }, select: { status: true } });
+  if (!term) throw new AppError('Term not found!', 404);
+
+  if (term.status !== 'PENDING') throw new AppError(`Exam is ${term.status} so you are not allowed to delete it.`, 400);
+  await prismaClient.term.delete({ where: { id: termId } });
+
+  return 'Term Deleted Successfully';
+};
+
+export const termService = { addTerm, getTerms, updateTerm, updateStatus, deleteTerm };

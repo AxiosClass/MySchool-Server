@@ -23,4 +23,9 @@ const updateStatus = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message });
 });
 
-export const termController = { addTerms, getTerms, updateTerm, updateStatus };
+const deleteTerm = catchAsync(async (req, res) => {
+  const message = await termService.deleteTerm(req.params.termId);
+  sendSuccessResponse(res, { message });
+});
+
+export const termController = { addTerms, getTerms, updateTerm, updateStatus, deleteTerm };
