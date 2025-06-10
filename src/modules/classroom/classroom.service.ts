@@ -183,6 +183,15 @@ const deleteNote = async (noteId: string) => {
   return 'Note deleted successfully';
 };
 
+const getTeachersSubjectsForClassroom = async (classroomId: string, teacherId: string) => {
+  const subjects = await prismaClient.classroomSubjectTeacher.findMany({
+    where: { classroomId, teacherId },
+    select: { subject: { select: { id: true, name: true } } },
+  });
+
+  return subjects.map(({ subject }) => ({ id: subject.id, name: subject.name }));
+};
+
 // exports
 export const classroomService = {
   createClassroom,
@@ -196,4 +205,5 @@ export const classroomService = {
   getNotes,
   updateNote,
   deleteNote,
+  getTeachersSubjectsForClassroom,
 };

@@ -57,6 +57,11 @@ const deleteNote = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message });
 });
 
+const getTeachersSubjectsForClassroom = catchAsync(async (req, res) => {
+  const subjects = await classroomService.getTeachersSubjectsForClassroom(req.params.classroomId, req.user.id);
+  sendSuccessResponse(res, { message: 'Subjects retrieved successfully', data: subjects });
+});
+
 export const classroomController = {
   createClassroom,
   assignSubjectTeacher,
@@ -69,4 +74,5 @@ export const classroomController = {
   getNotes,
   updateNote,
   deleteNote,
+  getTeachersSubjectsForClassroom,
 };

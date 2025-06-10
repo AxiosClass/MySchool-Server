@@ -72,6 +72,12 @@ classroomRouter.get(
   classroomController.getNotes,
 );
 
+classroomRouter.get(
+  '/:classroomId/teacher-subjects',
+  authGuard(USER_ROLES.TEACHER),
+  classroomController.getTeachersSubjectsForClassroom,
+);
+
 const classroomsRouter = Router();
 
 classroomsRouter.get(
