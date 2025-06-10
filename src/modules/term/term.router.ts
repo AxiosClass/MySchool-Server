@@ -29,6 +29,7 @@ termRouter.patch(
 );
 
 termRouter.delete('/:termId', authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN), termController.deleteTerm);
+termRouter.get('/ongoing', termController.getOngoingTerm);
 
 const termsRouter = Router();
 

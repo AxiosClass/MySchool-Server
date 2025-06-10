@@ -28,4 +28,9 @@ const deleteTerm = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message });
 });
 
-export const termController = { addTerms, getTerms, updateTerm, updateStatus, deleteTerm };
+const getOngoingTerm = catchAsync(async (req, res) => {
+  const term = await termService.getOngoingTerm();
+  sendSuccessResponse(res, { message: 'Current ongoing term fetched successfully', data: term });
+});
+
+export const termController = { addTerms, getTerms, updateTerm, updateStatus, deleteTerm, getOngoingTerm };

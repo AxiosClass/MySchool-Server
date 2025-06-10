@@ -93,4 +93,13 @@ const deleteTerm = async (termId: string) => {
   return 'Term Deleted Successfully';
 };
 
-export const termService = { addTerm, getTerms, updateTerm, updateStatus, deleteTerm };
+const getOngoingTerm = async () => {
+  const term = await prismaClient.term.findFirst({
+    where: { status: 'ONGOING' },
+    select: { id: true, name: true, year: true },
+  });
+
+  return term;
+};
+
+export const termService = { addTerm, getTerms, updateTerm, updateStatus, deleteTerm, getOngoingTerm };
