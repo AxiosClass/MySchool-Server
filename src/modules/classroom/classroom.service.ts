@@ -186,10 +186,24 @@ const deleteNote = async (noteId: string) => {
 const getTeachersSubjectsForClassroom = async (classroomId: string, teacherId: string) => {
   const subjects = await prismaClient.classroomSubjectTeacher.findMany({
     where: { classroomId, teacherId },
-    select: { subject: { select: { id: true, name: true } } },
+    select: {
+      subject: {
+        select: { id: true, name: true, type: true, childSubject: { select: { id: true, name: true, type: true } } },
+      },
+    },
   });
 
-  return subjects.map(({ subject }) => ({ id: subject.id, name: subject.name }));
+  return subjects.reduce((acc: Array<{ id: string; name: string; type: string }>, { subject }) => {
+    if (subject.type === 'COMBINED') {
+      subject.childSubject.forEach((childItem) => {
+        acc.push({ id: childItem.id, name: childItem.name, type: childItem.type });
+      });
+    } else {
+      acc.push({ id: subject.id, name: subject.name, type: subject.type });
+    }
+
+    return acc;
+  }, []);
 };
 
 // exports
