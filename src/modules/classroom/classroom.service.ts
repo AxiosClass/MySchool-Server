@@ -75,10 +75,25 @@ const getSubjectListForClassroom = async (classroomId: string) => {
 
   if (!classroomInfo) throw new AppError('Section not found!', 404);
 
-  const subjects = await prismaClient.classSubject.findMany({
+  const subjectsFromDb = await prismaClient.classSubject.findMany({
     where: { classId: classroomInfo.classId },
-    select: { subject: { select: { id: true, name: true } } },
+    select: {
+      subject: {
+        select: { id: true, name: true, type: true, childSubject: { select: { id: true, name: true, type: true } } },
+      },
+    },
   });
+
+  const subjects = subjectsFromDb.reduce((acc: Array<{ id: string; name: string; type: string }>, { subject }) => {
+    if (subject.type === 'COMBINED') {
+      subject.childSubject.forEach((childItem) => {
+        acc.push({ id: childItem.id, name: childItem.name, type: childItem.type });
+      });
+    } else {
+      acc.push({ id: subject.id, name: subject.name, type: subject.type });
+    }
+    return acc;
+  }, []);
 
   const assignedSubjects = await prismaClient.classroomSubjectTeacher.findMany({
     where: { classroomId },
@@ -88,11 +103,12 @@ const getSubjectListForClassroom = async (classroomId: string) => {
   const assignedSubjectMap = new Map(assignedSubjects.map((item) => [item.subjectId, item]));
 
   const subjectList = subjects.map((item) => {
-    const subjectId = item.subject.id;
-    const subjectName = item.subject.name;
+    const subjectId = item.id;
+    const subjectName = item.name;
+    const subjectType = item.type;
     const assignedSubjectData = assignedSubjectMap.get(subjectId);
-    if (assignedSubjectData) return { ...assignedSubjectData, subjectName };
-    return { id: null, subjectId, subjectName, teacher: null };
+    if (assignedSubjectData) return { ...assignedSubjectData, subjectName, subjectType };
+    return { id: null, subjectId, subjectName, subjectType, teacher: null };
   });
 
   return subjectList;
