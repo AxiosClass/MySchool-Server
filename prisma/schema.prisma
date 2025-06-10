@@ -71,7 +71,8 @@ model Student {
   classroom  Classroom    @relation(fields: [classroomId], references: [id])
   payments   Payment[]
   discounts  Discount[]
-  Attendance Attendance[]
+  attendances Attendance[]
+  termResults TermResult[]
 
   @@map("students")
 }
@@ -106,7 +107,7 @@ model Subject {
   parentSubject           Subject?                  @relation("subject-to-subject", fields: [parentId], references: [id])
   childSubject            Subject[]                 @relation("subject-to-subject")
   classSubject            ClassSubject[]
-  ClassroomSubjectTeacher ClassroomSubjectTeacher[]
+  classroomSubjectTeacher ClassroomSubjectTeacher[]
 
   @@map("subjects")
 }
@@ -269,6 +270,8 @@ model Term {
   classSubjects Json
   StudentClass  Json
 
+  termResult TermResult[]
+
   @@map("terms")
 }
 
@@ -276,4 +279,18 @@ enum TermStatus {
   PENDING
   ONGOING
   ENDED
+}
+
+model TermResult {
+  termId String
+  studentId String
+  marks Json
+  createAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  term Term @relation(fields: [termId], references: [id])
+  student Student @relation(fields: [studentId], references: [id])
+
+  @@map("term_results")
+  @@unique([termId, studentId])
 }

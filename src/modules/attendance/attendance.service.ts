@@ -49,7 +49,6 @@ const addAttendanceFormNfc = async (payload: TAddAttendanceFromNfcPayload) => {
 
 const getAttendancesForClassroom = async (classroomId: string, query: TObject) => {
   const date = parseDate(query.date);
-  console.log({ date });
 
   const start = moment(date).startOf('day').toDate();
   const end = moment(date).endOf('day').toDate();
@@ -69,8 +68,6 @@ const getAttendancesForClassroom = async (classroomId: string, query: TObject) =
   const students = await prismaClient.student.findMany({ where: { classroomId }, select: { id: true, name: true } });
 
   const attendanceMap = new Map(attendances.map((attendance) => [attendance.studentId, attendance]));
-
-  console.log({ attendances });
 
   const isHoliday = !!holiday || weekendDays.includes(day);
 
