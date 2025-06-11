@@ -2,7 +2,7 @@ import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
 import { TObject } from '../../utils/types';
 
-const getTermResultsForGrading = async (query: TObject) => {
+const getStudentsWithTermResult = async (query: TObject) => {
   const termId = query.termId;
   const classroomId = query.classroomId;
   const subjectId = query.subjectId;
@@ -24,7 +24,7 @@ const getTermResultsForGrading = async (query: TObject) => {
 
   const termResultMap = new Map(termResults.map((each) => [each.studentId, each]));
 
-  const studentWithTermResult = students.map((student) => {
+  const studentsWithTermResult = students.map((student) => {
     const termResult = termResultMap.get(student.id);
 
     return {
@@ -34,5 +34,9 @@ const getTermResultsForGrading = async (query: TObject) => {
     };
   });
 
-  return studentWithTermResult;
+  return studentsWithTermResult;
+};
+
+export const termResultService = {
+  getStudentsWithTermResult,
 };
