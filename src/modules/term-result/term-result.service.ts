@@ -10,14 +10,13 @@ const getStudentsWithTermResult = async (query: TObject) => {
   if (!termId || !classroomId || !subjectId)
     throw new AppError('Missing required parameters: termId, classroomId, or subjectId', 400);
 
+  const subject = await prismaClient.subject.findUnique({ where: { id: subjectId }, select: { id: true, type: true } });
+
+  if (!subject) throw new AppError('Subject not found', 400);
+
   const termResults = await prismaClient.termResult.findMany({
     where: { termId, student: { classroomId }, subjectId },
-    select: {
-      studentId: true,
-      student: { select: { name: true } },
-      subject: { select: { type: true } },
-      marks: true,
-    },
+    select: { studentId: true, marks: true },
   });
 
   const students = await prismaClient.student.findMany({ where: { classroomId }, select: { id: true, name: true } });
@@ -30,13 +29,13 @@ const getStudentsWithTermResult = async (query: TObject) => {
     return {
       studentId: student.id,
       studentName: student.name,
-      ...(termResult && { subjectType: termResult.subject.type, marks: termResult.marks }),
+      subjectType: subject.type,
+      subjectId: subject.id,
+      ...(termResult && { marks: termResult.marks }),
     };
   });
 
   return studentsWithTermResult;
 };
 
-export const termResultService = {
-  getStudentsWithTermResult,
-};
+export const termResultService = { getStudentsWithTermResult };
