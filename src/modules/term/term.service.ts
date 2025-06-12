@@ -70,14 +70,20 @@ const updateStatus = async (payload: TUpdateStatusPayload, termId: string) => {
   const term = await prismaClient.term.findUnique({ where: { id: termId }, select: { id: true, status: true } });
   if (!term) throw new AppError('No term found', 404);
 
-  if (term.status === 'ENDED') throw new AppError('Term has already been ended', 400);
+  const allowedTransition = {
+    [TermStatus.PENDING]: TermStatus.ONGOING,
+    [TermStatus.ONGOING]: TermStatus.ENDED,
+    [TermStatus.ENDED]: TermStatus.ONGOING,
+  };
 
-  const statues = [TermStatus.PENDING, TermStatus.ONGOING, TermStatus.ENDED];
-  const currentStatusIndex = statues.findIndex((s) => s === term.status);
-  const targetIndex = statues.findIndex((s) => s === payload.status);
+  if (allowedTransition[term.status] !== payload.status)
+    throw new AppError(`Can not change the status form ${term.status} to ${payload.status}`, 400);
 
-  const diff = targetIndex - currentStatusIndex;
-  if (diff !== 1) throw new AppError(`Can not change the status form ${term.status} to ${payload.status}`, 400);
+  if (payload.status === 'ONGOING') {
+    const onGoingTerm = await prismaClient.term.findFirst({ where: { status: 'ONGOING' }, select: { id: true } });
+
+    if (onGoingTerm?.id) throw new AppError('Transition is not allowed as another term is ongoing', 400);
+  }
 
   await prismaClient.term.update({ where: { id: termId }, data: { status: payload.status } });
   return 'Status Updated Successfully';
