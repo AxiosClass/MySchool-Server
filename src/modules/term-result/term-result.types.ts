@@ -1,0 +1,18 @@
+export type TTermResultSummary = {
+  termId: string;
+  termName: string;
+  academicYear: string;
+  termGPA: number;
+  termGrade: string;
+  subjectResults: TSubjectResult[];
+};
+
+export type TSubjectResult = {
+  subjectId: string;
+  subjectName: string;
+  fullMarks: number;
+  obtainedMarks: number;
+  grade: string;
+  gpa: number;
+  componentMarks: Record<string, number>;
+};

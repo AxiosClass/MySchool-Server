@@ -1,6 +1,8 @@
 import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
 import { TObject } from '../../utils/types';
+import { getSubjectResult, getTermResultSummary } from './term-result.helper';
+import { TTermResultSummary, TSubjectResult } from './term-result.types';
 import { TAddTermResultPayload, termResultValidation } from './term-result.validation';
 
 const addTermResult = async (payload: TAddTermResultPayload, teacherId: string) => {
@@ -90,36 +92,81 @@ const generateStudentGrade = async (studentId: string, query: TObject) => {
   const year = query.year ?? new Date().getFullYear();
 
   const termsFromDB = await prismaClient.term.findMany({
-    where: { year },
-    select: { id: true, name: true, classSubjects: true, studentClass: true },
+    where: { year, status: 'ENDED' },
+    select: { id: true, name: true, year: true, classSubjects: true, studentClass: true },
   });
 
   // termId => subjectIds[]
   const termsWithSubjects: Record<string, string[]> = {};
   const subjectIds = new Set<string>();
+  const terms: Array<{ id: string; name: string; year: string }> = [];
 
-  for (const term of termsFromDB) {
+  termsFromDB.forEach((term) => {
     const studentClass = term.studentClass as Record<string, string>;
     const classSubjects = term.classSubjects as Record<string, string[]>;
     const classId = studentClass[studentId];
 
-    if (!classId) continue;
+    if (!classId) return;
 
+    terms.push({ id: term.id, name: term.name, year: term.year });
     const subjects = classSubjects[classId] ?? [];
-
     termsWithSubjects[term.id] = subjects;
 
-    for (const subjectId of subjects) {
+    subjects.forEach((subjectId) => {
       subjectIds.add(subjectId);
-    }
-  }
+    });
+  });
 
+  // fetching subjects
   const subjects = await prismaClient.subject.findMany({
     where: { id: { in: Array.from(subjectIds) } },
     select: { id: true, type: true, name: true },
   });
 
-  return { subjects };
+  // fetching results
+  const termResults = await prismaClient.termResult.findMany({
+    where: { termId: { in: terms.map((term) => term.id) }, studentId },
+    select: { termId: true, marks: true, subjectId: true },
+  });
+
+  const subjectMap = new Map(subjects.map((subject) => [subject.id, subject]));
+  const termResultMap = new Map(termResults.map((result) => [`${result.subjectId}_${result.termId}`, result]));
+
+  const termsResultSummary: TTermResultSummary[] = [];
+  terms.forEach((term) => {
+    const subjectIds = termsWithSubjects[term.id] ?? [];
+
+    const subjectResults: TSubjectResult[] = [];
+    subjectIds.forEach((subjectId) => {
+      const subject = subjectMap.get(subjectId);
+      if (!subject) return;
+
+      const termResult = termResultMap.get(`${subjectId}_${term.id}`);
+      const termMarks = (termResult?.marks ?? {}) as Record<string, number>;
+
+      const subjectResult = getSubjectResult({
+        subjectId,
+        subjectName: subject.name,
+        subjectType: subject.type,
+        componentMarks: termMarks,
+      });
+
+      subjectResults.push(subjectResult);
+    });
+
+    const termResultSummary = getTermResultSummary({
+      academicYear: term.year,
+      termName: term.name,
+      termId: term.id,
+      subjectResults: subjectResults,
+    });
+
+    termsResultSummary.push(termResultSummary);
+  });
+
+  return termsResultSummary;
 };
+
+// Types
 
 export const termResultService = { addTermResult, getStudentsWithTermResult, generateStudentGrade };
