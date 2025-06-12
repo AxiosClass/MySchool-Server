@@ -13,6 +13,9 @@ CREATE TYPE "PaymentType" AS ENUM ('ADMISSION_FEE', 'MONTHLY_FEE', 'OTHERS');
 -- CreateEnum
 CREATE TYPE "NoticeFor" AS ENUM ('TEACHER', 'STUDENT', 'ALL');
 
+-- CreateEnum
+CREATE TYPE "TermStatus" AS ENUM ('PENDING', 'ONGOING', 'ENDED');
+
 -- CreateTable
 CREATE TABLE "admins" (
     "id" TEXT NOT NULL,
@@ -97,7 +100,7 @@ CREATE TABLE "subjects" (
 -- CreateTable
 CREATE TABLE "class_subjects" (
     "id" TEXT NOT NULL,
-    "classId" TEXT,
+    "classId" TEXT NOT NULL,
     "subjectId" TEXT NOT NULL,
 
     CONSTRAINT "class_subjects_pkey" PRIMARY KEY ("id")
@@ -182,6 +185,52 @@ CREATE TABLE "holidays" (
     CONSTRAINT "holidays_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "notes" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "description" TEXT,
+    "createdBy" TEXT NOT NULL,
+    "classroomId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "notes_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "media" (
+    "id" TEXT NOT NULL,
+    "url" TEXT NOT NULL,
+    "noteId" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "media_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "terms" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "year" TEXT NOT NULL,
+    "status" "TermStatus" NOT NULL DEFAULT 'PENDING',
+    "classSubjects" JSONB NOT NULL,
+    "studentClass" JSONB NOT NULL,
+
+    CONSTRAINT "terms_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "term_results" (
+    "termId" TEXT NOT NULL,
+    "studentId" TEXT NOT NULL,
+    "subjectId" TEXT NOT NULL,
+    "marks" JSONB NOT NULL,
+    "createAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "teachers_nid_key" ON "teachers"("nid");
 
@@ -206,6 +255,9 @@ CREATE UNIQUE INDEX "classrooms_classId_name_key" ON "classrooms"("classId", "na
 -- CreateIndex
 CREATE UNIQUE INDEX "classroom_subject_teacher_subjectId_classroomId_teacherId_key" ON "classroom_subject_teacher"("subjectId", "classroomId", "teacherId");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "term_results_termId_studentId_subjectId_key" ON "term_results"("termId", "studentId", "subjectId");
+
 -- AddForeignKey
 ALTER TABLE "students" ADD CONSTRAINT "students_classroomId_fkey" FOREIGN KEY ("classroomId") REFERENCES "classrooms"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -213,7 +265,7 @@ ALTER TABLE "students" ADD CONSTRAINT "students_classroomId_fkey" FOREIGN KEY ("
 ALTER TABLE "subjects" ADD CONSTRAINT "subjects_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "subjects"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "class_subjects" ADD CONSTRAINT "class_subjects_classId_fkey" FOREIGN KEY ("classId") REFERENCES "classes"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "class_subjects" ADD CONSTRAINT "class_subjects_classId_fkey" FOREIGN KEY ("classId") REFERENCES "classes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "class_subjects" ADD CONSTRAINT "class_subjects_subjectId_fkey" FOREIGN KEY ("subjectId") REFERENCES "subjects"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -241,3 +293,21 @@ ALTER TABLE "discount" ADD CONSTRAINT "discount_studentId_fkey" FOREIGN KEY ("st
 
 -- AddForeignKey
 ALTER TABLE "attendances" ADD CONSTRAINT "attendances_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "notes" ADD CONSTRAINT "notes_classroomId_fkey" FOREIGN KEY ("classroomId") REFERENCES "classrooms"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "notes" ADD CONSTRAINT "notes_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "teachers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "media" ADD CONSTRAINT "media_noteId_fkey" FOREIGN KEY ("noteId") REFERENCES "notes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "term_results" ADD CONSTRAINT "term_results_termId_fkey" FOREIGN KEY ("termId") REFERENCES "terms"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "term_results" ADD CONSTRAINT "term_results_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "term_results" ADD CONSTRAINT "term_results_subjectId_fkey" FOREIGN KEY ("subjectId") REFERENCES "subjects"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -86,4 +86,40 @@ const getStudentsWithTermResult = async (query: TObject) => {
   return studentsWithTermResult;
 };
 
-export const termResultService = { addTermResult, getStudentsWithTermResult };
+const generateStudentGrade = async (studentId: string, query: TObject) => {
+  const year = query.year ?? new Date().getFullYear();
+
+  const termsFromDB = await prismaClient.term.findMany({
+    where: { year },
+    select: { id: true, name: true, classSubjects: true, studentClass: true },
+  });
+
+  // termId => subjectIds[]
+  const termsWithSubjects: Record<string, string[]> = {};
+  const subjectIds = new Set<string>();
+
+  for (const term of termsFromDB) {
+    const studentClass = term.studentClass as Record<string, string>;
+    const classSubjects = term.classSubjects as Record<string, string[]>;
+    const classId = studentClass[studentId];
+
+    if (!classId) continue;
+
+    const subjects = classSubjects[classId] ?? [];
+
+    termsWithSubjects[term.id] = subjects;
+
+    for (const subjectId of subjects) {
+      subjectIds.add(subjectId);
+    }
+  }
+
+  const subjects = await prismaClient.subject.findMany({
+    where: { id: { in: Array.from(subjectIds) } },
+    select: { id: true, type: true, name: true },
+  });
+
+  return { subjects };
+};
+
+export const termResultService = { addTermResult, getStudentsWithTermResult, generateStudentGrade };

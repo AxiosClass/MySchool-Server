@@ -16,4 +16,10 @@ termResultRouter.post(
 
 termResultRouter.get('/students', authGuard(USER_ROLES.TEACHER), termResultController.getStudentsWithTermResult);
 
+termResultRouter.get(
+  '/grade/:studentId',
+  // authGuard(USER_ROLES.TEACHER, USER_ROLES.STUDENT, USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  termResultController.generateStudentGrade,
+);
+
 export { termResultRouter };

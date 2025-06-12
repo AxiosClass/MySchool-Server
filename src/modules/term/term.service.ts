@@ -3,31 +3,35 @@ import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
 import { TObject } from '../../utils/types';
 import { TAddOrUpdateTermPayload, TUpdateStatusPayload } from './term.validation';
-import { transformer } from 'zod';
 
 const addTerm = async (payload: TAddOrUpdateTermPayload) => {
-  const previousTerm = await prismaClient.term.findMany({ where: { status: { in: ['ONGOING', 'PENDING'] } } });
-  if (previousTerm.length) throw new AppError('There is an ongoing or pending term, First end the previous term', 400);
+  const activeTerm = await prismaClient.term.findFirst({ where: { status: { in: ['ONGOING', 'PENDING'] } } });
+  if (activeTerm) throw new AppError('There is an ongoing or pending term, First end the previous term', 400);
 
   // collecting class subject snapshot
-  const classSubjects = await prismaClient.classSubject.findMany({ select: { classId: true, subjectId: true } });
+  const classSubjects = await prismaClient.classSubject.findMany({
+    select: { classId: true, subject: { select: { type: true, id: true, childSubject: { select: { id: true } } } } },
+  });
 
-  const classSubjectSnapShot = classSubjects?.reduce((acc: Record<string, string[]>, classSubject) => {
-    const { classId, subjectId } = classSubject;
-    if (!acc[classId]) acc[classId] = [];
-    acc[classId].push(subjectId);
-    return acc;
-  }, {});
+  const classSubjectSnapShot: Record<string, string[]> = {};
+  classSubjects.forEach(({ classId, subject }) => {
+    if (!classSubjectSnapShot[classId]) classSubjectSnapShot[classId] = [];
+
+    if (subject.type === 'COMBINED')
+      subject.childSubject?.forEach((child) => classSubjectSnapShot[classId].push(child.id));
+    else classSubjectSnapShot[classId].push(subject.id);
+  });
 
   const students = await prismaClient.student.findMany({
     select: { id: true, classroom: { select: { classId: true } } },
   });
 
-  const studentClassSnapShot = students.reduce((acc: Record<string, string>, student) => {
+  // collecting student's class snap shot
+  const studentClassSnapShot: Record<string, string> = {};
+  students.forEach((student) => {
     const { id, classroom } = student;
-    acc[id] = classroom.classId;
-    return acc;
-  }, {});
+    studentClassSnapShot[id] = classroom.classId;
+  });
 
   const year = new Date().getFullYear();
   const term = await prismaClient.term.create({
@@ -35,7 +39,7 @@ const addTerm = async (payload: TAddOrUpdateTermPayload) => {
       name: payload.name,
       year: String(year),
       classSubjects: classSubjectSnapShot,
-      StudentClass: studentClassSnapShot,
+      studentClass: studentClassSnapShot,
     },
     select: { id: true },
   });

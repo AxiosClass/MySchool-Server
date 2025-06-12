@@ -269,7 +269,7 @@ model Term {
   year          String
   status        TermStatus @default(PENDING)
   classSubjects Json
-  StudentClass  Json
+  studentClass  Json
 
   termResult TermResult[]
 
@@ -294,6 +294,7 @@ model TermResult {
   student Student @relation(fields: [studentId], references: [id])
   subject Subject @relation(fields: [subjectId], references: [id])
 
+  @@id([termId, studentId, subjectId])
   @@unique([termId, studentId, subjectId])
   @@map("term_results")
 }
