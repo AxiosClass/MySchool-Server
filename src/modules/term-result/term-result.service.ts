@@ -88,7 +88,7 @@ const getStudentsWithTermResult = async (query: TObject) => {
   return studentsWithTermResult;
 };
 
-const generateStudentGrade = async (studentId: string, query: TObject) => {
+const getTermsResultSummary = async (studentId: string, query: TObject) => {
   const year = query.year ?? new Date().getFullYear();
 
   const termsFromDB = await prismaClient.term.findMany({
@@ -184,4 +184,4 @@ const generateStudentGrade = async (studentId: string, query: TObject) => {
 
 // Types
 
-export const termResultService = { addTermResult, getStudentsWithTermResult, generateStudentGrade };
+export const termResultService = { addTermResult, getStudentsWithTermResult, getTermsResultSummary };

@@ -17,9 +17,9 @@ const getStudentsWithTermResult = catchAsync(async (req, res) => {
   });
 });
 
-const generateStudentGrade = catchAsync(async (req, res) => {
-  const result = await termResultService.generateStudentGrade(req.params.studentId, req.query as TObject);
+const getTermsResultSummary = catchAsync(async (req, res) => {
+  const result = await termResultService.getTermsResultSummary(req.params.studentId, req.query as TObject);
   sendSuccessResponse(res, { message: 'Grade generated successfully', data: result });
 });
 
-export const termResultController = { addTermResult, getStudentsWithTermResult, generateStudentGrade };
+export const termResultController = { addTermResult, getStudentsWithTermResult, getTermsResultSummary };
