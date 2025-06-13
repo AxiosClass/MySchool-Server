@@ -19,7 +19,7 @@ const getAttendancesForClassroom = catchAsync(async (req, res) => {
 });
 
 const getAttendancesForStudent = catchAsync(async (req, res) => {
-  const result = await attendanceService.getAttendancesForStudent(req.user.id, req.query as TObject);
+  const result = await attendanceService.getAttendancesForStudent(req.params.studentId, req.query as TObject);
   sendSuccessResponse(res, { message: 'Attendance fetched successfully', data: result });
 });
 
