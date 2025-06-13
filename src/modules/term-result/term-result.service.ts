@@ -89,7 +89,7 @@ const getStudentsWithTermResult = async (query: TObject) => {
 };
 
 const getTermsResultSummary = async (studentId: string, query: TObject) => {
-  const year = query.year ?? new Date().getFullYear();
+  const year = query.year ?? new Date().getFullYear().toString();
 
   const termsFromDB = await prismaClient.term.findMany({
     where: { year, status: 'ENDED' },
@@ -160,7 +160,7 @@ const getTermsResultSummary = async (studentId: string, query: TObject) => {
         subjectId,
         subjectName: subject.name,
         subjectType: subject.type,
-        componentMarks: termMarks,
+        marks: termMarks,
       });
 
       subjectResults.push(subjectResult);

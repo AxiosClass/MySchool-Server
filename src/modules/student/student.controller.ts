@@ -18,7 +18,7 @@ const issueNfcCard = catchAsync(async (req, res) => {
 });
 
 const getStudentInfo = catchAsync(async (req, res) => {
-  const result = await studentService.getStudentInfo(req.user.id);
+  const result = await studentService.getStudentInfo(req.params.studentId);
   sendSuccessResponse(res, { message: 'Student Info Fetched Successfully', data: result });
 });
 

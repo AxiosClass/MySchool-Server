@@ -1,33 +1,45 @@
 import { SubjectType } from '@prisma/client';
 import { TSubjectResult, TTermResultSummary } from './term-result.types';
 
-type TPrepareGradeArgs = Pick<TSubjectResult, 'subjectId' | 'subjectName' | 'componentMarks'> & {
+type TPrepareGradeArgs = Pick<TSubjectResult, 'subjectId' | 'subjectName'> & {
   subjectType: SubjectType;
+  marks: Record<string, number>;
 };
 
-export const getSubjectResult = ({
-  subjectId,
-  subjectType,
-  componentMarks,
-  subjectName,
-}: TPrepareGradeArgs): TSubjectResult => {
+export const getSubjectResult = ({ subjectId, subjectType, marks, subjectName }: TPrepareGradeArgs): TSubjectResult => {
   const schema = {
-    CQ_MCQ: { total: 100, pass: 33, utils: { cq: 23, mcq: 10 } },
-    CQ_MCQ_PRACTICAL: { total: 100, pass: 33, utils: { cq: 17, mcq: 8, practical: 8 } },
-    WRITTEN_FULL: { total: 100, pass: 33 },
-    WRITTEN_HALF: { total: 50, pass: 17 },
+    CQ_MCQ: { total: 100, pass: 33, utils: { cq: 23, mcq: 10 }, components: { cq: 70, mcq: 30 } },
+    CQ_MCQ_PRACTICAL: {
+      total: 100,
+      pass: 33,
+      utils: { cq: 17, mcq: 8, practical: 8 },
+      components: { cq: 50, mcq: 25, practical: 25 },
+    },
+    WRITTEN_FULL: { total: 100, pass: 33, components: { written: 100 } },
+    WRITTEN_HALF: { total: 50, pass: 17, components: { written: 50 } },
   };
 
   const subjectSchema = schema[subjectType as keyof typeof schema];
 
   const fullMarks = subjectSchema.total;
-  const obtainedMarks = Object.values(componentMarks).reduce((acc, mark) => (acc += mark), 0);
+  const componentMarks: TSubjectResult['componentMarks'] = {};
+  let obtainedMarks = 0;
+
+  Object.keys(marks).forEach((key) => {
+    obtainedMarks += marks[key];
+    componentMarks[key] = {
+      total: subjectSchema.components[key as keyof typeof subjectSchema.components],
+      obtained: marks[key],
+    };
+  });
+
+  // const obtainedMarks = Object.values(marks).reduce((acc, mark) => (acc += mark), 0);.
   let { grade, gpa } = getGradeAndGpa((obtainedMarks * 100) / fullMarks);
 
   if ('utils' in subjectSchema) {
     const utils = subjectSchema.utils as Record<string, number>;
-    for (const key of Object.keys(componentMarks)) {
-      if (componentMarks[key] < utils[key]) {
+    for (const key of Object.keys(marks)) {
+      if (marks[key] < utils[key]) {
         grade = 'F';
         gpa = 0;
         break;

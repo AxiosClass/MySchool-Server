@@ -76,7 +76,7 @@ const issueNfcCard = async (payload: TIssueNfcCardPayload) => {
 const getStudentInfo = async (studentId: string) => {
   const studentInfo = await prismaClient.student.findUnique({
     where: { id: studentId },
-    select: { id: true, name: true, class: true, classroom: { select: { name: true } } },
+    select: { id: true, name: true, class: true, classroom: { select: { name: true } }, admittedAt: true },
   });
 
   if (!studentInfo) throw new AppError('Student not found', 404);

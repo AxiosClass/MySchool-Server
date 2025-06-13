@@ -15,5 +15,5 @@ export type TSubjectResult = {
   obtainedMarks: number;
   grade: string;
   gpa: number;
-  componentMarks: Record<string, number>;
+  componentMarks: Record<string, { obtained: number; total: number }>;
 };
