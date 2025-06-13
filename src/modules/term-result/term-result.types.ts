@@ -2,6 +2,7 @@ export type TTermResultSummary = {
   termId: string;
   termName: string;
   academicYear: string;
+  classInfo: { name: string; level: string };
   termGPA: number;
   termGrade: string;
   subjectResults: TSubjectResult[];

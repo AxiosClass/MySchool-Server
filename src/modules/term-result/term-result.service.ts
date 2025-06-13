@@ -99,7 +99,8 @@ const generateStudentGrade = async (studentId: string, query: TObject) => {
   // termId => subjectIds[]
   const termsWithSubjects: Record<string, string[]> = {};
   const subjectIds = new Set<string>();
-  const terms: Array<{ id: string; name: string; year: string }> = [];
+  const terms: Array<{ id: string; name: string; year: string; classId: string }> = [];
+  const classIds: string[] = [];
 
   termsFromDB.forEach((term) => {
     const studentClass = term.studentClass as Record<string, string>;
@@ -107,8 +108,9 @@ const generateStudentGrade = async (studentId: string, query: TObject) => {
     const classId = studentClass[studentId];
 
     if (!classId) return;
-
-    terms.push({ id: term.id, name: term.name, year: term.year });
+    classIds.push(classId);
+    // now storing classId later it will be replaced with actual class
+    terms.push({ id: term.id, name: term.name, year: term.year, classId });
     const subjects = classSubjects[classId] ?? [];
     termsWithSubjects[term.id] = subjects;
 
@@ -129,8 +131,18 @@ const generateStudentGrade = async (studentId: string, query: TObject) => {
     select: { termId: true, marks: true, subjectId: true },
   });
 
+  // fetching classes
+  const classes = await prismaClient.class.findMany({
+    where: { id: { in: classIds } },
+    select: { id: true, name: true, level: true },
+  });
+
   const subjectMap = new Map(subjects.map((subject) => [subject.id, subject]));
   const termResultMap = new Map(termResults.map((result) => [`${result.subjectId}_${result.termId}`, result]));
+
+  const classMap = new Map(
+    classes.map((eachClass) => [eachClass.id, { name: eachClass.name, level: eachClass.level }]),
+  );
 
   const termsResultSummary: TTermResultSummary[] = [];
   terms.forEach((term) => {
@@ -154,11 +166,14 @@ const generateStudentGrade = async (studentId: string, query: TObject) => {
       subjectResults.push(subjectResult);
     });
 
+    const classInfo = classMap.get(term.classId) || { name: '', level: '' };
+
     const termResultSummary = getTermResultSummary({
       academicYear: term.year,
       termName: term.name,
       termId: term.id,
       subjectResults: subjectResults,
+      classInfo,
     });
 
     termsResultSummary.push(termResultSummary);

@@ -48,13 +48,17 @@ export const getGradeAndGpa = (percentage: number) => {
   return { grade: 'F', gpa: 0 };
 };
 
-type TGenerateGpaForTermArgs = Pick<TTermResultSummary, 'termId' | 'termName' | 'academicYear' | 'subjectResults'>;
+type TGenerateGpaForTermArgs = Pick<
+  TTermResultSummary,
+  'termId' | 'termName' | 'academicYear' | 'subjectResults' | 'classInfo'
+>;
 
 export const getTermResultSummary = ({
   termId,
   termName,
   academicYear,
   subjectResults,
+  classInfo,
 }: TGenerateGpaForTermArgs): TTermResultSummary => {
   const totalGpa = subjectResults.reduce((acc, result) => (acc += result.gpa), 0);
   const isFailed = subjectResults.some((result) => !result.gpa);
@@ -63,7 +67,7 @@ export const getTermResultSummary = ({
   const termGPA = isFailed ? 0 : totalGpa / totalSubjects;
   const termGrade = getGradeFromGpa(termGPA);
 
-  return { termId, termName, academicYear, termGPA, termGrade, subjectResults };
+  return { termId, termName, academicYear, classInfo, termGPA, termGrade, subjectResults };
 };
 
 export const getGradeFromGpa = (gpa: number): string => {
