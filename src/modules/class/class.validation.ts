@@ -4,6 +4,7 @@ const addClassSchema = z.object({
   name: z.string().min(1, { message: 'Class Name is required' }),
   level: z.string().min(1, { message: 'Level is required' }),
   monthlyFee: z.number().positive({ message: 'Monthly fee can not be negative' }),
+  termFee: z.number().positive({ message: 'Term fee can not be negative' }),
   admissionFee: z.number().positive({ message: 'Admission fee can not be negative' }),
 });
 

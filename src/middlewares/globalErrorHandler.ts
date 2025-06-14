@@ -15,8 +15,6 @@ export const globalErrorHandler: ErrorRequestHandler = (error, _, res, __) => {
   let status: number = error.status || 500;
   let message: string = error.message || 'something went wrong';
 
-  console.log(error);
-
   // handling error for zod
   if (error.name === 'ZodError') {
     message = error.issues
@@ -37,6 +35,7 @@ export const globalErrorHandler: ErrorRequestHandler = (error, _, res, __) => {
   }
 
   const errorInfo = NODE_ENV === 'development' ? error : null;
+  if (NODE_ENV === 'development') console.log(error);
 
   return sendErrorResponse(res, { status, message, error: errorInfo });
 };

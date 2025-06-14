@@ -88,6 +88,7 @@ model Class {
   name         String   @unique
   level        String   @unique
   monthlyFee   Float
+  termFee      Float
   admissionFee Float
   createdAt    DateTime @default(now())
 
