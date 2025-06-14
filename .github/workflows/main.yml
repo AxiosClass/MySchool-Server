@@ -1,7 +1,11 @@
 name: Generate Monthly Dues
 on:
   schedule:
-    - cron: '0 0 1 * *' # 00:00 UTC → 06:00 AM in Bangladesh on the 1st day of each month
+   # Runs on 1st of every month at 00:00 UTC (→ 06:00 AM BD time)
+   # - cron: '0 0 1 * *'
+   
+   # 🔁 For testing: runs every 5 minutes
+   - cron: '*/5 * * * *'
   workflow_dispatch: # (optional) allows manual triggering via GitHub UI
 
 jobs:
