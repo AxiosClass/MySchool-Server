@@ -6,6 +6,7 @@ const takePaymentSchema = z
   .object({
     amount: z.number().min(0, { message: 'Amount can not be negative' }),
     month: z.number().optional(),
+    classId: z.string().min(1, { message: 'ClassId is required' }),
     year: z.number().min(0, { message: 'Invalid Year' }),
     description: z.string().optional(),
     type: enumGenerator(Object.keys(PaymentType), 'Invalid payment type'),

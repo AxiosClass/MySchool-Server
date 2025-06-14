@@ -94,13 +94,28 @@ const getStudentInfo = async (studentId: string) => {
       classroom: { select: { name: true, class: { select: { name: true, level: true } } } },
       admittedAt: true,
       status: true,
+      dues: { select: { amount: true } },
+      payments: { select: { amount: true } },
+      discounts: { select: { amount: true } },
     },
   });
 
   if (!studentInfo) throw new AppError('Student not found', 404);
   const { classroom, ...rest } = studentInfo;
 
-  return { ...rest, classroomName: classroom.name, className: classroom.class.name, classLevel: classroom.class.level };
+  const totalDue = studentInfo.dues.reduce((acc, due) => (acc += due.amount), 0);
+  const totalPaid = studentInfo.payments.reduce((acc, payment) => (acc += payment.amount), 0);
+  const totalDiscount = studentInfo.discounts.reduce((acc, discount) => (acc += discount.amount), 0);
+
+  return {
+    ...rest,
+    classroomName: classroom.name,
+    className: classroom.class.name,
+    classLevel: classroom.class.level,
+    totalPaid,
+    totalDue,
+    totalDiscount,
+  };
 };
 
 export const studentService = { addStudent, getStudents, issueNfcCard, getStudentInfo };
