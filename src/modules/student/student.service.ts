@@ -40,7 +40,7 @@ const addStudent = async (payload: TAddStudentPayload) => {
     const studentClassInfo = student.classroom.class;
 
     // creating student's due amount
-    const due = await tClient.due.create({
+    await tClient.due.create({
       data: {
         classId: studentClassInfo.id,
         amount: studentClassInfo.admissionFee,

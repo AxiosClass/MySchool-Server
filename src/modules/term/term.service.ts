@@ -1,4 +1,4 @@
-import { TermStatus } from '@prisma/client';
+import { Prisma, TermStatus } from '@prisma/client';
 import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
 import { TObject } from '../../utils/types';
@@ -23,29 +23,47 @@ const addTerm = async (payload: TAddOrUpdateTermPayload) => {
   });
 
   const students = await prismaClient.student.findMany({
-    select: { id: true, classroom: { select: { classId: true } } },
+    select: { id: true, classroom: { select: { class: { select: { id: true, termFee: true } } } } },
   });
 
   // collecting student's class snap shot
   const studentClassSnapShot: Record<string, string> = {};
   students.forEach((student) => {
     const { id, classroom } = student;
-    studentClassSnapShot[id] = classroom.classId;
+    studentClassSnapShot[id] = classroom.class.id;
   });
 
-  const year = new Date().getFullYear();
-  const term = await prismaClient.term.create({
-    data: {
-      name: payload.name,
-      year: String(year),
-      classSubjects: classSubjectSnapShot,
-      studentClass: studentClassSnapShot,
-    },
-    select: { id: true },
+  const message = await prismaClient.$transaction(async (tClient) => {
+    const year = new Date().getFullYear();
+
+    const term = await prismaClient.term.create({
+      data: {
+        name: payload.name,
+        year: String(year),
+        classSubjects: classSubjectSnapShot,
+        studentClass: studentClassSnapShot,
+      },
+      select: { id: true },
+    });
+
+    const dueInputs = students.map<Prisma.DueCreateManyInput>(({ id, classroom }) => {
+      const classInfo = classroom.class;
+      return {
+        studentId: id,
+        classId: classInfo.id,
+        termId: term.id,
+        type: 'TERM_FEE',
+        year: year.toString(),
+        amount: classInfo.termFee,
+      };
+    });
+
+    await tClient.due.createMany({ data: dueInputs });
+
+    return 'Term added successfully';
   });
 
-  if (!term.id) throw new AppError('Failed to create term', 500);
-  return 'Term added successfully';
+  return message;
 };
 
 const getTerms = async (query: TObject) => {
