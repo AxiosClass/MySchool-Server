@@ -1,0 +1,14 @@
+name: Generate Monthly Dues
+on:
+  schedule:
+    - cron: '0 0 1 * *' # 00:00 UTC → 06:00 AM in Bangladesh on the 1st day of each month
+  workflow_dispatch: # (optional) allows manual triggering via GitHub UI
+
+jobs:
+  generate-due:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Call API to generate monthly dues
+        run: |
+          curl -X POST "https://your-vercel-app.vercel.app/api/generate-monthly-dues?secret=YOUR_SECRET"
