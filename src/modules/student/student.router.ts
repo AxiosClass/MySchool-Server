@@ -36,4 +36,10 @@ studentsRouter.get(
   studentController.getStudents,
 );
 
+studentsRouter.get(
+  '/list',
+  authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
+  studentController.getStudentListForPayment,
+);
+
 export { studentRouter, studentsRouter };

@@ -118,4 +118,25 @@ const getStudentInfo = async (studentId: string) => {
   };
 };
 
-export const studentService = { addStudent, getStudents, issueNfcCard, getStudentInfo };
+const getStudentListForPayment = async () => {
+  const students = await prismaClient.student.findMany({
+    select: {
+      id: true,
+      name: true,
+      classroom: { select: { name: true, class: { select: { name: true, level: true } } } },
+    },
+  });
+
+  return students.map((student) => {
+    const { classroom, ...rest } = student;
+
+    return {
+      ...rest,
+      classroomName: classroom.name,
+      className: classroom.class.name,
+      classLevel: classroom.class.level,
+    };
+  });
+};
+
+export const studentService = { addStudent, getStudents, issueNfcCard, getStudentInfo, getStudentListForPayment };
