@@ -3,8 +3,8 @@ import { catchAsync } from '../../middlewares/catchAsync';
 import { studentService } from './student.service';
 
 const addStudent = catchAsync(async (req, res) => {
-  const { id, password } = await studentService.addStudent(req.body);
-  sendSuccessResponse(res, { status: 201, message: 'Student added successfully', data: { id, password } });
+  const message = await studentService.addStudent(req.body);
+  sendSuccessResponse(res, { status: 201, message });
 });
 
 const getStudents = catchAsync(async (_, res) => {

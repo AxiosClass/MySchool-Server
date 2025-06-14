@@ -30,18 +30,30 @@ const addStudent = async (payload: TAddStudentPayload) => {
 
   const hashedPassword = await encryptPassword(payload.birthId);
 
-  // creating the student
-  const student = await prismaClient.student.create({
-    data: {
-      ...payload,
-      id: studentId,
-      password: hashedPassword,
-      class: classInfo.class.level,
-    },
-    select: { id: true, password: true },
+  const message = await prismaClient.$transaction(async (tClient) => {
+    // creating student
+    const student = await tClient.student.create({
+      data: { ...payload, id: studentId, password: hashedPassword, class: classInfo.class.level },
+      select: { id: true, classroom: { select: { class: { select: { id: true, admissionFee: true } } } } },
+    });
+
+    const studentClassInfo = student.classroom.class;
+
+    // creating student's due amount
+    const due = await tClient.due.create({
+      data: {
+        classId: studentClassInfo.id,
+        amount: studentClassInfo.admissionFee,
+        type: 'ADMISSION_FEE',
+        studentId: student.id,
+        year: new Date().getFullYear().toString(),
+      },
+    });
+
+    return 'Student added successfully';
   });
 
-  return { ...student };
+  return message;
 };
 
 const getStudents = async () => {

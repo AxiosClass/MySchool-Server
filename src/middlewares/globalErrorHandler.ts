@@ -1,6 +1,7 @@
 import { ErrorRequestHandler } from 'express';
 import { sendErrorResponse } from '../helpers/responseHelper';
 import { NODE_ENV } from '../app/config';
+import { Prisma } from '@prisma/client';
 
 interface IZodIssue {
   code: string;
@@ -14,6 +15,8 @@ export const globalErrorHandler: ErrorRequestHandler = (error, _, res, __) => {
   let status: number = error.status || 500;
   let message: string = error.message || 'something went wrong';
 
+  console.log(error);
+
   // handling error for zod
   if (error.name === 'ZodError') {
     message = error.issues
@@ -25,8 +28,12 @@ export const globalErrorHandler: ErrorRequestHandler = (error, _, res, __) => {
         return msg;
       })
       .join(' | ');
-
-    console.log(message);
+  } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+    if (error.code === 'P2002') {
+      const fields = (error.meta?.target as string[])?.join(', ') || 'Unknown field';
+      message = `Duplicate entry: A record with the same ${fields} already exists.`;
+      status = 409;
+    }
   }
 
   const errorInfo = NODE_ENV === 'development' ? error : null;

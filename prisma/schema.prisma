@@ -73,6 +73,7 @@ model Student {
   discounts   Discount[]
   attendances Attendance[]
   termResults TermResult[]
+  dues        Due[]
 
   @@map("students")
 }
@@ -92,6 +93,8 @@ model Class {
 
   classrooms Classroom[]
   subjects   ClassSubject[]
+  payments   Payment[]
+  dues       Due[]
 
   @@map("classes")
 }
@@ -168,6 +171,8 @@ model ClassroomSubjectTeacher {
 model Payment {
   id          String      @id @default(uuid())
   amount      Float
+  classId     String
+  termId      String?
   month       Int?
   year        Int
   createdAt   DateTime    @default(now())
@@ -176,6 +181,8 @@ model Payment {
   studentId   String
 
   student Student @relation(fields: [studentId], references: [id])
+  class   Class   @relation(fields: [classId], references: [id])
+  term    Term?   @relation(fields: [termId], references: [id])
 
   @@map("payments")
 }
@@ -183,6 +190,32 @@ model Payment {
 enum PaymentType {
   ADMISSION_FEE
   MONTHLY_FEE
+  TERM_FEE
+  OTHERS
+}
+
+model Due {
+  id        String   @id() @default(uuid())
+  studentId String
+  classId   String
+  termId    String?
+  type      DueType
+  year      String
+  month     String?
+  amount    Int
+  createdAt DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id])
+  class   Class   @relation(fields: [classId], references: [id])
+  term    Term?   @relation(fields: [termId], references: [id])
+
+  @@map("dues")
+}
+
+enum DueType {
+  ADMISSION_FEE
+  MONTHLY_FEE
+  TERM_FEE
   OTHERS
 }
 
@@ -272,6 +305,8 @@ model Term {
   studentClass  Json
 
   termResult TermResult[]
+  payments   Payment[]
+  dues       Due[]
 
   @@map("terms")
 }
