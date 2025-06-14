@@ -53,8 +53,8 @@ const addTerm = async (payload: TAddOrUpdateTermPayload) => {
         classId: classInfo.id,
         termId: term.id,
         type: 'TERM_FEE',
-        year: year.toString(),
         amount: classInfo.termFee,
+        year,
       };
     });
 

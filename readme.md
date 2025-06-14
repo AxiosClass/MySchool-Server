@@ -18,4 +18,7 @@ ADMIN_PASSWORD="@admin@"
 # Email Service
 EMAIL="faisa.lahmed.ost@gmail.com"
 PASSWORD="gltw kbjy vfky pgvj"
+
+# GithubAction Secret
+GITHUB_ACTION_SECRET="@@git-action@@"
 ```

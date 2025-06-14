@@ -46,7 +46,7 @@ const addStudent = async (payload: TAddStudentPayload) => {
         amount: studentClassInfo.admissionFee,
         type: 'ADMISSION_FEE',
         studentId: student.id,
-        year: new Date().getFullYear().toString(),
+        year: new Date().getFullYear(),
       },
     });
 

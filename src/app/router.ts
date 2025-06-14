@@ -14,6 +14,7 @@ import { metaDataRouter } from '../modules/meta-data/meta-data.router';
 import { adminRouter, adminsRouter } from '../modules/admin/admin.router';
 import { termRouter, termsRouter } from '../modules/term/term.router';
 import { termResultRouter } from '../modules/term-result/term-result.router';
+import { actionsRouter } from '../modules/actions/actions.router';
 
 export const appRouter = Router();
 
@@ -43,6 +44,7 @@ const routes: { path: string; router: Router }[] = [
   { path: '/term', router: termRouter },
   { path: '/terms', router: termsRouter },
   { path: '/term-result', router: termResultRouter },
+  { path: '/actions', router: actionsRouter },
 ];
 
 routes.forEach(({ path, router }) => appRouter.use(path, router));

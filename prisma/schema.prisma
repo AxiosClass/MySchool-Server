@@ -201,8 +201,8 @@ model Due {
   classId   String
   termId    String?
   type      DueType
-  year      String
-  month     String?
+  year      Int
+  month     Int?
   amount    Int
   createdAt DateTime @default(now())
 
