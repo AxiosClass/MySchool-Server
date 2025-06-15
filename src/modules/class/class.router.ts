@@ -39,6 +39,8 @@ classRouter.get(
   classController.getAssignedClassSubject,
 );
 
+classRouter.delete('/:classId', authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN), classController.deleteClass);
+
 const classesRouter = Router();
 
 // getting detailed class info

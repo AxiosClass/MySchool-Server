@@ -42,6 +42,11 @@ const updateAssignedSubjectList = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message });
 });
 
+const deleteClass = catchAsync(async (req, res) => {
+  const message = await classService.deleteClass(req.params.classId);
+  sendSuccessResponse(res, { message });
+});
+
 export const classController = {
   addClass,
   getClasses,
@@ -51,4 +56,5 @@ export const classController = {
   getClassroomList,
   getAssignedClassSubject,
   updateAssignedSubjectList,
+  deleteClass,
 };

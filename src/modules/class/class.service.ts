@@ -131,6 +131,14 @@ const updateAssignedSubjectList = async (payload: TAssignClassSubjectsPayload) =
   return 'Assigned subject list updated!';
 };
 
+const deleteClass = async (classId: string) => {
+  const isClassExist = await prismaClient.class.findUnique({ where: { id: classId } });
+  if (!isClassExist) throw new AppError('Class not found', 404);
+
+  await prismaClient.class.delete({ where: { id: classId } });
+  return 'Class deleted!';
+};
+
 export const classService = {
   addClass,
   getClasses,
@@ -140,4 +148,5 @@ export const classService = {
   getClassroomList,
   getAssignedClassSubjects,
   updateAssignedSubjectList,
+  deleteClass,
 };
