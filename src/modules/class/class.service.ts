@@ -15,16 +15,23 @@ const addClass = async (payload: TAddClassPayload) => {
   return classInfo;
 };
 
-const getClasses = () => {
-  return prismaClient.class.findMany({
+const getClasses = async () => {
+  const classes = await prismaClient.class.findMany({
     select: {
       id: true,
       name: true,
       level: true,
       admissionFee: true,
       monthlyFee: true,
-      classrooms: { select: { id: true, students: { select: { id: true } } } },
+      termFee: true,
+      classrooms: { select: { students: { select: { id: true } } } },
     },
+  });
+
+  return classes.map((classInfo) => {
+    const { classrooms, ...rest } = classInfo;
+    const totalStudent = classrooms.reduce((acc, classroom) => (acc += classroom.students.length), 0);
+    return { ...rest, totalStudent, totalClassroom: classrooms.length };
   });
 };
 
