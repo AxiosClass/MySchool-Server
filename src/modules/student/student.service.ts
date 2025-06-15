@@ -139,4 +139,28 @@ const getStudentListForPayment = async () => {
   });
 };
 
-export const studentService = { addStudent, getStudents, issueNfcCard, getStudentInfo, getStudentListForPayment };
+const getStudentClassInfo = async (studentId: string) => {
+  const student = await prismaClient.student.findUnique({
+    where: { id: studentId },
+    select: {
+      classroom: {
+        select: {
+          class: { select: { id: true, name: true, level: true, monthlyFee: true, admissionFee: true, termFee: true } },
+        },
+      },
+    },
+  });
+
+  if (!student) throw new AppError('Student does not exist', 404);
+
+  return student.classroom.class;
+};
+
+export const studentService = {
+  addStudent,
+  getStudents,
+  issueNfcCard,
+  getStudentInfo,
+  getStudentListForPayment,
+  getStudentClassInfo,
+};

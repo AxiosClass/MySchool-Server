@@ -28,6 +28,12 @@ studentRouter.get(
   studentController.getStudentInfo,
 );
 
+studentRouter.get(
+  '/:studentId/class',
+  authGuard(USER_ROLES.STUDENT, USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.TEACHER),
+  studentController.getStudentClassInfo,
+);
+
 const studentsRouter = Router();
 
 studentsRouter.get(

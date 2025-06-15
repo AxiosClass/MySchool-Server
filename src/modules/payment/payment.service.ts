@@ -10,8 +10,6 @@ const takePayment = async (payload: TTakePaymentPayload) => {
     select: { id: true },
   });
 
-  if (!payment) throw new AppError('Failed to take payment', 400);
-
   return payment;
 };
 
