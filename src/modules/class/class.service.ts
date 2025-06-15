@@ -1,6 +1,6 @@
 import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
-import type { TAddClassPayload, TAssignClassSubjectsPayload } from './class.validation';
+import type { TAddClassPayload, TAssignClassSubjectsPayload, TUpdateClassPayload } from './class.validation';
 
 const addClass = async (payload: TAddClassPayload) => {
   const isClassExist = await prismaClient.class.findFirst({
@@ -53,6 +53,14 @@ const getClassDetails = async (classId: string) => {
 
 const getClassList = () => {
   return prismaClient.class.findMany({ select: { level: true, name: true } });
+};
+
+const updateClass = async (payload: TUpdateClassPayload, classId: string) => {
+  const isClassExist = await prismaClient.class.findUnique({ where: { id: classId }, select: { id: true } });
+  if (!isClassExist) throw new AppError('Class not found', 404);
+
+  await prismaClient.class.update({ where: { id: classId }, data: payload });
+  return 'Class Updated successfully';
 };
 
 const getClassroomList = async (level: string) => {
@@ -119,6 +127,7 @@ export const classService = {
   getClasses,
   getClassDetails,
   getClassList,
+  updateClass,
   getClassroomList,
   getAssignedClassSubjects,
   updateAssignedSubjectList,
