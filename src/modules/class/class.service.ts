@@ -28,11 +28,13 @@ const getClasses = async () => {
     },
   });
 
-  return classes.map((classInfo) => {
-    const { classrooms, ...rest } = classInfo;
-    const totalStudent = classrooms.reduce((acc, classroom) => (acc += classroom.students.length), 0);
-    return { ...rest, totalStudent, totalClassroom: classrooms.length };
-  });
+  return classes
+    .map((classInfo) => {
+      const { classrooms, ...rest } = classInfo;
+      const totalStudent = classrooms.reduce((acc, classroom) => (acc += classroom.students.length), 0);
+      return { ...rest, totalStudent, totalClassroom: classrooms.length };
+    })
+    .sort((a, b) => Number(a.level) - Number(b.level));
 };
 
 const getClassDetails = async (classId: string) => {
