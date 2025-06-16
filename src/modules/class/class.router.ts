@@ -21,16 +21,16 @@ classRouter.get(
 );
 
 classRouter.patch(
+  '/subjects',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  classController.updateAssignedSubjectList,
+);
+
+classRouter.patch(
   '/:classId',
   authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
   validationHandler(classValidation.updateClassSchema),
   classController.updateClass,
-);
-
-classRouter.patch(
-  '/subjects',
-  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
-  classController.updateAssignedSubjectList,
 );
 
 classRouter.get(
