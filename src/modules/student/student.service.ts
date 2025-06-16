@@ -2,6 +2,9 @@ import { encryptPassword } from '../../helpers/encryptionHelper';
 import { TAddStudentPayload, TIssueNfcCardPayload } from './student.validation';
 import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
+import { TObject } from '../../utils/types';
+import { getMeta, getPaginationInfo } from '../../helpers/common';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 const addStudent = async (payload: TAddStudentPayload) => {
   // getting last student's id
@@ -56,8 +59,22 @@ const addStudent = async (payload: TAddStudentPayload) => {
   return message;
 };
 
-const getStudents = async () => {
+const getStudents = async (query: TObject) => {
+  const searchTerm = query.searchTerm;
+  console.log({ searchTerm });
+  const { page, limit, skip } = getPaginationInfo(query);
+
+  const whereQuery: Prisma.StudentScalarWhereInput = {
+    ...(searchTerm && {
+      OR: [
+        { name: { contains: searchTerm, mode: 'insensitive' } },
+        { id: { contains: searchTerm, mode: 'insensitive' } },
+      ],
+    }),
+  };
+
   const student = await prismaClient.student.findMany({
+    where: whereQuery,
     select: {
       id: true,
       name: true,
@@ -68,9 +85,21 @@ const getStudents = async () => {
       classroom: { select: { name: true } },
       cardId: true,
     },
+    orderBy: { name: 'asc' },
+    skip,
+    take: limit,
   });
 
-  return { student };
+  const totalStudentCount = await prismaClient.student.count({ where: whereQuery });
+
+  const formattedStudents = student.map((student) => {
+    const { classroom, ...rest } = student;
+    return { ...rest, classroomName: classroom.name };
+  });
+
+  const meta = getMeta({ page, limit, total: totalStudentCount });
+
+  return { students: formattedStudents, meta };
 };
 
 const issueNfcCard = async (payload: TIssueNfcCardPayload) => {

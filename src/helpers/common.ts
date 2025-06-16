@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { IMeta, TObject } from '../utils/types';
+import { number } from 'zod';
 
 // ***** Check Valid date ***** \\
 export const isValidDate = (date: string) => {
@@ -126,4 +127,19 @@ export const generateHalfYearlyDateRange = () => {
 export const parseDate = (date: string) => {
   const parsedDate = new Date(date);
   return isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
+};
+
+// ****** Generate Meta ********* \\
+export const getPaginationInfo = (query: TObject) => {
+  const page = Number(query.page) || 1;
+  const limit = Number(query.limit) || 10;
+  const getAll = query.getAll === 'true';
+
+  const skip = (page - 1) * limit;
+
+  return { page, limit, skip, getAll };
+};
+
+export const getMeta = ({ page, limit, total }: Pick<IMeta, 'page' | 'limit' | 'total'>): IMeta => {
+  return { page, limit, total, totalPages: Math.ceil(total / page) };
 };

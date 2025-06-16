@@ -1,5 +1,6 @@
 import { sendSuccessResponse } from '../../helpers/responseHelper';
 import { catchAsync } from '../../middlewares/catchAsync';
+import { TObject } from '../../utils/types';
 import { studentService } from './student.service';
 
 const addStudent = catchAsync(async (req, res) => {
@@ -7,9 +8,9 @@ const addStudent = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { status: 201, message });
 });
 
-const getStudents = catchAsync(async (_, res) => {
-  const { student } = await studentService.getStudents();
-  sendSuccessResponse(res, { message: 'Student retrieved successfully', data: student });
+const getStudents = catchAsync(async (req, res) => {
+  const { students, meta } = await studentService.getStudents(req.query as TObject);
+  sendSuccessResponse(res, { message: 'Student retrieved successfully', meta, data: students });
 });
 
 const issueNfcCard = catchAsync(async (req, res) => {
