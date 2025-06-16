@@ -4,7 +4,7 @@ import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
 import { TObject } from '../../utils/types';
 import { getMeta, getPaginationInfo } from '../../helpers/common';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 const addStudent = async (payload: TAddStudentPayload) => {
   // getting last student's id
@@ -61,7 +61,8 @@ const addStudent = async (payload: TAddStudentPayload) => {
 
 const getStudents = async (query: TObject) => {
   const searchTerm = query.searchTerm;
-  console.log({ searchTerm });
+  const classLevel = query.classLevel as string;
+
   const { page, limit, skip } = getPaginationInfo(query);
 
   const whereQuery: Prisma.StudentScalarWhereInput = {
@@ -71,6 +72,7 @@ const getStudents = async (query: TObject) => {
         { id: { contains: searchTerm, mode: 'insensitive' } },
       ],
     }),
+    ...(classLevel && { class: classLevel }),
   };
 
   const student = await prismaClient.student.findMany({
@@ -120,7 +122,7 @@ const getStudentInfo = async (studentId: string) => {
     select: {
       id: true,
       name: true,
-      classroom: { select: { name: true, class: { select: { name: true, level: true } } } },
+      classroom: { select: { id: true, name: true, class: { select: { name: true, level: true } } } },
       admittedAt: true,
       status: true,
       dues: { select: { amount: true } },
@@ -138,6 +140,7 @@ const getStudentInfo = async (studentId: string) => {
 
   return {
     ...rest,
+    classroomId: classroom.id,
     classroomName: classroom.name,
     className: classroom.class.name,
     classLevel: classroom.class.level,

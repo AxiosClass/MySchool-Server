@@ -141,5 +141,5 @@ export const getPaginationInfo = (query: TObject) => {
 };
 
 export const getMeta = ({ page, limit, total }: Pick<IMeta, 'page' | 'limit' | 'total'>): IMeta => {
-  return { page, limit, total, totalPages: Math.ceil(total / page) };
+  return { page, limit, total, totalPages: Math.ceil(total / limit) };
 };
