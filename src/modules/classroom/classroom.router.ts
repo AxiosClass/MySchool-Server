@@ -42,7 +42,7 @@ classroomRouter.get(
 
 classroomRouter.get(
   '/:classroomId/subjects',
-  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER, USER_ROLES.STUDENT),
   classroomController.getSubjectListForClassroom,
 );
 

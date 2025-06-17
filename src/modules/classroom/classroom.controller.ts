@@ -1,5 +1,6 @@
 import { sendSuccessResponse } from '../../helpers/responseHelper';
 import { catchAsync } from '../../middlewares/catchAsync';
+import { TObject } from '../../utils/types';
 import { classroomService } from './classroom.service';
 
 const createClassroom = catchAsync(async (req, res) => {
@@ -43,7 +44,7 @@ const addNote = catchAsync(async (req, res) => {
 });
 
 const getNotes = catchAsync(async (req, res) => {
-  const notes = await classroomService.getNotes(req.params.classroomId);
+  const notes = await classroomService.getNotes(req.params.classroomId, req.query as TObject);
   sendSuccessResponse(res, { message: 'Notes retrieved successfully', data: notes });
 });
 

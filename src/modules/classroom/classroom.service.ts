@@ -7,6 +7,7 @@ import {
 
 import { AppError } from '../../utils/appError';
 import { prismaClient } from '../../app/prisma';
+import { TObject } from '../../utils/types';
 
 const createClassroom = async (payload: TCreateClassroomPayload) => {
   await prismaClient.classroom.create({ data: { ...payload } });
@@ -120,11 +121,18 @@ const removeSubjectTeacher = async (classroomSubjectTeacherId: string) => {
 };
 
 const addNote = async (payload: TAddNotePayload, teacherId: string) => {
-  const { title, description, classroomId } = payload;
+  const { title, description, classroomId, subjectId } = payload;
+
   const result = await prismaClient.$transaction(async (client) => {
     // creating note
     const note = await client.note.create({
-      data: { title, classroomId, ...(description && { description }), createdBy: teacherId },
+      data: {
+        title,
+        classroomId,
+        ...(description && { description }),
+        ...(subjectId && { subjectId }),
+        createdBy: teacherId,
+      },
     });
 
     if (!note.id) throw new AppError('Failed to create note', 400);
@@ -139,9 +147,11 @@ const addNote = async (payload: TAddNotePayload, teacherId: string) => {
   return result;
 };
 
-const getNotes = async (classroomId: string) => {
+const getNotes = async (classroomId: string, query: TObject) => {
+  const subjectId = query.subjectId;
+
   const notes = await prismaClient.note.findMany({
-    where: { classroomId },
+    where: { classroomId, ...(subjectId && { subjectId }) },
     select: {
       id: true,
       title: true,
@@ -150,6 +160,7 @@ const getNotes = async (classroomId: string) => {
       classroomId: true,
       teacher: { select: { id: true, name: true } },
       media: { select: { id: true, url: true, type: true } },
+      subject: { select: { id: true, name: true } },
     },
   });
 

@@ -4,7 +4,7 @@ import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
 import { TObject } from '../../utils/types';
 import { getMeta, getPaginationInfo } from '../../helpers/common';
-import { Prisma } from '@prisma/client';
+import { DueType, Prisma } from '@prisma/client';
 
 const addStudent = async (payload: TAddStudentPayload) => {
   // getting last student's id
@@ -37,21 +37,35 @@ const addStudent = async (payload: TAddStudentPayload) => {
     // creating student
     const student = await tClient.student.create({
       data: { ...payload, id: studentId, password: hashedPassword, class: classInfo.class.level },
-      select: { id: true, classroom: { select: { class: { select: { id: true, admissionFee: true } } } } },
+      select: {
+        id: true,
+        classroom: { select: { class: { select: { id: true, admissionFee: true, monthlyFee: true } } } },
+      },
     });
 
     const studentClassInfo = student.classroom.class;
 
-    // creating student's due amount
-    await tClient.due.create({
-      data: {
+    const today = new Date();
+    const duesInput = [
+      {
         classId: studentClassInfo.id,
         amount: studentClassInfo.admissionFee,
-        type: 'ADMISSION_FEE',
+        type: DueType.ADMISSION_FEE,
         studentId: student.id,
-        year: new Date().getFullYear(),
+        year: today.getFullYear(),
       },
-    });
+      {
+        classId: studentClassInfo.id,
+        amount: studentClassInfo.monthlyFee,
+        type: DueType.MONTHLY_FEE,
+        studentId: student.id,
+        year: today.getFullYear(),
+        month: today.getMonth(),
+      },
+    ];
+
+    // creating student's due amount
+    await tClient.due.createMany({ data: duesInput });
 
     return 'Student added successfully';
   });
