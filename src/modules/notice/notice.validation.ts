@@ -1,17 +1,30 @@
-import { enumGenerator } from '../../helpers/zodHelper';
 import { NoticeFor } from '@prisma/client';
 import { z } from 'zod';
 
-const createNotice = z.object({
-  title: z.string({ required_error: 'Title is required' }).min(1, { message: 'Tittle is required' }),
-  description: z.string({ required_error: 'Description is required' }).min(1, { message: 'Description is required' }),
-  noticeFor: enumGenerator(Object.keys(NoticeFor), 'Please specify who is going to see notice'),
+// Create Notice Schema
+export const createNotice = z.object({
+  title: z.string({ required_error: 'Title is required' }).min(1, { message: 'Title cannot be empty' }),
+
+  description: z
+    .string({ required_error: 'Description is required' })
+    .min(1, { message: 'Description cannot be empty' }),
+
+  noticeFor: z.nativeEnum(NoticeFor, {
+    required_error: 'Please specify who is going to see the notice',
+    invalid_type_error: 'Invalid notice target',
+  }),
 });
 
-const updateNotice = z.object({
-  title: z.string().optional(),
-  description: z.string().optional(),
-  noticeFor: enumGenerator(Object.keys(NoticeFor), 'Please Specify who is going to see notice').optional(),
+// Update Notice Schema
+export const updateNotice = z.object({
+  title: z.string().min(1, { message: 'Title cannot be empty' }).optional(),
+  description: z.string().min(1, { message: 'Description cannot be empty' }).optional(),
+
+  noticeFor: z
+    .nativeEnum(NoticeFor, {
+      invalid_type_error: 'Invalid notice target',
+    })
+    .optional(),
 });
 
 type TCreateNoticePayload = z.infer<typeof createNotice> & { noticeFor: NoticeFor };

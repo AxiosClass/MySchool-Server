@@ -113,6 +113,7 @@ model Subject {
   classSubject            ClassSubject[]
   classroomSubjectTeacher ClassroomSubjectTeacher[]
   termResult              TermResult[]
+  notes                   Note[]
 
   @@map("subjects")
 }
@@ -276,9 +277,11 @@ model Note {
   createdBy   String
   classroomId String
   createdAt   DateTime @default(now())
+  subjectId   String?
 
   classroom Classroom @relation(fields: [classroomId], references: [id])
   teacher   Teacher   @relation(fields: [createdBy], references: [id])
+  subject   Subject?  @relation(fields: [subjectId], references: [id])
   media     Media[]
 
   @@map("notes")
