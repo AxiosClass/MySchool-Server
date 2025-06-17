@@ -15,7 +15,12 @@ const createClassroom = async (payload: TCreateClassroomPayload) => {
 };
 
 const getClassroomListForTeacher = async (teacherId: string) => {
-  const selectOptions = { id: true, name: true, class: { select: { name: true } }, students: { select: { id: true } } };
+  const selectOptions = {
+    id: true,
+    name: true,
+    class: { select: { level: true } },
+    students: { select: { id: true } },
+  };
 
   const classroomsWhereTeacherIsClassTeacher = await prismaClient.classroom.findMany({
     where: { classTeacherId: teacherId },
