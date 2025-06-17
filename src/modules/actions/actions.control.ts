@@ -8,4 +8,9 @@ const addMonthlyDues = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message });
 });
 
-export const actionsController = { addMonthlyDues };
+const addDiscount = catchAsync(async (req, res) => {
+  const message = await actionsService.addDiscount(req.body);
+  sendSuccessResponse(res, { message });
+});
+
+export const actionsController = { addMonthlyDues, addDiscount };

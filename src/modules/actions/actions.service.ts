@@ -3,6 +3,7 @@ import { GITHUB_ACTION_SECRET } from '../../app/config';
 import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
 import { TObject } from '../../utils/types';
+import { TAddDiscountPayload } from './action.validation';
 
 const addMonthlyDues = async (query: TObject) => {
   const secret = query.secret;
@@ -46,4 +47,9 @@ const addMonthlyDues = async (query: TObject) => {
   return `Added total ${newDues.count} due records.`;
 };
 
-export const actionsService = { addMonthlyDues };
+const addDiscount = async (payload: TAddDiscountPayload) => {
+  await prismaClient.discount.create({ data: payload });
+  return 'Discount Granted!';
+};
+
+export const actionsService = { addMonthlyDues, addDiscount };
