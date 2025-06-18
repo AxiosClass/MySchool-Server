@@ -13,4 +13,9 @@ const addDiscount = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message });
 });
 
-export const actionsController = { addMonthlyDues, addDiscount };
+const promoteStudent = catchAsync(async (req, res) => {
+  const message = await actionsService.promoteStudent(req.body);
+  sendSuccessResponse(res, { message });
+});
+
+export const actionsController = { addMonthlyDues, addDiscount, promoteStudent };

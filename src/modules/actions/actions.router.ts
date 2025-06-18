@@ -16,4 +16,11 @@ actionsRouter.post(
   actionsController.addDiscount,
 );
 
+actionsRouter.patch(
+  '/promote',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  validationHandler(actionValidation.promoteStudentSchema),
+  actionsController.promoteStudent,
+);
+
 export { actionsRouter };

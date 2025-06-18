@@ -12,7 +12,14 @@ const addDiscountSchema = z.object({
   studentId: z.string({ required_error: 'Student ID is required' }),
 });
 
-type TAddDiscountPayload = z.infer<typeof addDiscountSchema>;
+export const promoteStudentSchema = z.object({
+  studentId: z.string().min(1, { message: 'Student ID is required' }).trim(),
+  classLevel: z.string().min(1, { message: 'Class level is required' }).trim(),
+  classroomId: z.string().uuid({ message: 'Invalid classroom ID format' }),
+});
 
-export const actionValidation = { addDiscountSchema };
-export type { TAddDiscountPayload };
+type TAddDiscountPayload = z.infer<typeof addDiscountSchema>;
+type TPromotedStudentPayload = z.infer<typeof promoteStudentSchema>;
+
+export const actionValidation = { addDiscountSchema, promoteStudentSchema };
+export type { TAddDiscountPayload, TPromotedStudentPayload };
