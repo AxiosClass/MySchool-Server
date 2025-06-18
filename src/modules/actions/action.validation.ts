@@ -9,12 +9,7 @@ const addDiscountSchema = z.object({
     .positive('Amount must be greater than 0'),
 
   description: z.string().max(255, 'Description must be 255 characters or fewer').optional().nullable(),
-
-  studentId: z
-    .string({
-      required_error: 'Student ID is required',
-    })
-    .uuid('Invalid student ID format'),
+  studentId: z.string({ required_error: 'Student ID is required' }),
 });
 
 type TAddDiscountPayload = z.infer<typeof addDiscountSchema>;
