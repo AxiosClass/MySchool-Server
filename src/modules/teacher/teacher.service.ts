@@ -2,6 +2,9 @@ import { encryptPassword } from '../../helpers/encryptionHelper';
 import { TAddTeacherPayload } from './teacher.validation';
 import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
+import { TObject } from '../../utils/types';
+import { getMeta, getPaginationInfo } from '../../helpers/common';
+import { Prisma } from '@prisma/client';
 
 const addTeacher = async (payload: TAddTeacherPayload) => {
   const encryptedPassword = await encryptPassword(payload.nid);
@@ -11,8 +14,22 @@ const addTeacher = async (payload: TAddTeacherPayload) => {
   return 'Teacher created successfully';
 };
 
-const getTeachers = async () => {
-  const teacher = await prismaClient.teacher.findMany({
+const getTeachers = async (query: TObject) => {
+  const searchTerm = query.searchTerm;
+
+  const { page, limit, skip } = getPaginationInfo(query);
+
+  const where: Prisma.TeacherWhereInput = {
+    ...(searchTerm && {
+      OR: [
+        { name: { contains: searchTerm, mode: 'insensitive' } },
+        { id: { contains: searchTerm, mode: 'insensitive' } },
+      ],
+    }),
+  };
+
+  const teachers = await prismaClient.teacher.findMany({
+    where,
     select: {
       id: true,
       name: true,
@@ -23,7 +40,15 @@ const getTeachers = async () => {
     },
   });
 
-  return teacher;
+  const teacherCount = await prismaClient.teacher.count({ where });
+  const meta = getMeta({ page, limit, total: teacherCount });
+
+  const formattedTeachers = teachers.map((teacher) => {
+    const { classroomsClassTeacher, ...rest } = teacher;
+    return { ...rest, classroomName: classroomsClassTeacher?.name, classLevel: classroomsClassTeacher?.class.level };
+  });
+
+  return { meta, teachers: formattedTeachers };
 };
 
 const getTeacherList = async () => {
