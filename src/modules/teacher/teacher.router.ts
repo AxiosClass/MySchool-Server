@@ -15,6 +15,12 @@ teacherRouter.post(
   teacherController.addTeacher,
 );
 
+teacherRouter.get(
+  '/:teacherId',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  teacherController.getTeacherDetails,
+);
+
 export const teachersRouter = Router();
 
 teachersRouter.get(

@@ -30,6 +30,10 @@ const getTeachers = async (query: TObject) => {
 
   const teachers = await prismaClient.teacher.findMany({
     where,
+    take: limit,
+    skip,
+    orderBy: { name: 'asc' },
+
     select: {
       id: true,
       name: true,
@@ -56,4 +60,24 @@ const getTeacherList = async () => {
   return teachers;
 };
 
-export const teacherService = { addTeacher, getTeachers, getTeacherList };
+const getTeacherDetails = async (teacherId: string) => {
+  const teacher = await prismaClient.teacher.findUnique({
+    where: { id: teacherId },
+    select: {
+      id: true,
+      name: true,
+      nid: true,
+      phone: true,
+      dob: true,
+      bloodGroup: true,
+      address: true,
+      salary: true,
+      education: true,
+    },
+  });
+
+  if (!teacher) throw new AppError('Teacher not found', 404);
+  return teacher;
+};
+
+export const teacherService = { addTeacher, getTeachers, getTeacherList, getTeacherDetails };

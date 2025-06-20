@@ -18,4 +18,9 @@ const getTeacherList = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message: 'Teacher list retrieved successfully', data: teachers });
 });
 
-export const teacherController = { addTeacher, getTeachers, getTeacherList };
+const getTeacherDetails = catchAsync(async (req, res) => {
+  const teacher = await teacherService.getTeacherDetails(req.params.teacherId);
+  sendSuccessResponse(res, { message: 'Teacher details retrieved successfully', data: teacher });
+});
+
+export const teacherController = { addTeacher, getTeachers, getTeacherList, getTeacherDetails };
