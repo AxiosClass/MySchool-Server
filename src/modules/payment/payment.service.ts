@@ -1,6 +1,7 @@
-import { exactMatchPicker, metaGenerator } from '../../helpers/common';
+import { getPaginationInfo, metaGenerator } from '../../helpers/common';
 import { TTakePaymentPayload } from './payment.validation';
 import { prismaClient } from '../../app/prisma';
+import { PaymentType, Prisma } from '@prisma/client';
 import { TObject } from '../../utils/types';
 
 const takePayment = async (payload: TTakePaymentPayload) => {
@@ -13,15 +14,32 @@ const takePayment = async (payload: TTakePaymentPayload) => {
 };
 
 const getPayments = async (query: TObject) => {
-  const exactMatchProperties = exactMatchPicker(['month', 'year', 'type', 'studentId'], query);
-  const page = Number(query.page);
-  const limit = Number(query.limit) || 10;
+  const searchTerm = query.searchTerm;
+  const studentId = query.studentId;
+  const type = query.type as PaymentType;
+  const start = query.start;
+  const end = query.end;
+
+  const whereQuery: Prisma.PaymentWhereInput = {
+    ...(searchTerm && {
+      OR: [
+        { student: { name: { contains: searchTerm, mode: 'insensitive' } } },
+        { studentId: { contains: searchTerm, mode: 'insensitive' } },
+      ],
+    }),
+
+    ...(studentId && { studentId }),
+    ...(type && { type }),
+    ...((start || end) && { createdAt: { ...(start && { gte: start }), ...(end && { lte: end }) } }),
+  };
+
+  const { page, limit, skip, getAll } = getPaginationInfo(query);
 
   const payments = await prismaClient.payment.findMany({
-    where: exactMatchProperties,
+    where: whereQuery,
     orderBy: { createdAt: 'desc' },
-    // apply pagination when page and limit is been passed
-    ...(page && { skip: (page - 1) * limit, take: limit }),
+
+    ...(!getAll && { skip, take: limit }),
 
     select: {
       id: true,
@@ -35,9 +53,10 @@ const getPayments = async (query: TObject) => {
     },
   });
 
-  const total = await prismaClient.payment.count({ where: { ...exactMatchProperties } });
+  const total = await prismaClient.payment.count({ where: whereQuery });
+  const meta = metaGenerator({ page, limit, total });
 
-  return { meta: metaGenerator({ page, limit, total }), payments };
+  return { meta, payments };
 };
 
 export const paymentService = { takePayment, getPayments };
