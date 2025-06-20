@@ -38,7 +38,6 @@ const getPayments = async (query: TObject) => {
   const payments = await prismaClient.payment.findMany({
     where: whereQuery,
     orderBy: { createdAt: 'desc' },
-
     ...(!getAll && { skip, take: limit }),
 
     select: {
