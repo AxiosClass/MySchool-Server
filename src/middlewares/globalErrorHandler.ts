@@ -28,8 +28,9 @@ export const globalErrorHandler: ErrorRequestHandler = (error, _, res, __) => {
       .join(' | ');
   } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
     if (error.code === 'P2002') {
+      const modelName = error?.meta?.modelName ?? null;
       const fields = (error.meta?.target as string[])?.join(', ') || 'Unknown field';
-      message = `Duplicate entry: A record with the same ${fields} already exists.`;
+      message = `Duplicate entry: A ${modelName} with the same ${fields} already exists.`;
       status = 409;
     }
   }
