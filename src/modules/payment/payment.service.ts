@@ -1,6 +1,5 @@
-import { calculateMonthsBetween, exactMatchPicker, metaGenerator } from '../../helpers/common';
+import { exactMatchPicker, metaGenerator } from '../../helpers/common';
 import { TTakePaymentPayload } from './payment.validation';
-import { AppError } from '../../utils/appError';
 import { prismaClient } from '../../app/prisma';
 import { TObject } from '../../utils/types';
 
@@ -16,13 +15,14 @@ const takePayment = async (payload: TTakePaymentPayload) => {
 const getPayments = async (query: TObject) => {
   const exactMatchProperties = exactMatchPicker(['month', 'year', 'type', 'studentId'], query);
   const page = Number(query.page);
-  const limit = Number(query.limit);
+  const limit = Number(query.limit) || 10;
 
   const payments = await prismaClient.payment.findMany({
     where: exactMatchProperties,
     orderBy: { createdAt: 'desc' },
     // apply pagination when page and limit is been passed
-    ...(page && limit && { skip: (page - 1) * limit, take: limit }),
+    ...(page && { skip: (page - 1) * limit, take: limit }),
+
     select: {
       id: true,
       student: { select: { id: true, name: true, class: true, classroom: { select: { name: true } } } },
@@ -40,31 +40,4 @@ const getPayments = async (query: TObject) => {
   return { meta: metaGenerator({ page, limit, total }), payments };
 };
 
-const getPaymentSummary = async (studentId: string) => {
-  const studentInfo = await prismaClient.student.findUnique({
-    where: { id: studentId },
-    select: {
-      id: true,
-      name: true,
-      class: true,
-      classroom: { select: { id: true, name: true, class: { select: { monthlyFee: true, admissionFee: true } } } },
-      guardian: true,
-      status: true,
-      admittedAt: true,
-    },
-  });
-
-  if (!studentInfo) return null;
-
-  // calculating total due
-  const totalMonthSinceAdmitted = calculateMonthsBetween(new Date(studentInfo?.admittedAt), new Date());
-  let totalDue =
-    (studentInfo.classroom.class.admissionFee || 0) +
-    (studentInfo.classroom.class.monthlyFee || 0) * totalMonthSinceAdmitted;
-
-  const totalPaid = await prismaClient.payment.aggregate({ where: { studentId }, _sum: { amount: true } });
-
-  return { ...studentInfo, totalPaid: totalPaid._sum.amount || 0, totalDue };
-};
-
-export const paymentService = { takePayment, getPayments, getPaymentSummary };
+export const paymentService = { takePayment, getPayments };

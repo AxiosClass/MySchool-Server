@@ -13,9 +13,4 @@ const getPayments = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message: 'Payments retrieved successfully', meta, data: payments });
 });
 
-const getPaymentSummary = catchAsync(async (req, res) => {
-  const summary = await paymentService.getPaymentSummary(req.params.studentId);
-  sendSuccessResponse(res, { message: 'Payment summary retrieved successfully', data: summary });
-});
-
-export const paymentController = { takePayment, getPayments, getPaymentSummary };
+export const paymentController = { takePayment, getPayments };
