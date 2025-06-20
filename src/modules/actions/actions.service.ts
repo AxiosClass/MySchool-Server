@@ -78,7 +78,7 @@ const promoteStudent = async (payload: TPromotedStudentPayload) => {
   const message = await prismaClient.$transaction(async (tClient) => {
     await tClient.student.update({
       where: { id: payload.studentId },
-      data: { class: payload.classLevel, classroomId: payload.classroomId },
+      data: { class: classInfo.level, classroomId: payload.classroomId },
     });
 
     await tClient.due.create({
