@@ -22,8 +22,8 @@ attendanceRouter.post(
 );
 
 attendanceRouter.get(
-  'summary/:studentId',
-  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER, USER_ROLES.SUPER_ADMIN),
+  '/summary/:studentId',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER, USER_ROLES.SUPER_ADMIN, USER_ROLES.STUDENT),
   attendanceController.getAttendanceSummaryForStudent,
 );
 

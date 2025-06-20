@@ -15,6 +15,13 @@ studentRouter.post(
   studentController.addStudent,
 );
 
+studentRouter.patch(
+  '/:studentId',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  validationHandler(studentValidation.updateStudentSchema),
+  studentController.updateStudent,
+);
+
 studentRouter.post(
   '/issue-nfc',
   authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),

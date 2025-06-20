@@ -1,5 +1,5 @@
 import { encryptPassword } from '../../helpers/encryptionHelper';
-import { TAddStudentPayload, TIssueNfcCardPayload } from './student.validation';
+import { TAddStudentPayload, TIssueNfcCardPayload, TUpdateStudentPayload } from './student.validation';
 import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
 import { TObject } from '../../utils/types';
@@ -71,6 +71,14 @@ const addStudent = async (payload: TAddStudentPayload) => {
   });
 
   return message;
+};
+
+const updateStudent = async (payload: TUpdateStudentPayload, studentId: string) => {
+  const student = await prismaClient.student.findUnique({ where: { id: studentId } });
+  if (!student) throw new AppError('Student not found!', 404);
+
+  await prismaClient.student.update({ where: { id: studentId }, data: payload });
+  return 'Student updated successfully';
 };
 
 const getStudents = async (query: TObject) => {
@@ -204,6 +212,7 @@ const getStudentClassInfo = async (studentId: string) => {
 
 export const studentService = {
   addStudent,
+  updateStudent,
   getStudents,
   issueNfcCard,
   getStudentInfo,

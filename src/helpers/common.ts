@@ -143,3 +143,11 @@ export const getPaginationInfo = (query: TObject) => {
 export const getMeta = ({ page, limit, total }: Pick<IMeta, 'page' | 'limit' | 'total'>): IMeta => {
   return { page, limit, total, totalPages: Math.ceil(total / limit) };
 };
+
+export const wordCapitalize = (val: string) => {
+  return val
+    .toLowerCase()
+    .split(' ')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+};

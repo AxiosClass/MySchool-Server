@@ -8,6 +8,11 @@ const addStudent = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { status: 201, message });
 });
 
+const updateStudent = catchAsync(async (req, res) => {
+  const message = await studentService.updateStudent(req.body, req.params.studentId);
+  sendSuccessResponse(res, { status: 201, message });
+});
+
 const getStudents = catchAsync(async (req, res) => {
   const { students, meta } = await studentService.getStudents(req.query as TObject);
   sendSuccessResponse(res, { message: 'Student retrieved successfully', meta, data: students });
@@ -35,6 +40,7 @@ const getStudentClassInfo = catchAsync(async (req, res) => {
 
 export const studentController = {
   addStudent,
+  updateStudent,
   getStudents,
   issueNfcCard,
   getStudentInfo,
