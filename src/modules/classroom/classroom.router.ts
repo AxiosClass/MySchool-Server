@@ -29,6 +29,18 @@ classroomRouter.patch(
   classroomController.updateClassroom,
 );
 
+classroomRouter.delete(
+  '/note/:noteId',
+  authGuard(USER_ROLES.TEACHER, USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  classroomController.deleteNote,
+);
+
+classroomRouter.delete(
+  '/:classroomId',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  classroomController.deleteClassroom,
+);
+
 classroomRouter.post(
   '/subject-teacher',
   authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
@@ -65,12 +77,6 @@ classroomRouter.post(
   authGuard(USER_ROLES.TEACHER),
   validationHandler(classroomValidation.addNoteSchema),
   classroomController.addNote,
-);
-
-classroomRouter.delete(
-  '/note/:noteId',
-  authGuard(USER_ROLES.TEACHER, USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
-  classroomController.deleteNote,
 );
 
 classroomRouter.get(

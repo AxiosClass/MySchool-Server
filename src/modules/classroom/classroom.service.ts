@@ -30,6 +30,27 @@ const updateClassroom = async (payload: TUpdateClassroomPayload, classroomId: st
   return 'Section updated successfully';
 };
 
+const deleteClassroom = async (classroomId: string) => {
+  const classroom = await prismaClient.classroom.findUnique({
+    where: { id: classroomId },
+    select: { students: { select: { id: true } } },
+  });
+
+  if (!classroom) throw new AppError('Section does not exist', 404);
+
+  if (classroom.students.length)
+    throw new AppError(
+      'This section has some students, please move them to another section to delete this section',
+      400,
+    );
+
+  // removing all the notes of that section
+  await prismaClient.note.deleteMany({ where: { classroomId } });
+  await prismaClient.classroom.delete({ where: { id: classroomId } });
+
+  return 'Section has been deleted successfully';
+};
+
 const getClassroomListForTeacher = async (teacherId: string) => {
   const selectOptions = {
     id: true,
@@ -258,6 +279,7 @@ const getTeachersSubjectsForClassroom = async (classroomId: string, teacherId: s
 export const classroomService = {
   createClassroom,
   updateClassroom,
+  deleteClassroom,
   getClassroomListForTeacher,
   getStudentList,
   getClassroomDetailsById,
