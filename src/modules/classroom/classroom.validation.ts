@@ -61,16 +61,29 @@ const updateNoteSchema = z.object({
   }),
 });
 
+const updateClassroomSchema = z.object({
+  name: z.string().min(1, { message: 'Section name can not be empty' }).optional(),
+  classTeacherId: z.string().min(1, { message: 'Please add a teacher' }).optional(),
+});
+
 type TCreateClassroomPayload = z.infer<typeof createClassroomSchema>;
 type TAssignSubjectTeacherPayload = z.infer<typeof assignSubjectTeacherSchema>;
 type TAddNotePayload = z.infer<typeof addNoteSchema>;
 type TUpdateNotePayload = z.infer<typeof updateNoteSchema>;
+type TUpdateClassroomPayload = z.infer<typeof updateClassroomSchema>;
 
 export const classroomValidation = {
   createClassroomSchema,
   assignSubjectTeacherSchema,
   addNoteSchema,
   updateNoteSchema,
+  updateClassroomSchema,
 };
 
-export { TCreateClassroomPayload, TAssignSubjectTeacherPayload, TAddNotePayload, TUpdateNotePayload };
+export {
+  TCreateClassroomPayload,
+  TAssignSubjectTeacherPayload,
+  TAddNotePayload,
+  TUpdateNotePayload,
+  TUpdateClassroomPayload,
+};

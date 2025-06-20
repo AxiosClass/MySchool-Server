@@ -8,6 +8,11 @@ const createClassroom = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message });
 });
 
+const updateClassroom = catchAsync(async (req, res) => {
+  const message = await classroomService.updateClassroom(req.body, req.params.classroomId);
+  sendSuccessResponse(res, { message });
+});
+
 const assignSubjectTeacher = catchAsync(async (req, res) => {
   const message = await classroomService.assignSubjectTeacher(req.body);
   sendSuccessResponse(res, { message });
@@ -65,6 +70,7 @@ const getTeachersSubjectsForClassroom = catchAsync(async (req, res) => {
 
 export const classroomController = {
   createClassroom,
+  updateClassroom,
   assignSubjectTeacher,
   removeSubjectTeacher,
   getClassroomListForTeacher,

@@ -2,6 +2,7 @@ import {
   TAddNotePayload,
   TAssignSubjectTeacherPayload,
   TCreateClassroomPayload,
+  TUpdateClassroomPayload,
   TUpdateNotePayload,
 } from './classroom.validation';
 
@@ -12,6 +13,21 @@ import { TObject } from '../../utils/types';
 const createClassroom = async (payload: TCreateClassroomPayload) => {
   await prismaClient.classroom.create({ data: { ...payload } });
   return 'Classroom is created successfully';
+};
+
+const updateClassroom = async (payload: TUpdateClassroomPayload, classroomId: string) => {
+  const classroom = await prismaClient.classroom.findUnique({
+    where: { id: classroomId },
+    select: { id: true },
+  });
+
+  if (!classroom) throw new AppError('Section does not exist', 404);
+
+  const teacher = await prismaClient.teacher.findUnique({ where: { id: payload.classTeacherId } });
+  if (!teacher) throw new AppError('Teacher not found', 404);
+
+  await prismaClient.classroom.update({ where: { id: classroomId }, data: payload });
+  return 'Section updated successfully';
 };
 
 const getClassroomListForTeacher = async (teacherId: string) => {
@@ -241,6 +257,7 @@ const getTeachersSubjectsForClassroom = async (classroomId: string, teacherId: s
 // exports
 export const classroomService = {
   createClassroom,
+  updateClassroom,
   getClassroomListForTeacher,
   getStudentList,
   getClassroomDetailsById,

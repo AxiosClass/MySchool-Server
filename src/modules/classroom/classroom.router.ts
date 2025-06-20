@@ -15,6 +15,20 @@ classroomRouter.post(
   classroomController.createClassroom,
 );
 
+classroomRouter.patch(
+  '/note/:noteId',
+  authGuard(USER_ROLES.TEACHER, USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  validationHandler(classroomValidation.updateNoteSchema),
+  classroomController.updateNote,
+);
+
+classroomRouter.patch(
+  '/:classroomId',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  validationHandler(classroomValidation.updateClassroomSchema),
+  classroomController.updateClassroom,
+);
+
 classroomRouter.post(
   '/subject-teacher',
   authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
@@ -51,13 +65,6 @@ classroomRouter.post(
   authGuard(USER_ROLES.TEACHER),
   validationHandler(classroomValidation.addNoteSchema),
   classroomController.addNote,
-);
-
-classroomRouter.patch(
-  '/note/:noteId',
-  authGuard(USER_ROLES.TEACHER, USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
-  validationHandler(classroomValidation.updateNoteSchema),
-  classroomController.updateNote,
 );
 
 classroomRouter.delete(
