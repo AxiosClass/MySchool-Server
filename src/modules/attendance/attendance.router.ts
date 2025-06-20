@@ -21,6 +21,12 @@ attendanceRouter.post(
   attendanceController.addAttendanceFormNfc,
 );
 
+attendanceRouter.get(
+  'summary/:studentId',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER, USER_ROLES.SUPER_ADMIN),
+  attendanceController.getAttendanceSummaryForStudent,
+);
+
 attendanceRouter.delete(
   '/:attendanceId',
   authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER),

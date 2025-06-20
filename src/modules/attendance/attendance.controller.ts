@@ -28,10 +28,16 @@ const removeAttendance = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message });
 });
 
+const getAttendanceSummaryForStudent = catchAsync(async (req, res) => {
+  const result = await attendanceService.getAttendanceSummaryForStudent(req.params.studentId);
+  sendSuccessResponse(res, { message: 'Attendance summary retrieved successfully', data: result });
+});
+
 export const attendanceController = {
   addAttendance,
   addAttendanceFormNfc,
   getAttendancesForClassroom,
   getAttendancesForStudent,
   removeAttendance,
+  getAttendanceSummaryForStudent,
 };

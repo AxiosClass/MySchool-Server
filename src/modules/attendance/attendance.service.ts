@@ -129,10 +129,54 @@ const removeAttendance = async (attendanceId: string) => {
   return 'Attendance Removed Successfully';
 };
 
+const getAttendanceSummaryForStudent = async (studentId: string) => {
+  const start = moment().startOf('year').toDate();
+  const end = moment().endOf('day').toDate();
+
+  const attendances = await prismaClient.attendance.findMany({
+    where: { studentId, date: { gte: start, lte: end } },
+    select: { id: true, date: true },
+  });
+
+  const holidays = await prismaClient.holiDay.findMany({
+    where: { startDate: { gte: start }, endDate: { lte: end } },
+    select: { id: true, startDate: true, endDate: true },
+  });
+
+  const dateFormatString = 'YYYY-MM-DD';
+  // generating attendances set
+  const attendanceSet = new Set(attendances.map((a) => moment(a.date).format(dateFormatString)));
+
+  // generating holidays set
+  const holidaySet = new Set();
+  holidays.forEach((h) => {
+    holidaySet.add(moment(h.startDate).format(dateFormatString));
+    holidaySet.add(moment(h.endDate).format(dateFormatString));
+  });
+
+  const days = generateDateArray({ start, end });
+
+  let totalPresent = 0;
+  let totalAbsent = 0;
+  let totalHolidays = 0;
+
+  days.forEach((day) => {
+    const dateFormatted = moment(day).format(dateFormatString);
+    const isWeekend = weekendDays.includes(day.getDay());
+    const isHoliday = holidaySet.has(dateFormatString);
+    if (attendanceSet.has(dateFormatted)) totalPresent++;
+    else if (!isWeekend && !isHoliday) totalAbsent++;
+    else totalHolidays++;
+  });
+
+  return { totalPresent, totalAbsent, totalHolidays };
+};
+
 export const attendanceService = {
   addAttendance,
   addAttendanceFormNfc,
   getAttendancesForClassroom,
   getAttendancesForStudent,
   removeAttendance,
+  getAttendanceSummaryForStudent,
 };
