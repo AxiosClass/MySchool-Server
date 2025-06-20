@@ -21,6 +21,13 @@ teacherRouter.get(
   teacherController.getTeacherDetails,
 );
 
+teacherRouter.patch(
+  '/:teacherId',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  validationHandler(teacherValidation.updateTeacherSchema),
+  teacherController.updateTeacher,
+);
+
 export const teachersRouter = Router();
 
 teachersRouter.get(

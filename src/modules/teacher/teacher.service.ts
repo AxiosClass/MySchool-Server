@@ -1,5 +1,5 @@
 import { encryptPassword } from '../../helpers/encryptionHelper';
-import { TAddTeacherPayload } from './teacher.validation';
+import { TAddTeacherPayload, TUpdateTeacherPayload } from './teacher.validation';
 import { prismaClient } from '../../app/prisma';
 import { AppError } from '../../utils/appError';
 import { TObject } from '../../utils/types';
@@ -80,4 +80,12 @@ const getTeacherDetails = async (teacherId: string) => {
   return teacher;
 };
 
-export const teacherService = { addTeacher, getTeachers, getTeacherList, getTeacherDetails };
+const updateTeacher = async (payload: TUpdateTeacherPayload, teacherId: string) => {
+  const teacher = await prismaClient.teacher.findUnique({ where: { id: teacherId }, select: { id: true } });
+  if (!teacher) throw new AppError('Teacher not found', 404);
+
+  await prismaClient.teacher.update({ where: { id: teacherId }, data: payload });
+  return 'Teacher updated successfully';
+};
+
+export const teacherService = { addTeacher, getTeachers, getTeacherList, getTeacherDetails, updateTeacher };

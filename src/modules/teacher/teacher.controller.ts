@@ -5,7 +5,7 @@ import { TObject } from '../../utils/types';
 
 const addTeacher = catchAsync(async (req, res) => {
   const message = await teacherService.addTeacher(req.body);
-  sendSuccessResponse(res, { status: 201, message });
+  sendSuccessResponse(res, { message });
 });
 
 const getTeachers = catchAsync(async (req, res) => {
@@ -13,7 +13,7 @@ const getTeachers = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message: 'Teachers retrieved successfully', meta, data: teachers });
 });
 
-const getTeacherList = catchAsync(async (req, res) => {
+const getTeacherList = catchAsync(async (_, res) => {
   const teachers = await teacherService.getTeacherList();
   sendSuccessResponse(res, { message: 'Teacher list retrieved successfully', data: teachers });
 });
@@ -23,4 +23,9 @@ const getTeacherDetails = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message: 'Teacher details retrieved successfully', data: teacher });
 });
 
-export const teacherController = { addTeacher, getTeachers, getTeacherList, getTeacherDetails };
+const updateTeacher = catchAsync(async (req, res) => {
+  const message = await teacherService.updateTeacher(req.body, req.params.teacherId);
+  sendSuccessResponse(res, { message });
+});
+
+export const teacherController = { addTeacher, getTeachers, getTeacherList, getTeacherDetails, updateTeacher };

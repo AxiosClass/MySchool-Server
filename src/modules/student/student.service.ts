@@ -73,14 +73,6 @@ const addStudent = async (payload: TAddStudentPayload) => {
   return message;
 };
 
-const updateStudent = async (payload: TUpdateStudentPayload, studentId: string) => {
-  const student = await prismaClient.student.findUnique({ where: { id: studentId } });
-  if (!student) throw new AppError('Student not found!', 404);
-
-  await prismaClient.student.update({ where: { id: studentId }, data: payload });
-  return 'Student updated successfully';
-};
-
 const getStudents = async (query: TObject) => {
   const searchTerm = query.searchTerm;
   const classLevel = query.classLevel as string;
@@ -124,6 +116,14 @@ const getStudents = async (query: TObject) => {
   const meta = getMeta({ page, limit, total: totalStudentCount });
 
   return { students: formattedStudents, meta };
+};
+
+const updateStudent = async (payload: TUpdateStudentPayload, studentId: string) => {
+  const student = await prismaClient.student.findUnique({ where: { id: studentId }, select: { id: true } });
+  if (!student) throw new AppError('Student not found!', 404);
+
+  await prismaClient.student.update({ where: { id: studentId }, data: payload });
+  return 'Student updated successfully';
 };
 
 const issueNfcCard = async (payload: TIssueNfcCardPayload) => {
@@ -223,8 +223,8 @@ const getStudentClassInfo = async (studentId: string) => {
 
 export const studentService = {
   addStudent,
-  updateStudent,
   getStudents,
+  updateStudent,
   issueNfcCard,
   getStudentInfo,
   getStudentDetails,
