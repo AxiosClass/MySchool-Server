@@ -28,6 +28,11 @@ const getStudentInfo = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message: 'Student Info Fetched Successfully', data: result });
 });
 
+const getStudentDetails = catchAsync(async (req, res) => {
+  const student = await studentService.getStudentDetails(req.params.studentId);
+  sendSuccessResponse(res, { message: 'Student details fetched successfully', data: student });
+});
+
 const getStudentListForPayment = catchAsync(async (req, res) => {
   const students = await studentService.getStudentListForPayment();
   sendSuccessResponse(res, { message: 'Student list retrieved successfully', data: students });
@@ -44,6 +49,7 @@ export const studentController = {
   getStudents,
   issueNfcCard,
   getStudentInfo,
+  getStudentDetails,
   getStudentListForPayment,
   getStudentClassInfo,
 };

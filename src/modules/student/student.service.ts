@@ -172,6 +172,17 @@ const getStudentInfo = async (studentId: string) => {
   };
 };
 
+const getStudentDetails = async (studentId: string) => {
+  const student = await prismaClient.student.findUnique({
+    where: { id: studentId },
+    select: { name: true, birthId: true, bloodGroup: true, dob: true, address: true, parents: true, guardian: true },
+  });
+
+  if (!student) throw new AppError('Student not found!', 404);
+  console.log('Iam');
+  return student;
+};
+
 const getStudentListForPayment = async () => {
   const students = await prismaClient.student.findMany({
     select: {
@@ -216,6 +227,7 @@ export const studentService = {
   getStudents,
   issueNfcCard,
   getStudentInfo,
+  getStudentDetails,
   getStudentListForPayment,
   getStudentClassInfo,
 };
