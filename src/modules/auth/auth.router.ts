@@ -20,7 +20,7 @@ authRouter.patch(
   '/reset-password',
   authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
   validationHandler(authValidation.resetPasswordSchema),
-  authController.changePassword,
+  authController.resetPassword,
 );
 
 export { authRouter };
