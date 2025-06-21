@@ -42,20 +42,31 @@ const getPayments = async (query: TObject) => {
 
     select: {
       id: true,
-      student: { select: { id: true, name: true, class: true, classroom: { select: { name: true } } } },
       amount: true,
       description: true,
       month: true,
       year: true,
       type: true,
       createdAt: true,
+      student: { select: { id: true, name: true, class: true, classroom: { select: { name: true } } } },
     },
   });
 
   const total = await prismaClient.payment.count({ where: whereQuery });
+  const formattedPayments = payments.map((payment) => {
+    const { student, ...rest } = payment;
+
+    return {
+      ...rest,
+      studentId: student.id,
+      studentName: student.name,
+      studentClass: student.class,
+      studentClassroomName: student.classroom.name,
+    };
+  });
   const meta = metaGenerator({ page, limit, total });
 
-  return { meta, payments };
+  return { meta, payments: formattedPayments };
 };
 
 export const paymentService = { takePayment, getPayments };
