@@ -17,9 +17,11 @@ const getPassword = async (userRole: USER_ROLES, userId: string) => {
 };
 
 const updatePassword = async (userRole: USER_ROLES, userId: string, password: string) => {
-  if (adminRoles.includes(userRole)) prismaClient.admin.update({ where: { id: userId }, data: { password } });
-  else if (userRole === USER_ROLES.TEACHER) prismaClient.teacher.update({ where: { id: userId }, data: { password } });
-  else if (userRole === USER_ROLES.STUDENT) prismaClient.student.update({ where: { id: userId }, data: { password } });
+  if (adminRoles.includes(userRole)) return prismaClient.admin.update({ where: { id: userId }, data: { password } });
+  else if (userRole === USER_ROLES.TEACHER)
+    return prismaClient.teacher.update({ where: { id: userId }, data: { password } });
+  else if (userRole === USER_ROLES.STUDENT)
+    return prismaClient.student.update({ where: { id: userId }, data: { password } });
 };
 
 const getNidOrBirthId = async (userRole: USER_ROLES, userId: string) => {
