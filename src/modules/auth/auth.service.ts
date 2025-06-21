@@ -1,5 +1,5 @@
 import { UserStatus } from '@prisma/client';
-import { TChangePasswordPayload, TLoginPayload } from './auth.validation';
+import { TChangePasswordPayload, TLoginPayload, TResetPasswordPayload } from './auth.validation';
 import { AppError } from '../../utils/appError';
 import { prismaClient } from '../../app/prisma';
 import { IUserInfo, USER_ROLES } from '../../utils/types';
@@ -102,4 +102,14 @@ const changePassword = async (payload: TChangePasswordPayload, userId: string, u
   return 'Password updated successfully';
 };
 
-export const authService = { login, changePassword };
+const resetPassword = async ({ userId, userRole }: TResetPasswordPayload) => {
+  const birthIdOrNid = await authUtils.getNidOrBirthId(userRole, userId);
+  if (!birthIdOrNid) throw new AppError('User not found', 404);
+
+  const hashedPassword = await encryptPassword(birthIdOrNid);
+  await authUtils.updatePassword(userRole, userId, hashedPassword);
+
+  return 'Password reset successfully!';
+};
+
+export const authService = { login, changePassword, resetPassword };

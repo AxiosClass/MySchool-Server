@@ -16,4 +16,11 @@ authRouter.patch(
   authController.changePassword,
 );
 
+authRouter.patch(
+  '/reset-password',
+  authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
+  validationHandler(authValidation.resetPasswordSchema),
+  authController.changePassword,
+);
+
 export { authRouter };

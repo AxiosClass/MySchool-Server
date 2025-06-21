@@ -13,4 +13,9 @@ const changePassword = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message });
 });
 
-export const authController = { login, changePassword };
+const resetPassword = catchAsync(async (req, res) => {
+  const message = await authService.resetPassword(req.body);
+  sendSuccessResponse(res, { message });
+});
+
+export const authController = { login, changePassword, resetPassword };
