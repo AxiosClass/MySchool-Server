@@ -5,11 +5,12 @@ import { sendSuccessResponse } from '../../helpers/responseHelper';
 const login = catchAsync(async (req, res) => {
   const loginType = req.query.type as string;
   const { accessToken } = await authService.login(req.body, loginType);
-
-  sendSuccessResponse(res, {
-    message: 'Login was successful',
-    data: { accessToken },
-  });
+  sendSuccessResponse(res, { message: 'Login was successful', data: { accessToken } });
 });
 
-export const authController = { login };
+const changePassword = catchAsync(async (req, res) => {
+  const message = await authService.changePassword(req.body, req.user.id, req.user.role);
+  sendSuccessResponse(res, { message });
+});
+
+export const authController = { login, changePassword };

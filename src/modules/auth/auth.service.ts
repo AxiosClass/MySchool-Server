@@ -1,14 +1,14 @@
 import { UserStatus } from '@prisma/client';
-import { TLoginPayload } from './auth.validation';
+import { TChangePasswordPayload, TLoginPayload } from './auth.validation';
 import { AppError } from '../../utils/appError';
 import { prismaClient } from '../../app/prisma';
 import { IUserInfo, USER_ROLES } from '../../utils/types';
-import { comparePassword } from '../../helpers/encryptionHelper';
+import { comparePassword, encryptPassword } from '../../helpers/encryptionHelper';
 import { generateAccessToken } from '../../helpers/tokenHelper';
-
-const loginTypes = ['ADMIN', 'TEACHER', 'STUDENT'];
+import { authUtils } from './auth.utils';
 
 const login = async (payload: TLoginPayload, type: string) => {
+  const loginTypes = ['ADMIN', 'TEACHER', 'STUDENT'];
   let refinedLoginType: string = '';
 
   for (const eachType of loginTypes) {
@@ -89,4 +89,17 @@ const login = async (payload: TLoginPayload, type: string) => {
   return { accessToken };
 };
 
-export const authService = { login };
+const changePassword = async (payload: TChangePasswordPayload, userId: string, userRole: USER_ROLES) => {
+  const userPassword = await authUtils.getPassword(userRole, userId);
+  if (!userPassword) throw new AppError('User not found', 404);
+
+  const isPasswordMatched = await comparePassword(payload.currentPassword, userPassword);
+  if (!isPasswordMatched) throw new AppError('Password did not match', 400);
+
+  const hashedPassword = await encryptPassword(payload.newPassword);
+  await authUtils.updatePassword(userRole, userId, hashedPassword);
+
+  return 'Password updated successfully';
+};
+
+export const authService = { login, changePassword };

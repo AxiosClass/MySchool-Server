@@ -13,5 +13,5 @@ export const changePasswordSchema = z.object({
 type TLoginPayload = z.infer<typeof loginSchema>;
 type TChangePasswordPayload = z.infer<typeof changePasswordSchema>;
 
-export const authValidation = { loginSchema };
+export const authValidation = { loginSchema, changePasswordSchema };
 export { TLoginPayload, TChangePasswordPayload };
