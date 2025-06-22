@@ -21,47 +21,29 @@ const getDueByClassroom = async () => {
   dues.forEach((due) => {
     const classroomId = due.student.classroomId;
     if (!classroomFinanceReportGroup[classroomId])
-      classroomFinanceReportGroup[classroomId] = {
-        classLevel: '',
-        classroomId: classroomId,
-        classroomName: '',
-        totalDues: 0,
-        totalPaid: 0,
-      };
+      classroomFinanceReportGroup[classroomId] = { totalDue: 0, totalPaid: 0 };
 
-    classroomFinanceReportGroup[classroomId].totalDues += due.amount;
+    classroomFinanceReportGroup[classroomId].totalDue += due.amount;
     totalDue += due.amount;
   });
 
   payments.forEach((payment) => {
     const classroomId = payment.student.classroomId;
-    if (!classroomFinanceReportGroup[classroomId]) {
-      classroomFinanceReportGroup[classroomId] = {
-        classroomId,
-        classLevel: '',
-        classroomName: '',
-        totalDues: 0,
-        totalPaid: 0,
-      };
-    }
+    if (!classroomFinanceReportGroup[classroomId])
+      classroomFinanceReportGroup[classroomId] = { totalDue: 0, totalPaid: 0 };
+
     classroomFinanceReportGroup[classroomId].totalPaid += payment.amount;
     totalPaid += payment.amount;
   });
 
-  const classroomMap = new Map(classrooms.map((classroom) => [classroom.id, classroom]));
+  const classroomWithDueAndPaidSummary = classrooms
+    .map((classroom) => {
+      const classroomFinanceInfo = classroomFinanceReportGroup[classroom.id];
+      const { class: cls, ...rest } = classroom;
 
-  Object.keys(classroomFinanceReportGroup).forEach((key) => {
-    const classroomInfo = classroomMap.get(key);
-    classroomFinanceReportGroup[key] = {
-      ...classroomFinanceReportGroup[key],
-      classLevel: classroomInfo?.class.level ?? '',
-      classroomName: classroomInfo?.name ?? '',
-    };
-  });
-
-  const classroomWithDueAndPaidSummary = Object.values(classroomFinanceReportGroup).sort(
-    (a, b) => Number(a.classLevel) - Number(b.classLevel),
-  );
+      return { ...rest, classLevel: cls.level, ...classroomFinanceInfo };
+    })
+    .sort((a, b) => Number(a.classLevel) - Number(b.classLevel));
 
   return { totalDue, totalPaid, classrooms: classroomWithDueAndPaidSummary };
 };

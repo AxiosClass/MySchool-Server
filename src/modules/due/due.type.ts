@@ -1,7 +1,1 @@
-export type TClassroomFinanceReport = {
-  classroomId: string;
-  classroomName: string;
-  classLevel: string;
-  totalDues: number;
-  totalPaid: number;
-};
+export type TClassroomFinanceReport = { totalDue: number; totalPaid: number };
