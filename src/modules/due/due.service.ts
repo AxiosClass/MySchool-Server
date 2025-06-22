@@ -1,5 +1,8 @@
+import { Prisma } from '@prisma/client';
 import { prismaClient } from '../../app/prisma';
-import { TClassroomFinanceReport } from './due.type';
+import { getMeta, getPaginationInfo } from '../../helpers/common';
+import { TObject } from '../../utils/types';
+import { TClassroomFinanceReport, TStudentDueSummary } from './due.type';
 
 const getDueByClassroom = async () => {
   const dues = await prismaClient.due.findMany({
@@ -48,4 +51,64 @@ const getDueByClassroom = async () => {
   return { totalDue, totalPaid, classrooms: classroomWithDueAndPaidSummary };
 };
 
-export const dueService = { getDueByClassroom };
+const getDueByStudent = async (query: TObject) => {
+  const searchTerm = query.searchTerm;
+  const level = query.level;
+  const classroomId = query.classroomId;
+
+  const { page, limit, skip } = getPaginationInfo(query);
+
+  // Shared filters (use null fallback for SQL-safe injection)
+  const filters = {
+    level: level ?? null,
+    classroomId: classroomId ?? null,
+    searchTerm: searchTerm ?? null,
+  };
+
+  // Shared SQL fragment for FROM, JOINs, WHERE, GROUP BY, HAVING
+  const baseQuery = Prisma.sql`
+    FROM students s
+    JOIN classrooms cr ON s."classroomId" = cr.id
+    LEFT JOIN dues d ON s.id = d."studentId"
+    LEFT JOIN payments p ON s.id = p."studentId"
+    WHERE 1 = 1
+      AND (${filters.level} IS NULL OR s.class = ${filters.level})
+      AND (${filters.classroomId} IS NULL OR cr.id = ${filters.classroomId})
+      AND (
+        ${filters.searchTerm} IS NULL OR
+        s.id ILIKE CONCAT('%', ${filters.searchTerm}, '%') OR
+        s.name ILIKE CONCAT('%', ${filters.searchTerm}, '%')
+      )
+    GROUP BY s.id, s.name, cr.name, s.class
+    HAVING COALESCE(SUM(d.amount), 0) - COALESCE(SUM(p.amount), 0) > 0
+  `;
+
+  // Main query: Get paginated students with dues
+  const studentsWithDues = await prismaClient.$queryRaw<TStudentDueSummary[]>`
+    SELECT
+      s.id AS "studentId",
+      s.name AS "studentName",
+      s.class AS "classLevel",
+      cr.name AS "classroomName",
+      COALESCE(SUM(d.amount), 0) - COALESCE(SUM(p.amount), 0) AS "due"
+    ${baseQuery}
+    ORDER BY s.name
+    LIMIT ${limit}
+    OFFSET ${skip};
+  `;
+
+  // Count query: Get total count for pagination
+  const totalCountResult = await prismaClient.$queryRaw<{ count: number }[]>`
+    SELECT COUNT(*) AS count FROM (
+      SELECT s.id
+      ${baseQuery}
+    ) AS filtered_students;
+  `;
+
+  const totalCount = totalCountResult[0]?.count ?? 0;
+  const meta = getMeta({ limit, page, total: totalCount });
+
+  return { meta, student: studentsWithDues };
+};
+
+export const dueService = { getDueByClassroom, getDueByStudent };
