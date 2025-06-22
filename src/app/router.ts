@@ -15,6 +15,7 @@ import { adminRouter, adminsRouter } from '../modules/admin/admin.router';
 import { termRouter, termsRouter } from '../modules/term/term.router';
 import { termResultRouter } from '../modules/term-result/term-result.router';
 import { actionsRouter } from '../modules/actions/actions.router';
+import { duesRouter } from '../modules/due/due.router';
 
 export const appRouter = Router();
 
@@ -45,6 +46,7 @@ const routes: { path: string; router: Router }[] = [
   { path: '/terms', router: termsRouter },
   { path: '/term-result', router: termResultRouter },
   { path: '/actions', router: actionsRouter },
+  { path: '/dues', router: duesRouter },
 ];
 
 routes.forEach(({ path, router }) => appRouter.use(path, router));
