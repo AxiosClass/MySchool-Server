@@ -8,8 +8,8 @@ const getDueByClass = catchAsync(async (_, res) => {
   sendSuccessResponse(res, { message: 'Dues by class fetched successfully', data: result });
 });
 
-const getDueByClassroom = catchAsync(async (_, res) => {
-  const result = await dueService.getDueByClassroom();
+const getDueByClassroom = catchAsync(async (req, res) => {
+  const result = await dueService.getDueByClassroom(req.params.level);
   sendSuccessResponse(res, { message: 'Dues by classroom fetched successfully', data: result });
 });
 
