@@ -1,8 +1,5 @@
-import { Prisma } from '@prisma/client';
 import { prismaClient } from '../../app/prisma';
-import { getMeta, getPaginationInfo } from '../../helpers/common';
-import { TObject } from '../../utils/types';
-import { TFinanceReport, TStudentDueSummary } from './due.type';
+import { TFinanceReport } from './due.type';
 import { AppError } from '../../utils/appError';
 
 const getDuesByClass = async () => {
@@ -112,7 +109,7 @@ const getDueByClassroom = async (classLevel: string) => {
     if (!classroomFinanceReportGroup[classroomId])
       classroomFinanceReportGroup[classroomId] = { totalDue: 0, totalPaid: 0, totalDiscount: 0 };
 
-    classroomFinanceReportGroup[classroomId].totalPaid += discount.amount;
+    classroomFinanceReportGroup[classroomId].totalDiscount += discount.amount;
   });
 
   const classroomWithDueAndPaidSummary = classrooms
@@ -132,64 +129,36 @@ const getDueByClassroom = async (classLevel: string) => {
   return classroomWithDueAndPaidSummary;
 };
 
-const getDueByStudent = async (query: TObject) => {
-  const searchTerm = query.searchTerm;
-  const level = query.level;
-  const classroomId = query.classroomId;
+const getDueByStudent = async (classroomId: string) => {
+  const students = await prismaClient.student.findMany({
+    where: { classroomId },
+    select: {
+      id: true,
+      name: true,
+      class: true,
+      classroom: { select: { name: true } },
+      payments: { select: { id: true, amount: true } },
+      dues: { select: { id: true, amount: true } },
+      discounts: { select: { id: true, amount: true } },
+    },
+  });
 
-  const { page, limit, skip } = getPaginationInfo(query);
+  const formattedStudent = students
+    .map((student) => {
+      const { payments, dues, discounts, classroom, class: cls, ...rest } = student;
 
-  // Shared filters (use null fallback for SQL-safe injection)
-  const filters = {
-    level: level ?? null,
-    classroomId: classroomId ?? null,
-    searchTerm: searchTerm ?? null,
-  };
+      const totalPayment = payments.reduce((acc, { amount }) => (acc += amount), 0);
+      const totalDue = dues.reduce((acc, { amount }) => (acc += amount), 0);
+      const totalDiscount = discounts.reduce((acc, { amount }) => (acc += amount), 0);
 
-  // Shared SQL fragment for FROM, JOINs, WHERE, GROUP BY, HAVING
-  const baseQuery = Prisma.sql`
-    FROM students s
-    JOIN classrooms cr ON s."classroomId" = cr.id
-    LEFT JOIN dues d ON s.id = d."studentId"
-    LEFT JOIN payments p ON s.id = p."studentId"
-    WHERE 1 = 1
-      AND (${filters.level} IS NULL OR s.class = ${filters.level})
-      AND (${filters.classroomId} IS NULL OR cr.id = ${filters.classroomId})
-      AND (
-        ${filters.searchTerm} IS NULL OR
-        s.id ILIKE CONCAT('%', ${filters.searchTerm}, '%') OR
-        s.name ILIKE CONCAT('%', ${filters.searchTerm}, '%')
-      )
-    GROUP BY s.id, s.name, cr.name, s.class
-    HAVING COALESCE(SUM(d.amount), 0) - COALESCE(SUM(p.amount), 0) > 0
-  `;
+      const classroomName = classroom.name;
+      const due = totalDue - totalPayment - totalDiscount;
 
-  // Main query: Get paginated students with dues
-  const studentsWithDues = await prismaClient.$queryRaw<TStudentDueSummary[]>`
-    SELECT
-      s.id AS "studentId",
-      s.name AS "studentName",
-      s.class AS "classLevel",
-      cr.name AS "classroomName",
-      COALESCE(SUM(d.amount), 0) - COALESCE(SUM(p.amount), 0) AS "due"
-    ${baseQuery}
-    ORDER BY s.name
-    LIMIT ${limit}
-    OFFSET ${skip};
-  `;
+      return { ...rest, classLevel: cls, classroomName, due };
+    })
+    .filter((student) => !!student.due);
 
-  // Count query: Get total count for pagination
-  const totalCountResult = await prismaClient.$queryRaw<{ count: number }[]>`
-    SELECT COUNT(*) AS count FROM (
-      SELECT s.id
-      ${baseQuery}
-    ) AS filtered_students;
-  `;
-
-  const totalCount = totalCountResult[0]?.count ?? 0;
-  const meta = getMeta({ limit, page, total: totalCount });
-
-  return { meta, student: studentsWithDues };
+  return formattedStudent;
 };
 
 export const dueService = { getDuesByClass, getDueByClassroom, getDueByStudent };

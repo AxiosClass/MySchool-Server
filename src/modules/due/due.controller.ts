@@ -14,8 +14,8 @@ const getDueByClassroom = catchAsync(async (req, res) => {
 });
 
 const getDuesByStudent = catchAsync(async (req, res) => {
-  const { meta, student } = await dueService.getDueByStudent(req.query as TObject);
-  sendSuccessResponse(res, { message: 'Dues by student fetched successfully', meta, data: student });
+  const result = await dueService.getDueByStudent(req.params.classroomId);
+  sendSuccessResponse(res, { message: 'Dues by student fetched successfully', data: result });
 });
 
 export const dueController = { getDueByClass, getDueByClassroom, getDuesByStudent };
