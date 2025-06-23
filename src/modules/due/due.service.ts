@@ -2,7 +2,52 @@ import { Prisma } from '@prisma/client';
 import { prismaClient } from '../../app/prisma';
 import { getMeta, getPaginationInfo } from '../../helpers/common';
 import { TObject } from '../../utils/types';
-import { TClassroomFinanceReport, TStudentDueSummary } from './due.type';
+import { TFinanceReport, TStudentDueSummary } from './due.type';
+
+const getDuesByClass = async () => {
+  const dues = await prismaClient.due.findMany({
+    select: { amount: true, student: { select: { class: true } } },
+  });
+
+  const payments = await prismaClient.payment.findMany({
+    select: { amount: true, student: { select: { class: true } } },
+  });
+
+  const cls = await prismaClient.class.findMany({
+    select: { level: true, name: true },
+  });
+
+  let totalDue = 0;
+  let totalPaid = 0;
+
+  const classFinanceReportGroup: Record<string, TFinanceReport> = {};
+
+  dues.forEach((due) => {
+    const classKey = due.student.class;
+    if (!classFinanceReportGroup[classKey]) classFinanceReportGroup[classKey] = { totalDue: 0, totalPaid: 0 };
+
+    classFinanceReportGroup[classKey].totalDue += due.amount;
+    totalDue += due.amount;
+  });
+
+  payments.forEach((payment) => {
+    const classKey = payment.student.class;
+    if (!classFinanceReportGroup[classKey]) classFinanceReportGroup[classKey] = { totalDue: 0, totalPaid: 0 };
+
+    classFinanceReportGroup[classKey].totalPaid += payment.amount;
+    totalPaid += payment.amount;
+  });
+
+  const classWithDueAndPaidSummary = cls
+    .map((classItem) => {
+      const classKey = classItem.name;
+      const classFinanceInfo = classFinanceReportGroup[classKey] || { totalDue: 0, totalPaid: 0 };
+      return { ...classItem, ...classFinanceInfo };
+    })
+    .sort((a, b) => Number(a.level) - Number(b.level));
+
+  return { totalDue, totalPaid, classes: classWithDueAndPaidSummary };
+};
 
 const getDueByClassroom = async () => {
   const dues = await prismaClient.due.findMany({
@@ -19,7 +64,7 @@ const getDueByClassroom = async () => {
 
   let totalDue = 0;
   let totalPaid = 0;
-  const classroomFinanceReportGroup: Record<string, TClassroomFinanceReport> = {};
+  const classroomFinanceReportGroup: Record<string, TFinanceReport> = {};
 
   dues.forEach((due) => {
     const classroomId = due.student.classroomId;
@@ -111,4 +156,4 @@ const getDueByStudent = async (query: TObject) => {
   return { meta, student: studentsWithDues };
 };
 
-export const dueService = { getDueByClassroom, getDueByStudent };
+export const dueService = { getDuesByClass, getDueByClassroom, getDueByStudent };

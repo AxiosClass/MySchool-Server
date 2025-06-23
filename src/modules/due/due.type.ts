@@ -1,4 +1,4 @@
-export type TClassroomFinanceReport = { totalDue: number; totalPaid: number };
+export type TFinanceReport = { totalDue: number; totalPaid: number };
 
 export type TStudentDueSummary = {
   studentId: string;
