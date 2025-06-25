@@ -6,8 +6,8 @@ import { generateDateArray, generateHalfYearArray, generateHalfYearlyDateRange }
 const getOverview = async () => {
   const date = moment();
 
-  const studentsCount = await prismaClient.student.count({ where: { isDeleted: false } });
-  const teachersCount = await prismaClient.teacher.count({ where: { isDeleted: false } });
+  const totalStudent = await prismaClient.student.count({ where: { isDeleted: false } });
+  const totalTeacher = await prismaClient.teacher.count({ where: { isDeleted: false } });
 
   const payments = await prismaClient.payment.findMany({ select: { amount: true, createdAt: true } });
   const dues = await prismaClient.due.findMany({ select: { amount: true } });
@@ -20,12 +20,12 @@ const getOverview = async () => {
   const totalDiscount = discount.reduce((acc, { amount }) => (acc += amount), 0);
 
   const currentDue = totalDues - totalPaid - totalDiscount;
-  const currentMonthPaid = thisMonthsPayment.reduce((acc, { amount }) => (acc += amount), 0);
+  const collection = thisMonthsPayment.reduce((acc, { amount }) => (acc += amount), 0);
 
   return {
-    studentsCount,
-    teachersCount,
-    currentMonthPaid,
+    totalStudent,
+    totalTeacher,
+    collection,
     currentDue,
   };
 };
