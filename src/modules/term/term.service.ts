@@ -23,6 +23,7 @@ const addTerm = async (payload: TAddOrUpdateTermPayload) => {
   });
 
   const students = await prismaClient.student.findMany({
+    where: { isDeleted: false },
     select: { id: true, classroom: { select: { class: { select: { id: true, termFee: true } } } } },
   });
 

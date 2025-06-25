@@ -69,7 +69,10 @@ const getStudentsWithTermResult = async (query: TObject) => {
     select: { studentId: true, marks: true },
   });
 
-  const students = await prismaClient.student.findMany({ where: { classroomId }, select: { id: true, name: true } });
+  const students = await prismaClient.student.findMany({
+    where: { classroomId, isDeleted: false },
+    select: { id: true, name: true },
+  });
 
   const termResultMap = new Map(termResults.map((each) => [each.studentId, each]));
 

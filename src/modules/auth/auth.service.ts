@@ -51,11 +51,12 @@ const login = async (payload: TLoginPayload, type: string) => {
     case 'TEACHER': {
       const teacherInfo = await prismaClient.teacher.findUnique({
         where: { id: payload.id },
-        select: { id: true, name: true, password: true, status: true },
+        select: { id: true, name: true, password: true, status: true, isDeleted: true },
       });
 
       if (!teacherInfo) throw new AppError('Teacher not found', 404);
       if (teacherInfo.status === UserStatus.BLOCKED) throw new AppError('You are blocked please contact to admin', 400);
+      if (teacherInfo.isDeleted) throw new AppError('User has been deleted', 400);
 
       const isPasswordMatched = await comparePassword(payload.password, teacherInfo.password);
       if (!isPasswordMatched) throw new AppError('Password does not match', 400);
@@ -73,10 +74,11 @@ const login = async (payload: TLoginPayload, type: string) => {
     case 'STUDENT': {
       const studentInfo = await prismaClient.student.findUnique({
         where: { id: payload.id },
-        select: { id: true, name: true, password: true, needPasswordChange: true },
+        select: { id: true, name: true, password: true, needPasswordChange: true, isDeleted: true },
       });
 
       if (!studentInfo) throw new AppError('Student not found', 404);
+      if (studentInfo.isDeleted) throw new AppError('User has been deleted', 400);
 
       const isPasswordMatched = await comparePassword(payload.password, studentInfo.password);
       if (!isPasswordMatched) throw new AppError('Password does not match', 400);

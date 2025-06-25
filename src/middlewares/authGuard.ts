@@ -62,14 +62,16 @@ export const authGuard = (...requiredRoles: USER_ROLES[]) => {
     else if (isStudent) {
       const studentInfo = await prismaClient.student.findUnique({
         where: { id },
-        select: { name: true, status: true, needPasswordChange: true },
+        select: { name: true, status: true, needPasswordChange: true, isDeleted: true },
       });
 
       if (!studentInfo) throw new AppError('User not found!', 404);
 
       const { name, needPasswordChange } = studentInfo;
+
       if (studentInfo.status === UserStatus.BLOCKED)
         throw new AppError('You are blocked, please contact to the admin', 400);
+      if (studentInfo.isDeleted) throw new AppError('You have been removed', 400);
 
       req.user = { id, name, role: USER_ROLES.STUDENT, needPasswordChange };
     }

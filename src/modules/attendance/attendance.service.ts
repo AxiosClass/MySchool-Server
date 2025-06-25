@@ -9,10 +9,18 @@ import { generateDateArray, parseDate } from '../../helpers/common';
 
 const addAttendance = async (payload: TAddAttendancePayload) => {
   const date = payload.date ? new Date(payload.date) : new Date();
-  const dayRange = attendanceHelper.getDayRange(date);
+  const { start, end } = attendanceHelper.getDayRange(date);
+
+  const studentInfo = await prismaClient.student.findUnique({
+    where: { id: payload.studentId },
+    select: { isDeleted: true },
+  });
+
+  if (!studentInfo) throw new AppError('Student not found', 404);
+  if (studentInfo.isDeleted) throw new AppError('Student has been deleted', 400);
 
   const isAttendanceExist = await prismaClient.attendance.findFirst({
-    where: { studentId: payload.studentId, date: { gte: dayRange.start, lte: dayRange.end } },
+    where: { studentId: payload.studentId, date: { gte: start, lte: end } },
     select: { id: true },
   });
 
@@ -27,8 +35,13 @@ const addAttendanceFormNfc = async (payload: TAddAttendanceFromNfcPayload) => {
   const date = new Date();
   const { start, end } = attendanceHelper.getDayRange(date);
 
-  const studentInfo = await prismaClient.student.findFirst({ where: { cardId: payload.cardId }, select: { id: true } });
+  const studentInfo = await prismaClient.student.findFirst({
+    where: { cardId: payload.cardId },
+    select: { id: true, isDeleted: true },
+  });
+
   if (!studentInfo) throw new AppError('Invalid CardId', 400);
+  if (studentInfo.isDeleted) throw new AppError('Student has been deleted', 400);
 
   const isAttendanceExist = await prismaClient.attendance.findFirst({
     where: { studentId: studentInfo.id, date: { gte: start, lte: end } },
@@ -65,7 +78,11 @@ const getAttendancesForClassroom = async (classroomId: string, query: TObject) =
   });
 
   const holiday = await prismaClient.holiDay.findFirst({ where: { startDate: { lte: start }, endDate: { gte: end } } });
-  const students = await prismaClient.student.findMany({ where: { classroomId }, select: { id: true, name: true } });
+
+  const students = await prismaClient.student.findMany({
+    where: { classroomId, isDeleted: false },
+    select: { id: true, name: true },
+  });
 
   const attendanceMap = new Map(attendances.map((attendance) => [attendance.studentId, attendance]));
 

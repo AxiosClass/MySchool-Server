@@ -47,6 +47,12 @@ studentRouter.get(
   studentController.getStudentClassInfo,
 );
 
+studentRouter.delete(
+  '/:studentId',
+  authGuard(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
+  studentController.deleteStudent,
+);
+
 const studentsRouter = Router();
 
 studentsRouter.get(

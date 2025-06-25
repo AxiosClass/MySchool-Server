@@ -16,6 +16,7 @@ const addMonthlyDues = async (query: TObject) => {
   const currentYear = today.getFullYear();
 
   const students = await prismaClient.student.findMany({
+    where: { isDeleted: false },
     select: { id: true, classroom: { select: { class: { select: { monthlyFee: true, id: true } } } } },
   });
 
@@ -55,10 +56,11 @@ const addDiscount = async (payload: TAddDiscountPayload) => {
 const promoteStudent = async (payload: TPromotedStudentPayload) => {
   const student = await prismaClient.student.findUnique({
     where: { id: payload.studentId },
-    select: { class: true, classroomId: true },
+    select: { class: true, classroomId: true, isDeleted: true },
   });
 
   if (!student) throw new AppError('No Student Found!', 404);
+  if (!student.isDeleted) throw new AppError('Student has been deleted', 400);
 
   const classInfo = await prismaClient.class.findFirst({
     where: { level: payload.classLevel },

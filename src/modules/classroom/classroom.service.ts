@@ -81,7 +81,7 @@ const getClassroomListForTeacher = async (teacherId: string) => {
 
 const getStudentList = async (classroomId: string) => {
   const students = await prismaClient.student.findMany({
-    where: { classroomId },
+    where: { classroomId, isDeleted: false },
     select: { id: true, name: true, class: true },
   });
   return students;

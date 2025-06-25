@@ -43,6 +43,11 @@ const getStudentClassInfo = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message: 'Class info retrieved successfully', data: classInfo });
 });
 
+const deleteStudent = catchAsync(async (req, res) => {
+  const message = await studentService.deleteStudent(req.params.studentId);
+  sendSuccessResponse(res, { message });
+});
+
 export const studentController = {
   addStudent,
   updateStudent,
@@ -52,4 +57,5 @@ export const studentController = {
   getStudentDetails,
   getStudentListForPayment,
   getStudentClassInfo,
+  deleteStudent,
 };

@@ -87,6 +87,7 @@ const getStudents = async (query: TObject) => {
       ],
     }),
     ...(classLevel && { class: classLevel }),
+    isDeleted: false,
   };
 
   const student = await prismaClient.student.findMany({
@@ -179,12 +180,13 @@ const getStudentDetails = async (studentId: string) => {
   });
 
   if (!student) throw new AppError('Student not found!', 404);
-  console.log('Iam');
+
   return student;
 };
 
 const getStudentListForPayment = async () => {
   const students = await prismaClient.student.findMany({
+    where: { isDeleted: false },
     select: {
       id: true,
       name: true,
@@ -221,6 +223,32 @@ const getStudentClassInfo = async (studentId: string) => {
   return student.classroom.class;
 };
 
+const deleteStudent = async (studentId: string) => {
+  const student = await prismaClient.student.findUnique({
+    where: { id: studentId },
+    select: {
+      id: true,
+      isDeleted: true,
+      payments: { select: { amount: true } },
+      dues: { select: { amount: true } },
+      discounts: { select: { amount: true } },
+    },
+  });
+
+  if (!student) throw new AppError('Student not found', 404);
+  if (student.isDeleted) throw new AppError('Student has been already removed', 400);
+
+  const paid = student.payments.reduce((acc, { amount }) => (acc += amount), 0);
+  const due = student.dues.reduce((acc, { amount }) => (acc += amount), 0);
+  const discount = student.discounts.reduce((acc, { amount }) => (acc += amount), 0);
+  const totalDue = due - paid - discount;
+
+  if (totalDue) throw new AppError(`Student has already ${totalDue} TK due`, 400);
+  await prismaClient.student.update({ where: { id: studentId }, data: { isDeleted: true } });
+
+  return 'Student removed successfully';
+};
+
 export const studentService = {
   addStudent,
   getStudents,
@@ -230,4 +258,5 @@ export const studentService = {
   getStudentDetails,
   getStudentListForPayment,
   getStudentClassInfo,
+  deleteStudent,
 };
