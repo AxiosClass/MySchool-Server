@@ -2,9 +2,9 @@ import { sendSuccessResponse } from '../../helpers/responseHelper';
 import { catchAsync } from '../../middlewares/catchAsync';
 import { metaDataService } from './meta-data.service';
 
-const getAttendanceSummary = catchAsync(async (_, res) => {
-  const summary = await metaDataService.getAttendanceSummary();
-  sendSuccessResponse(res, { message: 'Attendance summary fetched successfully', data: summary });
+const getOverview = catchAsync(async (req, res) => {
+  const result = await metaDataService.getOverview();
+  sendSuccessResponse(res, { message: 'Overview fetched successfully', data: result });
 });
 
 const getAttendanceTrends = catchAsync(async (req, res) => {
@@ -17,4 +17,4 @@ const generatePaymentTrends = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message: 'Payment trends fetched successfully', data: paymentTrends });
 });
 
-export const metaDataController = { getAttendanceSummary, getAttendanceTrends, generatePaymentTrends };
+export const metaDataController = { getOverview, getAttendanceTrends, generatePaymentTrends };

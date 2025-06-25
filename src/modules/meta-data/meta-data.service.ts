@@ -1,21 +1,32 @@
-import moment, { relativeTimeRounding } from 'moment';
+import moment from 'moment';
 
 import { prismaClient } from '../../app/prisma';
 import { generateDateArray, generateHalfYearArray, generateHalfYearlyDateRange } from '../../helpers/common';
 
-const getAttendanceSummary = async () => {
-  const studentsCount = await prismaClient.student.count({ where: { status: 'ACTIVE' } });
+const getOverview = async () => {
+  const date = moment();
 
-  const date = new Date();
-  const start = moment(date).startOf('day').toDate();
-  const end = moment(date).endOf('day').toDate();
+  const studentsCount = await prismaClient.student.count({ where: { isDeleted: false } });
+  const teachersCount = await prismaClient.teacher.count({ where: { isDeleted: false } });
 
-  const attendanceCount = await prismaClient.attendance.count({ where: { date: { gte: start, lte: end } } });
+  const payments = await prismaClient.payment.findMany({ select: { amount: true, createdAt: true } });
+  const dues = await prismaClient.due.findMany({ select: { amount: true } });
+  const discount = await prismaClient.discount.findMany({ select: { amount: true } });
+
+  const thisMonthsPayment = payments.filter((payment) => moment(payment.createdAt).isSame(date, 'month'));
+
+  const totalPaid = payments.reduce((acc, { amount }) => (acc += amount), 0);
+  const totalDues = dues.reduce((acc, { amount }) => (acc += amount), 0);
+  const totalDiscount = discount.reduce((acc, { amount }) => (acc += amount), 0);
+
+  const currentDue = totalDues - totalPaid - totalDiscount;
+  const currentMonthPaid = thisMonthsPayment.reduce((acc, { amount }) => (acc += amount), 0);
 
   return {
-    totalStudents: studentsCount,
-    present: attendanceCount,
-    absent: studentsCount - attendanceCount,
+    studentsCount,
+    teachersCount,
+    currentMonthPaid,
+    currentDue,
   };
 };
 
@@ -70,4 +81,4 @@ const getPaymentTrends = async () => {
   return monthsArray.map((month) => ({ month, amount: paymentMap[month] || 0 }));
 };
 
-export const metaDataService = { getAttendanceSummary, getAttendanceTrends, getPaymentTrends };
+export const metaDataService = { getOverview, getAttendanceTrends, getPaymentTrends };

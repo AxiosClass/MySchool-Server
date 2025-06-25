@@ -41,6 +41,7 @@ model Teacher {
   updatedAt          DateTime   @updatedAt
   status             UserStatus @default(ACTIVE)
   needPasswordChange Boolean    @default(true)
+  isDeleted          Boolean    @default(false)
 
   classroomsClassTeacher  Classroom?
   classroomSubjectTeacher ClassroomSubjectTeacher[]
@@ -67,6 +68,7 @@ model Student {
   monthlyFee         Float?
   needPasswordChange Boolean    @default(true)
   cardId             String?
+  isDeleted          Boolean    @default(false)
 
   classroom   Classroom    @relation(fields: [classroomId], references: [id])
   payments    Payment[]
