@@ -26,6 +26,7 @@ const getTeachers = async (query: TObject) => {
         { id: { contains: searchTerm, mode: 'insensitive' } },
       ],
     }),
+    isDeleted: false,
   };
 
   const teachers = await prismaClient.teacher.findMany({
@@ -56,7 +57,11 @@ const getTeachers = async (query: TObject) => {
 };
 
 const getTeacherList = async () => {
-  const teachers = await prismaClient.teacher.findMany({ select: { id: true, name: true } });
+  const teachers = await prismaClient.teacher.findMany({
+    where: { isDeleted: false },
+    select: { id: true, name: true },
+  });
+
   return teachers;
 };
 
@@ -88,4 +93,34 @@ const updateTeacher = async (payload: TUpdateTeacherPayload, teacherId: string) 
   return 'Teacher updated successfully';
 };
 
-export const teacherService = { addTeacher, getTeachers, getTeacherList, getTeacherDetails, updateTeacher };
+const deleteTeacher = async (teacherId: string) => {
+  const teacherInfo = await prismaClient.teacher.findUnique({
+    where: { id: teacherId },
+    select: {
+      isDeleted: true,
+      classroomsClassTeacher: { select: { id: true } },
+      classroomSubjectTeacher: { select: { id: true } },
+    },
+  });
+
+  if (!teacherInfo) throw new AppError('Teacher not found', 404);
+
+  if (teacherInfo.classroomsClassTeacher)
+    throw new AppError(`Can not delete this teacher as he is a class teacher of a section`, 400);
+
+  if (teacherInfo.classroomSubjectTeacher.length)
+    throw new AppError('Can not delete this teacher as he is subject teacher of at least a section', 400);
+
+  await prismaClient.teacher.update({ where: { id: teacherId }, data: { isDeleted: true } });
+
+  return 'Teacher has been deleted';
+};
+
+export const teacherService = {
+  addTeacher,
+  getTeachers,
+  getTeacherList,
+  getTeacherDetails,
+  updateTeacher,
+  deleteTeacher,
+};

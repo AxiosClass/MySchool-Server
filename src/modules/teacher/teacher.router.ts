@@ -28,6 +28,12 @@ teacherRouter.patch(
   teacherController.updateTeacher,
 );
 
+teacherRouter.delete(
+  '/:teacherId',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  teacherController.deleteTeacher,
+);
+
 export const teachersRouter = Router();
 
 teachersRouter.get(

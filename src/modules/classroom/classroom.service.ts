@@ -11,6 +11,14 @@ import { prismaClient } from '../../app/prisma';
 import { TObject } from '../../utils/types';
 
 const createClassroom = async (payload: TCreateClassroomPayload) => {
+  const teacher = await prismaClient.teacher.findUnique({
+    where: { id: payload.classTeacherId },
+    select: { isDeleted: true },
+  });
+
+  if (!teacher) throw new AppError('Teacher not found!', 404);
+  if (teacher.isDeleted) throw new AppError('Teacher has been deleted', 400);
+
   await prismaClient.classroom.create({ data: { ...payload } });
   return 'Classroom is created successfully';
 };
@@ -23,8 +31,15 @@ const updateClassroom = async (payload: TUpdateClassroomPayload, classroomId: st
 
   if (!classroom) throw new AppError('Section does not exist', 404);
 
-  const teacher = await prismaClient.teacher.findUnique({ where: { id: payload.classTeacherId } });
-  if (!teacher) throw new AppError('Teacher not found', 404);
+  if (payload.classTeacherId) {
+    const teacher = await prismaClient.teacher.findUnique({
+      where: { id: payload.classTeacherId },
+      select: { isDeleted: true },
+    });
+
+    if (!teacher) throw new AppError('Teacher not found', 404);
+    if (teacher.isDeleted) throw new AppError('Teacher has been deleted', 400);
+  }
 
   await prismaClient.classroom.update({ where: { id: classroomId }, data: payload });
   return 'Section updated successfully';

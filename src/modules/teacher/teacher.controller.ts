@@ -28,4 +28,16 @@ const updateTeacher = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message });
 });
 
-export const teacherController = { addTeacher, getTeachers, getTeacherList, getTeacherDetails, updateTeacher };
+const deleteTeacher = catchAsync(async (req, res) => {
+  const message = await teacherService.deleteTeacher(req.params.teacherId);
+  sendSuccessResponse(res, { message });
+});
+
+export const teacherController = {
+  addTeacher,
+  getTeachers,
+  getTeacherList,
+  getTeacherDetails,
+  updateTeacher,
+  deleteTeacher,
+};
