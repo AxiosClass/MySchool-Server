@@ -5,11 +5,11 @@ const addHolidaySchema = z.object({
   description: z.string().optional(),
   startDate: z
     .string()
-    .date()
+    .datetime()
     .transform((val) => new Date(val)),
   endDate: z
     .string()
-    .date()
+    .datetime()
     .transform((val) => new Date(val)),
 });
 
