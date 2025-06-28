@@ -13,4 +13,9 @@ const getHolidays = catchAsync(async (req, res) => {
   sendSuccessResponse(res, { message: 'Holidays fetched successfully', meta, data: holidays });
 });
 
-export const holidayController = { addHoliday, getHolidays };
+const deleteHoliday = catchAsync(async (req, res) => {
+  const message = await holidayService.deleteHoliday(req.params.holidayId);
+  sendSuccessResponse(res, { message });
+});
+
+export const holidayController = { addHoliday, getHolidays, deleteHoliday };

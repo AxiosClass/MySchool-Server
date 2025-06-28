@@ -14,6 +14,12 @@ holidayRouter.post(
   holidayController.addHoliday,
 );
 
+holidayRouter.delete(
+  '/:holidayId',
+  authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  holidayController.deleteHoliday,
+);
+
 const holidaysRouter = Router();
 
 holidaysRouter.get('/', authGuard(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN), holidayController.getHolidays);

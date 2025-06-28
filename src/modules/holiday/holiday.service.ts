@@ -53,4 +53,9 @@ const getHolidays = async (query: TObject) => {
   return { holidays, meta: metaGenerator({ page, limit, total }) };
 };
 
-export const holidayService = { addHoliday, getHolidays };
+const deleteHoliday = async (holidayId: string) => {
+  await prismaClient.holiDay.delete({ where: { id: holidayId } });
+  return 'Holiday has been deleted!';
+};
+
+export const holidayService = { addHoliday, getHolidays, deleteHoliday };
