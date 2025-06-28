@@ -13,14 +13,26 @@ const addHoliday = async (payload: TAddHolidayPayload) => {
   const startDateStart = moment(startDate).endOf('day').toDate();
   const endDateEnd = moment(endDate).endOf('day').toDate();
 
-  const holiday = await prismaClient.holiDay.create({
-    data: { ...payload, startDate: startDateStart, endDate: endDateEnd },
-    select: { id: true },
+  const message = await prismaClient.$transaction(async (tClient) => {
+    await tClient.holiDay.create({
+      data: { ...payload, startDate: startDateStart, endDate: endDateEnd },
+      select: { id: true },
+    });
+
+    await tClient.notice.create({
+      data: {
+        title: payload.name,
+        description:
+          payload.description ??
+          `School shall remain close form ${moment(payload.startDate).format('DD MMM YYYY')} to ${moment(payload.endDate).format('DD MMM YYYY')}`,
+        noticeFor: 'ALL',
+      },
+    });
+
+    return 'Holiday created successfully';
   });
 
-  if (!holiday.id) throw new AppError('Failed to create holiday', 400);
-
-  return 'Holiday created successfully';
+  return message;
 };
 
 const getHolidays = async (query: TObject) => {

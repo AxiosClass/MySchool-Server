@@ -1,7 +1,6 @@
 import { exactMatchPicker, metaGenerator, partialMatchPicker } from '../../helpers/common';
 import { TCreateNoticePayload, TUpdateNoticePayload } from './notice.validation';
 import { prismaClient } from '../../app/prisma';
-import { USER_ROLES } from '../../utils/types';
 
 const createNotice = async (payload: TCreateNoticePayload) => {
   const notice = await prismaClient.notice.create({ data: payload });
